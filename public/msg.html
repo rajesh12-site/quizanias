@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizania Messages</title>
+    <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+    @keyframes glow {
+      0%   { box-shadow: 0 0 5px #a855f7; }
+      50%  { box-shadow: 0 0 10px #a855f7; }
+      100% { box-shadow: 0 0 5px #a855f7; }
+    }
+    .glow {
+      animation: glow 2s infinite;
+    }
+    /* Scrollbar for message list */
+    .message-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    .message-list::-webkit-scrollbar-thumb {
+      background-color: #a855f7;
+      border-radius: 4px;
+    }
+		html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+  </style>
+
+  
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+
+<script type="module">
+
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  let currentUser = null;
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const res = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST", body: formData
+    });
+    const data = await res.json();
+    if (data.secure_url) {
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+    currentUser = user;
+    const docRef = doc(db, "users", user.uid);
+    let docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { name: user.email, rechargeWallet: 0, winningWallet: 0 }, { merge: true });
+      docSnap = await getDoc(docRef);
+    }
+    const data = docSnap.data();
+
+    if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+  });
+  // Initialize Firebase
+
+  // Initialize Firestore
+
+import { collection, query, onSnapshot } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+const messagesCol = collection(db, "messages");
+const q = query(messagesCol);
+
+onSnapshot(q, (querySnapshot) => {
+  messages = [];
+  querySnapshot.forEach((doc) => {
+    messages.push({ id: doc.id, ...doc.data() });
+  });
+  renderMessageList();
+
+  // Auto-select first message
+  if (messages.length > 0) {
+    selectMessage(messages[0].id);
+  }
+});
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+
+  window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+
+
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+
+</script>
+
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="dashboard.html">🏠 Home</a>
+      <a href="profile-edit.html">👤 Profile</a>
+      <a href="msg.html">✉️ Messages</a>
+      <a href="play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="settingtrial">⚙️ Setting</a>
+      <a href="feedback.html">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 animate-fadeIn flex flex-col sm:flex-row gap-4">
+
+    <!-- Messages List (Inbox) -->
+    <section class="w-full sm:w-1/3 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden flex flex-col">
+      <header class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 font-semibold text-lg">
+        Inbox
+      </header>
+      <ul id="messageList" class="message-list overflow-y-auto flex-1 divide-y divide-gray-200 dark:divide-gray-700">
+        <!-- JS will populate messages here -->
+      </ul>
+    </section>
+
+    <!-- Message Content -->
+    <section id="messageContent" class="w-full sm:w-2/3 bg-white dark:bg-gray-800 rounded-lg shadow p-6 flex flex-col">
+      <h2 id="msgTitle" class="text-2xl font-bold mb-2">Select a message</h2>
+      <p id="msgBody" class="flex-1 text-gray-700 dark:text-gray-300 leading-relaxed">Please select a message from the left to read its content.</p>
+    </section>
+
+  </main>
+</div>
+<script>
+  // Variables for DOM elements
+  const messageListEl = document.getElementById("messageList");
+  const msgTitleEl = document.getElementById("msgTitle");
+  const msgBodyEl = document.getElementById("msgBody");
+
+  // Store messages locally
+  let messages = [];
+
+  // Reference to the Firestore "messages" collection
+ 
+
+    renderMessageList();
+
+    // Auto-select first message if available
+    if (messages.length > 0) {
+      selectMessage(messages[0].id);
+    }
+   error => {
+    console.error("Error fetching messages:", error);
+  };
+
+  // Render the message list in sidebar
+  function renderMessageList() {
+  messageListEl.innerHTML = "";
+
+  messages.forEach(msg => {
+    const li = document.createElement("li");
+    li.className = "cursor-pointer px-4 py-3 hover:bg-purple-100 dark:hover:bg-purple-800 transition flex flex-col";
+
+    // Title element
+    const title = document.createElement("span");
+    title.textContent = msg.title;
+    title.className = "font-semibold text-purple-700 dark:text-purple-400 truncate";
+
+    // Preview snippet (first 50 chars)
+    const preview = document.createElement("small");
+preview.textContent = (typeof msg.content === 'string' && msg.content.length > 0)
+  ? msg.content.substring(0, 50) + (msg.content.length > 50 ? "..." : "")
+  : "No content";
+    preview.className = "text-gray-500 dark:text-gray-400 truncate";
+
+    li.appendChild(title);
+    li.appendChild(preview);
+
+    li.onclick = () => selectMessage(msg.id);
+
+    messageListEl.appendChild(li);
+  });
+}
+
+
+  // Display the selected message content
+function selectMessage(messageId) {
+  const msg = messages.find(m => m.id === messageId);
+
+  if (!msg) {
+    console.error("Message not found with ID:", messageId);
+    return;
+  }
+
+  const titleEl = document.getElementById("msgTitle");
+  const contentEl = document.getElementById("msgBody");
+
+  titleEl.textContent = msg.title;
+
+  // ✅ Use msg.content instead of msg.text
+  if (typeof msg.content === 'string') {
+    contentEl.innerHTML = msg.content.replace(/\n/g, "<br>");
+  } else {
+    contentEl.innerHTML = "<i>No content available</i>";
+  }
+}
+
+
+
+
+</script>
+
+</body>
+</html>

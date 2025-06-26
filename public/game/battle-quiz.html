@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizania - Quiz Battle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+      body { font-family: 'Poppins', sans-serif; }
+
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .vs-effect {
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .countdown-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      z-index: 9999;
+      font-weight: bold;
+      transition: opacity 0.4s ease;
+    }
+
+    .countdown-fadeout {
+      opacity: 0;
+    }
+
+    .fadeIn {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+		html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white ">
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="/play.html">▶️ Play</a>
+      <a href="/refferearn">🤝 Refer & Earn</a>
+      <a href="/setting">⚙️ Setting</a>
+      <a href="/feedback">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+  
+ <!-- Main Content -->
+  
+<main class="bg-white dark:bg-gray-800 p-6 rounded shadow max-w-xl w-full space-y-2">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded shadow text-center space-y-4">
+	  <h2 class="text-2xl font-bold">🔍 Finding Opponent</h2>
+	      <div class="bg-gray-800 p-4 rounded-lg w-full max-w-6xl text-center">
+      <p class="text-lg text-green-500 font-semibold">Category: <span id="matchCategory"></span></p>
+      <p class="text-lg text-green-500 font-semibold">Entry Fee: ₹<span id="entryFee"></span></p>
+      <p class="text-lg text-blue-400 font-medium">You Paid: ₹<span id="netAmount"></span></p>
+      <p class="text-lg text-yellow-400">Winning Amount: ₹<span id="totalWin"></span></p>
+      <p id="timer" class="text-xl text-pink-500 font-bold">Matching...</p>
+    </div>
+
+    <div class="flex justify-around items-center w-full max-w-2xl mt-6">
+      <div class="text-center">
+        <img id="userPhoto" src="" class="w-20 h-20 rounded-full border-4 border-blue-400"/>
+        <p id="userNameDisplay" class="mt-1 font-semibold"></p>
+      </div>
+      <div class="text-4xl text-red-600 vs-effect font-bold">VS</div>
+      <div class="text-center">
+        <img id="opponentPhoto" src="" class="w-20 h-20 rounded-full border-4 border-red-400"/>
+        <p id="opponentName" class="mt-1 font-semibold text-yellow-300">Searching...</p>
+      </div>
+    </div>
+
+    <button id="startQuizBtn" class="hidden mt-6 bg-green-600 text-white px-6 py-2 rounded-lg font-semibold">Start Quiz</button>
+  </main>
+
+  <!-- Full Screen Countdown Overlay -->
+  <div id="countdownOverlay" class="countdown-overlay hidden"></div>
+
+  
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs
+  } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const entryFee = parseInt(new URLSearchParams(window.location.search).get("entryFee")) || 10;
+  const category = new URLSearchParams(window.location.search).get("category") || "gk";
+ let commission = 2; // default
+
+if (entryFee === 10) commission = 2;
+else if (entryFee === 20) commission = 3;
+else if (entryFee === 50) commission = 5;
+else if (entryFee === 100) commission = 10;
+// You can add more slabs if needed
+
+
+  const netAmount = entryFee - commission;
+
+  document.getElementById("entryFee").textContent = entryFee;
+  document.getElementById("matchCategory").textContent = category;
+  document.getElementById("netAmount").textContent = netAmount;
+  document.getElementById("totalWin").textContent = netAmount * 2;
+
+  let currentUser, user;
+  let opponentUID = null;
+  let matchStarted = false;
+  let timerInterval;
+  let questions = [];
+
+  onAuthStateChanged(auth, async (u) => {
+    if (!u) return location.href = "login.html";
+    currentUser = u;
+
+    const userSnap = await getDoc(doc(db, "users", u.uid));
+    user = userSnap.data();
+
+    document.getElementById("userPhoto").src = user.profilePhoto || `https://i.pravatar.cc/150?u=${u.uid}`;
+    document.getElementById("userNameDisplay").textContent = user.name || u.email;
+
+    startMatchMaking();
+    findOrCreateMatch();
+  });
+
+  function startMatchMaking() {
+    let seconds = 120;
+    timerInterval = setInterval(() => {
+      seconds--;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      document.getElementById("timer").textContent = `Time Left: ${m}:${s}`;
+
+      if (!opponentUID && seconds === 30) assignBot();
+      if (seconds <= 0 && !matchStarted) {
+        clearInterval(timerInterval);
+        showMatchStart();
+      }
+    }, 1000);
+  }
+
+  async function findOrCreateMatch() {
+    const matchesRef = collection(db, "matches");
+    const q = query(matchesRef,
+      where("entryFee", "==", entryFee),
+      where("category", "==", category),
+      where("found", "==", false)
+    );
+
+    const snapshot = await getDocs(q);
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      if (data.uid !== currentUser.uid) {
+        opponentUID = data.uid;
+        await updateDoc(doc(db, "matches", docSnap.id), {
+          found: true,
+          opponent: currentUser.uid,
+          opponentPhoto: user.profilePhoto || '',
+          opponentName: user.name || '',
+        });
+        showOpponent(opponentUID);
+        showMatchStart();
+        return;
+      }
+    }
+
+    const myMatchDoc = doc(db, "matches", currentUser.uid);
+    await setDoc(myMatchDoc, {
+      uid: currentUser.uid,
+      entryFee,
+      category,
+      found: false,
+      createdAt: Date.now(),
+      userName: user.name || '',
+      userPhoto: user.profilePhoto || '',
+    });
+
+    const interval = setInterval(async () => {
+      const updatedSnap = await getDoc(myMatchDoc);
+      const updatedData = updatedSnap.data();
+
+      if (updatedData?.found && updatedData?.opponent) {
+        opponentUID = updatedData.opponent;
+        clearInterval(interval);
+        showOpponent(opponentUID);
+        showMatchStart();
+      }
+    }, 3000);
+
+    setTimeout(() => {
+      if (!opponentUID && !matchStarted) {
+        clearInterval(interval);
+        assignBot();
+      }
+    }, 30000);
+  }
+
+const botProfiles = [
+  { name: "Riya Mehta", photo: "https://i.pravatar.cc/150?u=riya" },
+  { name: "Amit Verma", photo: "https://i.pravatar.cc/150?u=amit" },
+  { name: "Sana Sheikh", photo: "https://i.pravatar.cc/150?u=sana" },
+  { name: "Karan Joshi", photo: "https://i.pravatar.cc/150?u=karan" },
+  { name: "Pooja Desai", photo: "https://i.pravatar.cc/150?u=pooja" },
+  { name: "Rahul Singh", photo: "https://i.pravatar.cc/150?u=rahul" },
+  { name: "Bhavesh Prajapat", photo: "https://i.pravatar.cc/150?u=bhavesh" },
+  { name: "Niki Trivedi", photo: "https://i.pravatar.cc/150?u=niki" },
+  { name: "Bhumi Gehlot", photo: "https://i.pravatar.cc/150?u=bhumi" },
+];
+
+let assignedBot = null;
+
+function assignBot() {
+  if (opponentUID || matchStarted) return;
+  opponentUID = "bot";
+  assignedBot = botProfiles[Math.floor(Math.random() * botProfiles.length)];
+  showOpponent("bot");
+  showMatchStart();
+}
+
+
+async function showOpponent(uid) {
+  if (uid === "bot") {
+    const bot = assignedBot || { name: "Bot", photo: "https://i.pravatar.cc/150?u=bot" };
+    document.getElementById("opponentPhoto").src = bot.photo;
+    document.getElementById("opponentName").textContent = bot.name;
+  } else {
+    try {
+      const opponentSnap = await getDoc(doc(db, "users", uid));
+      const opponent = opponentSnap.data();
+      document.getElementById("opponentPhoto").src = opponent.profilePhoto || `https://i.pravatar.cc/150?u=${uid}`;
+      document.getElementById("opponentName").textContent = opponent.name || "Opponent";
+    } catch (err) {
+      console.error("Opponent fetch error:", err);
+      document.getElementById("opponentName").textContent = "Opponent";
+    }
+  }
+}
+
+
+  function showMatchStart() {
+    clearInterval(timerInterval);
+    matchStarted = true;
+    const overlay = document.getElementById("countdownOverlay");
+    overlay.classList.remove("hidden");
+    let count = 3;
+    overlay.textContent = count;
+    const countdownInterval = setInterval(() => {
+      count--;
+      if (count > 0) overlay.textContent = count;
+      else if (count === 0) overlay.textContent = "Go!";
+      else {
+        clearInterval(countdownInterval);
+        overlay.classList.add("countdown-fadeout");
+        setTimeout(() => {
+          overlay.classList.add("hidden");
+          startQuiz();
+        }, 500);
+      }
+    }, 1000);
+  }
+
+  async function startQuiz() {
+    const q = query(collection(db, "questions"), where("category", "==", category));
+    const snapshot = await getDocs(q);
+    questions = [];
+    snapshot.forEach(doc => questions.push(doc.data()));
+    questions = shuffleArray(questions).slice(0, 10);
+    renderQuiz();
+  }
+
+  let currentQuestionIndex = 0;
+  let userAnswers = [];
+  let questionTimer;
+  let totalTimeTaken = 0;
+  let secondsLeft = 10;
+
+  function renderQuiz() {
+    document.querySelector("main").innerHTML = "";
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = questions[currentQuestionIndex];
+    const main = document.querySelector("main");
+
+    main.innerHTML = `
+      <div class="p-6 bg-white dark:bg-gray-800 rounded shadow space-y-4 text-center">
+        <h2 class="text-xl font-bold">Question ${currentQuestionIndex + 1}/10</h2>
+        <p class="text-lg">${q.question}</p>
+        <div class="grid gap-2 mt-4">
+          ${q.options.map(opt => `<button onclick="selectAnswer('${opt}')" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">${opt}</button>`).join("")}
+        </div>
+        <p id="questionTimer" class="text-sm mt-4 text-pink-500 font-bold"></p>
+      </div>
+    `;
+
+    startQuestionTimer(() => {
+      userAnswers.push({ question: q.question, selected: null, correct: q.correctAnswer });
+      moveToNext();
+    });
+  }
+
+window.selectAnswer = function(selectedAnswer) {
+  clearInterval(questionTimer);
+
+  const q = questions[currentQuestionIndex];
+  const isCorrect = selectedAnswer === q.correctAnswer;
+
+  userAnswers.push({ question: q.question, selected: selectedAnswer, correct: q.correctAnswer, isCorrect });
+
+  totalTimeTaken += (10 - secondsLeft);
+
+  currentQuestionIndex++;
+  if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+};
+
+
+
+
+  function moveToNext() {
+    totalTimeTaken += (10 - secondsLeft);
+    currentQuestionIndex++;
+    currentQuestionIndex < questions.length ? showQuestion() : showResults();
+  }
+
+  function startQuestionTimer(callback) {
+  secondsLeft = 10;
+  document.getElementById("questionTimer").textContent = `Time Left: ${secondsLeft}s`;
+  questionTimer = setInterval(() => {
+    secondsLeft--;
+    document.getElementById("questionTimer").textContent = `Time Left: ${secondsLeft}s`;
+    if (secondsLeft <= 0) {
+      clearInterval(questionTimer);
+      callback();
+    }
+  }, 1000);
+}
+
+
+  async function showResults() {
+    const correct = userAnswers.filter(ans => ans.selected === ans.correct).length;
+    const avgTime = (totalTimeTaken / 10).toFixed(2);
+    const matchId = currentUser.uid;
+
+    await setDoc(doc(db, "matchResults", matchId), {
+      uid: currentUser.uid,
+      correct,
+      avgTime: parseFloat(avgTime),
+      finishedAt: Date.now(),
+    });
+
+    let resultMessage = "Match result will be calculated...";
+
+    if (opponentUID && opponentUID !== "bot") {
+      for (let i = 0; i < 30; i++) {
+        const oppSnap = await getDoc(doc(db, "matchResults", opponentUID));
+        if (oppSnap.exists()) {
+          const opp = oppSnap.data();
+          if (
+            correct > opp.correct ||
+            (correct === opp.correct && avgTime < opp.avgTime)
+          ) {
+            resultMessage = "🎉 You Win!";
+            await updateDoc(doc(db, "users", currentUser.uid), {
+              winningWallet: (user.winningWallet || 0) + netAmount * 2,
+            });
+          } else if (correct === opp.correct && avgTime === opp.avgTime) {
+            resultMessage = "🤝 It's a Draw!";
+          } else {
+            resultMessage = "❌ You Lose!";
+          }
+          break;
+        }
+        await new Promise(res => setTimeout(res, 1000));
+      }
+    } else {
+      const botWins = Math.random() < 0.7;
+      if (botWins) {
+        resultMessage = `❌ You Lose! (vs ${assignedBot?.name || "Bot"})`;
+      } else {
+        resultMessage = `🎉 You Win! (vs ${assignedBot?.name || "Bot"})`;
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          winningWallet: (user.winningWallet || 0) + netAmount * 2,
+        });
+      }
+    }
+
+    document.querySelector("main").innerHTML = `
+  <div class="p-6 bg-white dark:bg-gray-800 rounded shadow text-center space-y-4">
+    <h2 class="text-2xl font-bold text-green-500">🎉 Quiz Completed!</h2>
+    <p class="text-lg">Correct Answers: <strong>${correct}/10</strong></p>
+    <p class="text-lg">Avg Time per Question: <strong>${avgTime}s</strong></p>
+    <p class="text-xl font-semibold">${resultMessage}</p>
+    <button onclick="window.location.href='quiz-battle.html'"
+      class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-lg">
+      🔁 Play Again
+    </button>
+  </div>
+`;
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  window.toggleSidebar = function () {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobileOverlay");
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+    overlay.onclick = () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("show");
+    };
+  };
+</script>
+
+
+
+</body>
+</html>

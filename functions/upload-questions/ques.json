@@ -1,0 +1,1351 @@
+[
+  {
+    "category": "gk",
+    "question": "Who was the first Prime Minister of India?",
+    "options": ["Nehru", "Gandhi", "Modi", "Patel"],
+    "correctAnswer": "Nehru"
+  },
+  {
+    "category": "gk",
+    "question": "What is the capital of Australia?",
+    "options": ["Sydney", "Canberra", "Melbourne", "Perth"],
+    "correctAnswer": "Canberra"
+  },
+  {
+    "category": "gk",
+    "question": "Which planet is known as the Red Planet?",
+    "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+    "correctAnswer": "Mars"
+  },
+
+  {
+    "category": "gk",
+    "question": "What is the name of the treaty that ended World War I?",
+    "options": ["Treaty of Versailles", "Treaty of Paris", "Treaty of Ghent", "Treaty of Vienna"],
+    "correctAnswer": "Treaty of Versailles"
+  },
+  {
+    "category": "gk",
+    "question": "Which ancient city was known for the Hanging Gardens, one of the Seven Wonders of the Ancient World?",
+    "options": ["Alexandria", "Babylon", "Athens", "Carthage"],
+    "correctAnswer": "Babylon"
+  },
+  {
+    "category": "gk",
+    "question": "Which African country was formerly known as Abyssinia?",
+    "options": ["Ethiopia", "Sudan", "Somalia", "Eritrea"],
+    "correctAnswer": "Ethiopia"
+  },
+  {
+    "category": "gk",
+    "question": "Which ancient Indian mathematician is credited with the concept of zero as a number?",
+    "options": ["Aryabhata", "Bhaskara I", "Brahmagupta", "Varahamihira"],
+    "correctAnswer": "Brahmagupta"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian monument was built to commemorate the visit of King George V in 1911?",
+    "options": ["India Gate", "Gateway of India", "Victoria Memorial", "Charminar"],
+    "correctAnswer": "Gateway of India"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the founder of the Maurya Empire?",
+    "options": ["Ashoka", "Chandragupta Maurya", "Bindusara", "Harshavardhana"],
+    "correctAnswer": "Chandragupta Maurya"
+  },
+  {
+    "category": "gk",
+    "question": "In which year did the Battle of Plassey take place?",
+    "options": ["1757", "1761", "1857", "1782"],
+    "correctAnswer": "1757"
+  },
+  {
+    "category": "gk",
+    "question": "Which Mughal emperor built the Red Fort in Delhi?",
+    "options": ["Akbar", "Shah Jahan", "Aurangzeb", "Jahangir"],
+    "correctAnswer": "Shah Jahan"
+  },
+  {
+    "category": "gk",
+    "question": "Who composed the Indian national song 'Vande Mataram'?",
+    "options": ["Bankim Chandra Chattopadhyay", "Rabindranath Tagore", "Sarojini Naidu", "Subramania Bharati"],
+    "correctAnswer": "Bankim Chandra Chattopadhyay"
+  },
+  {
+    "category": "gk",
+    "question": "Which planet has the most moons?",
+    "options": ["Jupiter", "Saturn", "Uranus", "Neptune"],
+    "correctAnswer": "Saturn"
+  },
+  {
+    "category": "gk",
+    "question": "The 'Chipko Movement' was primarily aimed at?",
+    "options": ["Animal protection", "Forest conservation", "Water conservation", "Pollution control"],
+    "correctAnswer": "Forest conservation"
+  },
+  {
+    "category": "gk",
+    "question": "Which is the longest written constitution in the world?",
+    "options": ["USA", "India", "UK", "France"],
+    "correctAnswer": "India"
+  },
+  {
+    "category": "gk",
+    "question": "Where is the headquarters of the International Court of Justice located?",
+    "options": ["Geneva", "New York", "The Hague", "Paris"],
+    "correctAnswer": "The Hague"
+  },
+  {
+    "category": "gk",
+    "question": "Which river is known as the 'Sorrow of Bengal'?",
+    "options": ["Hooghly", "Damodar", "Ganga", "Kosi"],
+    "correctAnswer": "Damodar"
+  },
+  {
+    "category": "gk",
+    "question": "What is the capital of the ancient kingdom of Magadha?",
+    "options": ["Pataliputra", "Varanasi", "Mathura", "Ujjain"],
+    "correctAnswer": "Pataliputra"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the first Indian to win an individual Olympic gold medal?",
+    "options": ["Abhinav Bindra", "Milkha Singh", "Leander Paes", "Sushil Kumar"],
+    "correctAnswer": "Abhinav Bindra"
+  },
+  {
+    "category": "gk",
+    "question": "Which state in India has the highest number of national parks?",
+    "options": ["Madhya Pradesh", "Assam", "Karnataka", "Maharashtra"],
+    "correctAnswer": "Madhya Pradesh"
+  },
+  {
+    "category": "gk",
+    "question": "Who discovered the sea route to India in 1498?",
+    "options": ["Marco Polo", "Vasco da Gama", "Christopher Columbus", "Ferdinand Magellan"],
+    "correctAnswer": "Vasco da Gama"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian scientist won the Nobel Prize in Physics in 1930?",
+    "options": ["Homi Bhabha", "C.V. Raman", "Jagadish Chandra Bose", "Satyendra Nath Bose"],
+    "correctAnswer": "C.V. Raman"
+  },
+  {
+    "category": "gk",
+    "question": "What is the name of India’s first satellite?",
+    "options": ["Aryabhata", "Bhaskara", "INSAT-1", "Rohini"],
+    "correctAnswer": "Aryabhata"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian city is known as the 'Manchester of India'?",
+    "options": ["Surat", "Ludhiana", "Ahmedabad", "Kanpur"],
+    "correctAnswer": "Ahmedabad"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the last Governor-General of independent India?",
+    "options": ["C. Rajagopalachari", "Lord Mountbatten", "Rajendra Prasad", "Jawaharlal Nehru"],
+    "correctAnswer": "C. Rajagopalachari"
+  },
+  {
+    "category": "gk",
+    "question": "Which Article of the Indian Constitution provides for the abolition of Untouchability?",
+    "options": ["Article 14", "Article 15", "Article 17", "Article 21"],
+    "correctAnswer": "Article 17"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian freedom fighter was known as 'Lokhitwadi'?",
+    "options": ["Gopal Hari Deshmukh", "Bal Gangadhar Tilak", "Dadabhai Naoroji", "Lala Lajpat Rai"],
+    "correctAnswer": "Gopal Hari Deshmukh"
+  },
+  {
+    "category": "gk",
+    "question": "The Nalanda University ruins are located in which present-day Indian state?",
+    "options": ["Bihar", "Uttar Pradesh", "West Bengal", "Jharkhand"],
+    "correctAnswer": "Bihar"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the first Indian woman to become President of the Indian National Congress?",
+    "options": ["Sarojini Naidu", "Annie Besant", "Vijaya Lakshmi Pandit", "Indira Gandhi"],
+    "correctAnswer": "Annie Besant"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian king is known for constructing the Grand Trunk Road?",
+    "options": ["Sher Shah Suri", "Akbar", "Chandragupta Maurya", "Ashoka"],
+    "correctAnswer": "Sher Shah Suri"
+  },
+  {
+    "category": "gk",
+    "question": "Who is considered the father of the Indian nuclear program?",
+    "options": ["Homi J. Bhabha", "Vikram Sarabhai", "APJ Abdul Kalam", "Raja Ramanna"],
+    "correctAnswer": "Homi J. Bhabha"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian classical musician was awarded the Bharat Ratna in 1999?",
+    "options": ["Bismillah Khan", "Pandit Ravi Shankar", "Lata Mangeshkar", "MS Subbulakshmi"],
+    "correctAnswer": "Pandit Ravi Shankar"
+  },
+  {
+    "category": "gk",
+    "question": "In which year was the Simon Commission appointed?",
+    "options": ["1927", "1930", "1919", "1942"],
+    "correctAnswer": "1927"
+  },
+  {
+    "category": "gk",
+    "question": "Which Viceroy of India was assassinated in the Andaman Islands?",
+    "options": ["Lord Mayo", "Lord Curzon", "Lord Dalhousie", "Lord Mountbatten"],
+    "correctAnswer": "Lord Mayo"
+  },
+  {
+    "category": "gk",
+    "question": "The Kakori conspiracy case was associated with which revolutionary group?",
+    "options": ["Hindustan Socialist Republican Association", "Indian National Army", "Ghadar Party", "Anushilan Samiti"],
+    "correctAnswer": "Hindustan Socialist Republican Association"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian was elected as the President of the United Nations General Assembly in 1953?",
+    "options": ["V.K. Krishna Menon", "Vijaya Lakshmi Pandit", "S. Radhakrishnan", "Hansa Mehta"],
+    "correctAnswer": "Vijaya Lakshmi Pandit"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the only Indian Governor-General of independent India?",
+    "options": ["C. Rajagopalachari", "Dr. Rajendra Prasad", "Sardar Vallabhbhai Patel", "Morarji Desai"],
+    "correctAnswer": "C. Rajagopalachari"
+  },
+  {
+    "category": "gk",
+    "question": "Which ancient text is considered the oldest known legal code of India?",
+    "options": ["Manusmriti", "Arthashastra", "Rigveda", "Mahabharata"],
+    "correctAnswer": "Manusmriti"
+  },
+  {
+    "category": "gk",
+    "question": "What is the name of India’s first interplanetary mission?",
+    "options": ["Mangalyaan", "Chandrayaan", "Aditya-L1", "Gaganyaan"],
+    "correctAnswer": "Mangalyaan"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian city is home to the world's largest cricket stadium by capacity?",
+    "options": ["Ahmedabad", "Kolkata", "Mumbai", "Chennai"],
+    "correctAnswer": "Ahmedabad"
+  },
+  {
+    "category": "gk",
+    "question": "Who among the following was not associated with the Home Rule Movement?",
+    "options": ["Bal Gangadhar Tilak", "Annie Besant", "Mahatma Gandhi", "Joseph Baptista"],
+    "correctAnswer": "Mahatma Gandhi"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian physicist developed the 'Bose-Einstein statistics'?",
+    "options": ["Satyendra Nath Bose", "C.V. Raman", "Meghnad Saha", "Jagadish Chandra Bose"],
+    "correctAnswer": "Satyendra Nath Bose"
+  },
+  {
+    "category": "gk",
+    "question": "In which year did India join the United Nations?",
+    "options": ["1945", "1947", "1950", "1949"],
+    "correctAnswer": "1945"
+  },
+  {
+    "category": "gk",
+    "question": "Which Indian ruler is known for his policy of 'Dhamma'?",
+    "options": ["Ashoka", "Chandragupta Maurya", "Samudragupta", "Harsha"],
+    "correctAnswer": "Ashoka"
+  },
+  {
+    "category": "gk",
+    "question": "Which port city was known in ancient times as Muziris?",
+    "options": ["Kodungallur", "Kochi", "Chennai", "Kozhikode"],
+    "correctAnswer": "Kodungallur"
+  },
+  {
+    "category": "gk",
+    "question": "Who was the architect of modern Delhi during the British era?",
+    "options": ["Edwin Lutyens", "Charles Correa", "Le Corbusier", "Laurie Baker"],
+    "correctAnswer": "Edwin Lutyens"
+  },
+  {
+    "category": "gk",
+    "question": "Who is known as the Father of the Nation in India?",
+    "options": ["Jawaharlal Nehru", "Mahatma Gandhi", "Bhagat Singh", "Subhas Chandra Bose"],
+    "correctAnswer": "Mahatma Gandhi"
+  },
+  {
+    "category": "science",
+    "question": "What is the Heisenberg Uncertainty Principle related to?",
+    "options": ["Speed and time", "Mass and gravity", "Position and momentum", "Light and magnetism"],
+    "correctAnswer": "Position and momentum"
+  },
+  {
+    "category": "science",
+    "question": "Which element has the highest melting point?",
+    "options": ["Carbon", "Tungsten", "Iron", "Platinum"],
+    "correctAnswer": "Tungsten"
+  },
+  {
+    "category": "science",
+    "question": "What is the powerhouse of the cell?",
+    "options": ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"],
+    "correctAnswer": "Mitochondria"
+  },
+  {
+    "category": "movies",
+    "question": "Which foreign language film won the Best Picture Oscar in 2020?",
+    "options": ["Parasite", "Roma", "Amour", "Life is Beautiful"],
+    "correctAnswer": "Parasite"
+  },
+  {
+    "category": "movies",
+    "question": "In which movie does the character 'Tyler Durden' appear?",
+    "options": ["Fight Club", "Se7en", "American Psycho", "The Usual Suspects"],
+    "correctAnswer": "Fight Club"
+  },
+  {
+    "category": "movies",
+    "question": "Who played the role of the Joker in 'The Dark Knight'?",
+    "options": ["Heath Ledger", "Joaquin Phoenix", "Jared Leto", "Jack Nicholson"],
+    "correctAnswer": "Heath Ledger"
+  },
+  {
+    "category": "sports",
+    "question": "Who holds the record for most goals in a calendar year?",
+    "options": ["Cristiano Ronaldo", "Pele", "Lionel Messi", "Neymar"],
+    "correctAnswer": "Lionel Messi"
+  },
+  {
+    "category": "sports",
+    "question": "Which country has won the most number of FIFA World Cups?",
+    "options": ["Germany", "Italy", "Brazil", "Argentina"],
+    "correctAnswer": "Brazil"
+  },
+  {
+    "category": "sports",
+    "question": "Which country won the first ever FIFA World Cup in 1930?",
+    "options": ["Uruguay", "Brazil", "Germany", "Italy"],
+    "correctAnswer": "Uruguay"
+  },
+  {
+    "category": "sports",
+    "question": "Who holds the record for the most Olympic gold medals won by an individual?",
+    "options": ["Usain Bolt", "Larisa Latynina", "Mark Spitz", "Michael Phelps"],
+    "correctAnswer": "Michael Phelps"
+  },
+  {
+    "category": "sports",
+    "question": "Which cricketer was the first to score a double century in ODI cricket?",
+    "options": ["Virender Sehwag", "Rohit Sharma", "Sachin Tendulkar", "Chris Gayle"],
+    "correctAnswer": "Sachin Tendulkar"
+  },
+  {
+    "category": "sports",
+    "question": "Which Indian shooter won India’s first ever individual Olympic gold medal?",
+    "options": ["Rajyavardhan Singh Rathore", "Abhinav Bindra", "Gagan Narang", "Jitu Rai"],
+    "correctAnswer": "Abhinav Bindra"
+  },
+  {
+    "category": "sports",
+    "question": "Who was the first footballer to win the Ballon d'Or five times?",
+    "options": ["Cristiano Ronaldo", "Lionel Messi", "Michel Platini", "Zinedine Zidane"],
+    "correctAnswer": "Lionel Messi"
+  },
+  {
+    "category": "sports",
+    "question": "Which country has won the most number of Davis Cup tennis titles?",
+    "options": ["Australia", "USA", "France", "Spain"],
+    "correctAnswer": "USA"
+  },
+  {
+    "category": "sports",
+    "question": "In which year did India first win an Olympic gold medal in hockey?",
+    "options": ["1928", "1936", "1948", "1952"],
+    "correctAnswer": "1928"
+  },
+  {
+    "category": "sports",
+    "question": "Which athlete has the most World Athletics Championships gold medals?",
+    "options": ["Usain Bolt", "Carl Lewis", "Allyson Felix", "Haile Gebrselassie"],
+    "correctAnswer": "Usain Bolt"
+  },
+  {
+    "category": "sports",
+    "question": "Which city hosted the first modern Olympic Games in 1896?",
+    "options": ["Athens", "Paris", "Rome", "London"],
+    "correctAnswer": "Athens"
+  },
+  {
+    "category": "sports",
+    "question": "Who was the first female tennis player to win 23 Grand Slam singles titles in the Open Era?",
+    "options": ["Steffi Graf", "Serena Williams", "Martina Navratilova", "Margaret Court"],
+    "correctAnswer": "Serena Williams"
+  },
+  {
+    "category": "sports",
+    "question": "Which football club has the most UEFA Champions League titles?",
+    "options": ["FC Barcelona", "Bayern Munich", "Liverpool", "Real Madrid"],
+    "correctAnswer": "Real Madrid"
+  },
+  {
+    "category": "sports",
+    "question": "In Formula 1, who holds the record for most pole positions?",
+    "options": ["Ayrton Senna", "Lewis Hamilton", "Michael Schumacher", "Sebastian Vettel"],
+    "correctAnswer": "Lewis Hamilton"
+  },
+  {
+    "category": "sports",
+    "question": "Who was the first Indian woman to win a medal at the Olympics?",
+    "options": ["Mary Kom", "Karnam Malleswari", "P.V. Sindhu", "Saina Nehwal"],
+    "correctAnswer": "Karnam Malleswari"
+  },
+  {
+    "category": "sports",
+    "question": "Which chess player held the title of World Champion for the longest time?",
+    "options": ["Garry Kasparov", "Bobby Fischer", "Magnus Carlsen", "Anatoly Karpov"],
+    "correctAnswer": "Emanuel Lasker"
+  },
+  {
+    "category": "sports",
+    "question": "Which country has hosted the Summer Olympics the most times?",
+    "options": ["UK", "France", "USA", "Germany"],
+    "correctAnswer": "USA"
+  },
+  {
+    "category": "sports",
+    "question": "Which Grand Slam tournament is played on a clay surface?",
+    "options": ["Wimbledon", "Australian Open", "French Open", "US Open"],
+    "correctAnswer": "French Open"
+  },
+  {
+    "category": "sports",
+    "question": "Who is the youngest ever male Grand Slam singles champion?",
+    "options": ["Björn Borg", "Michael Chang", "Rafael Nadal", "Pete Sampras"],
+    "correctAnswer": "Michael Chang"
+  },
+  {
+    "category": "sports",
+    "question": "Which cricketer has the highest number of wickets in Test cricket?",
+    "options": ["Muttiah Muralitharan", "Shane Warne", "Anil Kumble", "James Anderson"],
+    "correctAnswer": "Muttiah Muralitharan"
+  },
+  {
+    "category": "sports",
+    "question": "Who won the ICC Men’s Cricket World Cup in 1996?",
+    "options": ["Australia", "India", "Pakistan", "Sri Lanka"],
+    "correctAnswer": "Sri Lanka"
+  },
+  {
+    "category": "sports",
+    "question": "Which Indian footballer is known as the 'Sikkimese Sniper'?",
+    "options": ["Sunil Chhetri", "Bhaichung Bhutia", "IM Vijayan", "Jeje Lalpekhlua"],
+    "correctAnswer": "Bhaichung Bhutia"
+  },
+  {
+    "category": "sports",
+    "question": "Which cricketer has the highest individual score in a Test match innings?",
+    "options": ["Brian Lara", "Matthew Hayden", "Sachin Tendulkar", "Don Bradman"],
+    "correctAnswer": "Brian Lara"
+  },
+  {
+    "category": "sports",
+    "question": "Who was the first Indian to win a medal at the Paralympics?",
+    "options": ["Devendra Jhajharia", "Murlikant Petkar", "Deepa Malik", "Mariyappan Thangavelu"],
+    "correctAnswer": "Murlikant Petkar"
+  },
+  {
+    "category": "sports",
+    "question": "Which country has won the most number of Olympic medals in field hockey?",
+    "options": ["India", "Germany", "Netherlands", "Australia"],
+    "correctAnswer": "India"
+  },
+  {
+    "category": "sports",
+    "question": "In which year did Roger Bannister break the four-minute mile barrier?",
+    "options": ["1954", "1952", "1949", "1956"],
+    "correctAnswer": "1954"
+  },
+  {
+    "category": "sports",
+    "question": "Which country hosted the first Rugby World Cup in 1987?",
+    "options": ["New Zealand", "Australia", "England", "South Africa"],
+    "correctAnswer": "New Zealand"
+  },
+  {
+    "category": "sports",
+    "question": "Which female gymnast has won the most Olympic medals?",
+    "options": ["Larisa Latynina", "Simone Biles", "Nadia Comaneci", "Svetlana Khorkina"],
+    "correctAnswer": "Larisa Latynina"
+  },
+  {
+    "category": "sports",
+    "question": "Which cricketer scored a century in each innings of a Test match on debut?",
+    "options": ["Lawrence Rowe", "Mohammad Azharuddin", "Sunil Gavaskar", "Yasir Hameed"],
+    "correctAnswer": "Lawrence Rowe"
+  },
+  {
+    "category": "sports",
+    "question": "Which athlete lit the Olympic flame at the 1996 Atlanta Games?",
+    "options": ["Carl Lewis", "Muhammad Ali", "Michael Johnson", "Jesse Owens"],
+    "correctAnswer": "Muhammad Ali"
+  },
+  {
+    "category": "sports",
+    "question": "Which country has produced the most Formula One World Champions?",
+    "options": ["UK", "Germany", "Brazil", "Italy"],
+    "correctAnswer": "UK"
+  },
+  {
+    "category": "sports",
+    "question": "Which Indian wrestler won bronze at the 1952 Helsinki Olympics?",
+    "options": ["Khashaba Dadasaheb Jadhav", "Sushil Kumar", "Yogeshwar Dutt", "Bajrang Punia"],
+    "correctAnswer": "Khashaba Dadasaheb Jadhav"
+  },
+  {
+    "category": "sports",
+    "question": "Who was the first athlete to win Olympic gold in both the 100m and 200m sprints?",
+    "options": ["Jesse Owens", "Carl Lewis", "Usain Bolt", "Archie Hahn"],
+    "correctAnswer": "Archie Hahn"
+  },
+  {
+    "category": "sports",
+    "question": "Which cricketer bowled the fastest recorded delivery in international cricket?",
+    "options": ["Brett Lee", "Shoaib Akhtar", "Shaun Tait", "Jeff Thomson"],
+    "correctAnswer": "Shoaib Akhtar"
+  },
+  {
+    "category": "sports",
+    "question": "Who is the only Indian to win a Grand Slam title in men’s singles (junior or senior)?",
+    "options": ["Leander Paes", "Ramanathan Krishnan", "Vijay Amritraj", "Somdev Devvarman"],
+    "correctAnswer": "Leander Paes"
+  },
+  {
+    "category": "sports",
+    "question": "Which footballer scored in five different World Cup tournaments?",
+    "options": ["Miroslav Klose", "Pelé", "Cristiano Ronaldo", "Diego Maradona"],
+    "correctAnswer": "Cristiano Ronaldo"
+  },
+  {
+    "category": "sports",
+    "question": "Which country won the first ever ICC Women's Cricket World Cup?",
+    "options": ["England", "Australia", "New Zealand", "India"],
+    "correctAnswer": "England"
+  },
+  {
+    "category": "sports",
+    "question": "Who holds the record for the most sixes in international cricket?",
+    "options": ["Chris Gayle", "Rohit Sharma", "Shahid Afridi", "MS Dhoni"],
+    "correctAnswer": "Rohit Sharma"
+  },
+  {
+    "category": "sports",
+    "question": "In which sport is the Thomas Cup awarded?",
+    "options": ["Badminton", "Tennis", "Table Tennis", "Squash"],
+    "correctAnswer": "Badminton"
+  },
+  {
+    "category": "sports",
+    "question": "Which Indian boxer was the first to qualify for the Olympics?",
+    "options": ["Hawa Singh", "Vijender Singh", "Gurcharan Singh", "Paresh Lal Roy"],
+    "correctAnswer": "Paresh Lal Roy"
+  },
+  {
+    "category": "sports",
+    "question": "What is the name of the prestigious golf tournament held annually at Augusta National?",
+    "options": ["The Masters", "The Open", "US Open", "PGA Championship"],
+    "correctAnswer": "The Masters"
+  },
+  {
+    "category": "sports",
+    "question": "Which Indian athlete set a national record in 400m hurdles at the Tokyo Olympics 2020?",
+    "options": ["Neeraj Chopra", "Avinash Sable", "MP Jabir", "Dharun Ayyasamy"],
+    "correctAnswer": "MP Jabir"
+  },
+  {
+    "category": "science",
+    "question": "What is the name of the theoretical boundary around a black hole beyond which no light or other radiation can escape?",
+    "options": ["Event Horizon", "Singularity", "Schwarzschild Radius", "Photon Sphere"],
+    "correctAnswer": "Event Horizon"
+  },
+  {
+    "category": "science",
+    "question": "Which element has the highest melting point?",
+    "options": ["Tungsten", "Carbon", "Osmium", "Rhenium"],
+    "correctAnswer": "Tungsten"
+  },
+  {
+    "category": "science",
+    "question": "What branch of physics deals with the behavior of light as both particle and wave?",
+    "options": ["Optics", "Quantum Mechanics", "Relativity", "Electrodynamics"],
+    "correctAnswer": "Quantum Mechanics"
+  },
+  {
+    "category": "science",
+    "question": "Which subatomic particle was discovered by James Chadwick in 1932?",
+    "options": ["Neutron", "Proton", "Electron", "Positron"],
+    "correctAnswer": "Neutron"
+  },
+  {
+    "category": "science",
+    "question": "Which scientist is known for the uncertainty principle in quantum mechanics?",
+    "options": ["Heisenberg", "Bohr", "Schrödinger", "Fermi"],
+    "correctAnswer": "Heisenberg"
+  },
+  {
+    "category": "science",
+    "question": "Which vitamin is synthesized when human skin is exposed to sunlight?",
+    "options": ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin B12"],
+    "correctAnswer": "Vitamin D"
+  },
+  {
+    "category": "science",
+    "question": "What is the SI unit of electric capacitance?",
+    "options": ["Farad", "Henry", "Ohm", "Tesla"],
+    "correctAnswer": "Farad"
+  },
+  {
+    "category": "science",
+    "question": "Which element is used as a standard for defining the atomic mass unit?",
+    "options": ["Hydrogen", "Carbon-12", "Oxygen", "Uranium-238"],
+    "correctAnswer": "Carbon-12"
+  },
+  {
+    "category": "science",
+    "question": "What is the most abundant gas in the Earth's atmosphere?",
+    "options": ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
+    "correctAnswer": "Nitrogen"
+  },
+  {
+    "category": "science",
+    "question": "Which organelle is known as the 'powerhouse of the cell'?",
+    "options": ["Mitochondria", "Nucleus", "Ribosome", "Endoplasmic Reticulum"],
+    "correctAnswer": "Mitochondria"
+  },
+  {
+    "category": "science",
+    "question": "In genetics, what term describes the observable characteristics of an organism?",
+    "options": ["Genotype", "Phenotype", "Allele", "Locus"],
+    "correctAnswer": "Phenotype"
+  },
+  {
+    "category": "science",
+    "question": "Which law states that energy cannot be created or destroyed, only transformed?",
+    "options": ["First Law of Thermodynamics", "Second Law of Thermodynamics", "Law of Inertia", "Hooke's Law"],
+    "correctAnswer": "First Law of Thermodynamics"
+  },
+  {
+    "category": "science",
+    "question": "Which part of the brain is responsible for regulating balance and coordination?",
+    "options": ["Cerebrum", "Cerebellum", "Medulla", "Hypothalamus"],
+    "correctAnswer": "Cerebellum"
+  },
+  {
+    "category": "science",
+    "question": "Which planet has the strongest magnetic field in our solar system?",
+    "options": ["Jupiter", "Saturn", "Neptune", "Earth"],
+    "correctAnswer": "Jupiter"
+  },
+  {
+    "category": "science",
+    "question": "What type of bond is formed when atoms share electrons?",
+    "options": ["Covalent Bond", "Ionic Bond", "Hydrogen Bond", "Metallic Bond"],
+    "correctAnswer": "Covalent Bond"
+  },
+  {
+    "category": "science",
+    "question": "Which particle has no electric charge?",
+    "options": ["Neutron", "Electron", "Proton", "Alpha Particle"],
+    "correctAnswer": "Neutron"
+  },
+  {
+    "category": "science",
+    "question": "What is the hardest natural substance on Earth?",
+    "options": ["Quartz", "Corundum", "Topaz", "Diamond"],
+    "correctAnswer": "Diamond"
+  },
+  {
+    "category": "science",
+    "question": "Which hormone regulates blood sugar levels?",
+    "options": ["Insulin", "Adrenaline", "Cortisol", "Estrogen"],
+    "correctAnswer": "Insulin"
+  },
+  {
+    "category": "science",
+    "question": "Which scientist proposed the heliocentric model of the solar system?",
+    "options": ["Ptolemy", "Galileo", "Kepler", "Copernicus"],
+    "correctAnswer": "Copernicus"
+  },
+  {
+    "category": "science",
+    "question": "Which chemical element is liquid at room temperature?",
+    "options": ["Bromine", "Iodine", "Mercury", "Chlorine"],
+    "correctAnswer": "Mercury"
+  },
+  {
+    "category": "science",
+    "question": "Which particle mediates the strong nuclear force between quarks?",
+    "options": ["Gluon", "Photon", "Graviton", "W Boson"],
+    "correctAnswer": "Gluon"
+  },
+  {
+    "category": "science",
+    "question": "What is the second most abundant element in the Earth's crust?",
+    "options": ["Silicon", "Iron", "Aluminum", "Calcium"],
+    "correctAnswer": "Silicon"
+  },
+  {
+    "category": "science",
+    "question": "Which law explains why the sky appears blue?",
+    "options": ["Rayleigh Scattering", "Snell's Law", "Doppler Effect", "Planck's Law"],
+    "correctAnswer": "Rayleigh Scattering"
+  },
+  {
+    "category": "science",
+    "question": "Which enzyme is responsible for unzipping DNA during replication?",
+    "options": ["DNA Helicase", "DNA Ligase", "RNA Polymerase", "Topoisomerase"],
+    "correctAnswer": "DNA Helicase"
+  },
+  {
+    "category": "science",
+    "question": "What is the SI unit of luminous intensity?",
+    "options": ["Candela", "Lux", "Lumen", "Watt"],
+    "correctAnswer": "Candela"
+  },
+  {
+    "category": "science",
+    "question": "Which is the only planet that rotates on its side relative to its orbit?",
+    "options": ["Uranus", "Neptune", "Venus", "Saturn"],
+    "correctAnswer": "Uranus"
+  },
+  {
+    "category": "science",
+    "question": "In the periodic table, which block contains the lanthanides and actinides?",
+    "options": ["f-block", "d-block", "p-block", "s-block"],
+    "correctAnswer": "f-block"
+  },
+  {
+    "category": "science",
+    "question": "Which physicist proposed the wave equation used in quantum mechanics?",
+    "options": ["Schrödinger", "Dirac", "Bohr", "Heisenberg"],
+    "correctAnswer": "Schrödinger"
+  },
+  {
+    "category": "science",
+    "question": "Which gas is used in MRI machines to maintain low temperatures?",
+    "options": ["Helium", "Nitrogen", "Argon", "Hydrogen"],
+    "correctAnswer": "Helium"
+  },
+  {
+    "category": "science",
+    "question": "Which molecule is known as the universal energy currency of the cell?",
+    "options": ["ATP", "DNA", "Glucose", "NADH"],
+    "correctAnswer": "ATP"
+  },
+  {
+    "category": "science",
+    "question": "What phenomenon allows insects to walk on water?",
+    "options": ["Surface tension", "Buoyancy", "Capillary action", "Adhesion"],
+    "correctAnswer": "Surface tension"
+  },
+  {
+    "category": "science",
+    "question": "Which vitamin is essential for blood clotting?",
+    "options": ["Vitamin K", "Vitamin D", "Vitamin B6", "Vitamin A"],
+    "correctAnswer": "Vitamin K"
+  },
+  {
+    "category": "science",
+    "question": "What is the name of the protein that carries oxygen in muscles?",
+    "options": ["Myoglobin", "Hemoglobin", "Keratin", "Collagen"],
+    "correctAnswer": "Myoglobin"
+  },
+  {
+    "category": "science",
+    "question": "Which element has the lowest density in the periodic table?",
+    "options": ["Hydrogen", "Helium", "Lithium", "Oxygen"],
+    "correctAnswer": "Hydrogen"
+  },
+  {
+    "category": "science",
+    "question": "In Einstein's mass-energy equivalence formula E=mc², what does 'c' represent?",
+    "options": ["Speed of light", "Charge of electron", "Coulomb constant", "Speed of sound"],
+    "correctAnswer": "Speed of light"
+  },
+  {
+    "category": "science",
+    "question": "Which theory proposes that continents were once joined in a supercontinent called Pangaea?",
+    "options": ["Continental Drift", "Plate Tectonics", "Seafloor Spreading", "Uniformitarianism"],
+    "correctAnswer": "Continental Drift"
+  },
+  {
+    "category": "science",
+    "question": "Which fundamental force is responsible for radioactive decay?",
+    "options": ["Weak nuclear force", "Strong nuclear force", "Gravitational force", "Electromagnetic force"],
+    "correctAnswer": "Weak nuclear force"
+  },
+  {
+    "category": "science",
+    "question": "What is the function of the Golgi apparatus in a cell?",
+    "options": ["Packaging and transport of proteins", "Energy production", "DNA replication", "Detoxification"],
+    "correctAnswer": "Packaging and transport of proteins"
+  },
+  {
+    "category": "science",
+    "question": "Which type of electromagnetic radiation has the shortest wavelength?",
+    "options": ["Gamma rays", "X-rays", "Ultraviolet", "Microwaves"],
+    "correctAnswer": "Gamma rays"
+  },
+  {
+    "category": "science",
+    "question": "Which scientist developed the first successful polio vaccine?",
+    "options": ["Jonas Salk", "Louis Pasteur", "Edward Jenner", "Robert Koch"],
+    "correctAnswer": "Jonas Salk"
+  },
+
+  {
+    "category": "sports",
+    "question": "Which tennis player has the most Grand Slam titles as of 2025?",
+    "options": ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
+    "correctAnswer": "Novak Djokovic"
+  },
+{
+        "category": "gk",
+        "question": "Which empire was ruled by Emperor Ashoka?",
+        "options": ["Maurya Empire", "Mughal Empire", "Gupta Empire", "Kushan Empire"],
+        "correctAnswer": "Maurya Empire"
+    },
+    {
+        "category": "gk",
+        "question": "Which country is both in Europe and Asia?",
+        "options": ["Russia", "Turkey", "Kazakhstan", "All of the above"],
+        "correctAnswer": "All of the above"
+    },
+    {
+        "category": "gk",
+        "question": "The Rosetta Stone helped to decode which ancient language?",
+        "options": ["Greek", "Latin", "Egyptian hieroglyphs", "Sanskrit"],
+        "correctAnswer": "Egyptian hieroglyphs"
+    },
+  {
+    "category": "gk",
+    "question": "What is the currency of Japan?",
+    "options": ["Yuan", "Yen", "Won", "Dollar"],
+    "correctAnswer": "Yen"
+  },
+  {
+    "category": "gk",
+    "question": "Which ocean is the largest?",
+    "options": ["Atlantic", "Indian", "Pacific", "Arctic"],
+    "correctAnswer": "Pacific"
+  },
+  {
+    "category": "gk",
+    "question": "What is the national bird of India?",
+    "options": ["Sparrow", "Peacock", "Eagle", "Crow"],
+    "correctAnswer": "Peacock"
+  },
+  {
+    "category": "gk",
+    "question": "In which year did India gain independence?",
+    "options": ["1945", "1947", "1950", "1935"],
+    "correctAnswer": "1947"
+  },
+{
+        "category": "science",
+        "question": "Which particle has a negative charge?",
+        "options": ["Proton", "Electron", "Neutron", "Photon"],
+        "correctAnswer": "Electron"
+    },
+    {
+        "category": "science",
+        "question": "What is the hardest natural substance on Earth?",
+        "options": ["Iron", "Diamond", "Quartz", "Platinum"],
+        "correctAnswer": "Diamond"
+    },
+    {
+        "category": "science",
+        "question": "Which gas is commonly known as laughing gas?",
+        "options": ["Nitrous Oxide", "Methane", "Carbon Monoxide", "Hydrogen"],
+        "correctAnswer": "Nitrous Oxide"
+    },
+  {
+    "category": "gk",
+    "question": "Who invented the telephone?",
+    "options": ["Thomas Edison", "Alexander Graham Bell", "Nikola Tesla", "Albert Einstein"],
+    "correctAnswer": "Alexander Graham Bell"
+  },
+  {
+    "category": "gk",
+    "question": "Which is the smallest country in the world?",
+    "options": ["Monaco", "Vatican City", "Malta", "San Marino"],
+    "correctAnswer": "Vatican City"
+  },
+  {
+    "category": "gk",
+    "question": "Which element has the chemical symbol 'O'?",
+    "options": ["Oxygen", "Gold", "Osmium", "Hydrogen"],
+    "correctAnswer": "Oxygen"
+  },
+    {
+        "category": "movies",
+        "question": "Which actor played the lead in 'There Will Be Blood'?",
+        "options": ["Leonardo DiCaprio", "Daniel Day-Lewis", "Tom Hardy", "Christian Bale"],
+        "correctAnswer": "Daniel Day-Lewis"
+    },
+    {
+        "category": "movies",
+        "question": "In which year was the first Academy Awards (Oscars) ceremony held?",
+        "options": ["1929", "1932", "1940", "1925"],
+        "correctAnswer": "1929"
+    },
+    {
+        "category": "movies",
+        "question": "Which movie features a character named Keyser Söze?",
+        "options": ["The Usual Suspects", "Se7en", "Heat", "Reservoir Dogs"],
+        "correctAnswer": "The Usual Suspects"
+    },
+  {
+    "category": "movies",
+    "question": "Which silent film won the first Academy Award for Best Picture in 1929?",
+    "options": ["Wings", "The Jazz Singer", "Metropolis", "The Kid"],
+    "correctAnswer": "Wings"
+  },
+  {
+    "category": "movies",
+    "question": "In 'Inception', what is the term used for the process of planting an idea into someone's subconscious?",
+    "options": ["Inception", "Dream Imprinting", "Extraction", "Projection"],
+    "correctAnswer": "Inception"
+  },
+  {
+    "category": "movies",
+    "question": "Which director is known for the 'Three Colors' trilogy: Blue, White, and Red?",
+    "options": ["Krzysztof Kieślowski", "Lars von Trier", "Jean-Luc Godard", "Andrei Tarkovsky"],
+    "correctAnswer": "Krzysztof Kieślowski"
+  },
+  {
+    "category": "movies",
+    "question": "Which film features a character named HAL 9000?",
+    "options": ["2001: A Space Odyssey", "Blade Runner", "Alien", "Interstellar"],
+    "correctAnswer": "2001: A Space Odyssey"
+  },
+  {
+    "category": "movies",
+    "question": "What movie has the line: 'I'm mad as hell, and I'm not going to take this anymore!'?",
+    "options": ["Network", "Taxi Driver", "The Godfather", "Apocalypse Now"],
+    "correctAnswer": "Network"
+  },
+  {
+    "category": "movies",
+    "question": "Which Indian film was nominated for the Best Foreign Language Film Oscar in 2002?",
+    "options": ["Lagaan", "Devdas", "Mother India", "Salaam Bombay!"],
+    "correctAnswer": "Lagaan"
+  },
+  {
+    "category": "movies",
+    "question": "In which movie did Marlon Brando deliver the line: 'I coulda been a contender'?",
+    "options": ["On the Waterfront", "The Godfather", "Apocalypse Now", "Last Tango in Paris"],
+    "correctAnswer": "On the Waterfront"
+  },
+  {
+    "category": "movies",
+    "question": "Which Japanese director is known for films like 'Rashomon' and 'Seven Samurai'?",
+    "options": ["Akira Kurosawa", "Yasujiro Ozu", "Hayao Miyazaki", "Takeshi Kitano"],
+    "correctAnswer": "Akira Kurosawa"
+  },
+  {
+    "category": "movies",
+    "question": "Which 2019 film holds the record for the most Oscars won by a non-English language film?",
+    "options": ["Parasite", "Roma", "Crouching Tiger, Hidden Dragon", "Amour"],
+    "correctAnswer": "Parasite"
+  },
+  {
+    "category": "movies",
+    "question": "Who was the first woman to win the Academy Award for Best Director?",
+    "options": ["Kathryn Bigelow", "Sofia Coppola", "Greta Gerwig", "Jane Campion"],
+    "correctAnswer": "Kathryn Bigelow"
+  },
+  {
+    "category": "movies",
+    "question": "In 'The Matrix', what color pill does Neo take?",
+    "options": ["Red", "Blue", "Green", "Black"],
+    "correctAnswer": "Red"
+  },
+  {
+    "category": "movies",
+    "question": "Which actor played the Joker in 'The Dark Knight'?",
+    "options": ["Heath Ledger", "Joaquin Phoenix", "Jared Leto", "Jack Nicholson"],
+    "correctAnswer": "Heath Ledger"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie won the Oscar for Best Picture in 1995, beating out 'Pulp Fiction' and 'The Shawshank Redemption'?",
+    "options": ["Forrest Gump", "Braveheart", "Apollo 13", "The English Patient"],
+    "correctAnswer": "Forrest Gump"
+  },
+  {
+    "category": "movies",
+    "question": "Which Indian filmmaker directed 'Pather Panchali'?",
+    "options": ["Satyajit Ray", "Ritwik Ghatak", "Guru Dutt", "Raj Kapoor"],
+    "correctAnswer": "Satyajit Ray"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie features the fictional band 'Stillwater'?",
+    "options": ["Almost Famous", "School of Rock", "That Thing You Do!", "This Is Spinal Tap"],
+    "correctAnswer": "Almost Famous"
+  },
+  {
+    "category": "movies",
+    "question": "Which psychological thriller features the line: 'What’s in the box?'",
+    "options": ["Se7en", "Fight Club", "Gone Girl", "Zodiac"],
+    "correctAnswer": "Se7en"
+  },
+  {
+    "category": "movies",
+    "question": "Which film used the phrase 'Rosebud' as a central mystery element?",
+    "options": ["Citizen Kane", "Vertigo", "Rebecca", "Casablanca"],
+    "correctAnswer": "Citizen Kane"
+  },
+  {
+    "category": "movies",
+    "question": "Who directed the film 'Eternal Sunshine of the Spotless Mind'?",
+    "options": ["Michel Gondry", "Spike Jonze", "Charlie Kaufman", "David Lynch"],
+    "correctAnswer": "Michel Gondry"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie is considered the first feature-length animated film?",
+    "options": ["Snow White and the Seven Dwarfs", "Fantasia", "Steamboat Willie", "Gertie the Dinosaur"],
+    "correctAnswer": "Snow White and the Seven Dwarfs"
+  },
+  {
+    "category": "movies",
+    "question": "In 'Fight Club', what is the first rule of Fight Club?",
+    "options": ["You do not talk about Fight Club", "No shoes allowed", "Fights last 5 minutes", "Only two guys to a fight"],
+    "correctAnswer": "You do not talk about Fight Club"
+  },
+  {
+    "category": "gk",
+    "question": "Which continent is known as the Dark Continent?",
+    "options": ["Asia", "Africa", "Europe", "Australia"],
+    "correctAnswer": "Africa"
+  },
+    {
+        "category": "sports",
+        "question": "Who was the first cricketer to score 100 international centuries?",
+        "options": ["Sachin Tendulkar", "Ricky Ponting", "Virat Kohli", "Brian Lara"],
+        "correctAnswer": "Sachin Tendulkar"
+    },
+    {
+        "category": "sports",
+        "question": "In which sport is the Davis Cup contested?",
+        "options": ["Badminton", "Tennis", "Table Tennis", "Squash"],
+        "correctAnswer": "Tennis"
+    },
+    {
+        "category": "sports",
+        "question": "Which athlete has won the most Olympic gold medals?",
+        "options": ["Usain Bolt", "Michael Phelps", "Larisa Latynina", "Mark Spitz"],
+        "correctAnswer": "Michael Phelps"
+    },
+  {
+    "category": "gk",
+    "question": "Who wrote the play 'Romeo and Juliet'?",
+    "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+    "correctAnswer": "William Shakespeare"
+  },
+  {
+    "category": "gk",
+    "question": "What is the boiling point of water at sea level?",
+    "options": ["90°C", "100°C", "80°C", "110°C"],
+    "correctAnswer": "100°C"
+  },
+  {
+    "category": "gk",
+    "question": "Which country is known as the Land of the Rising Sun?",
+    "options": ["China", "Japan", "South Korea", "Thailand"],
+    "correctAnswer": "Japan"
+  },
+
+  {
+    "category": "sports",
+    "question": "How many players are there in a soccer team on the field?",
+    "options": ["9", "10", "11", "12"],
+    "correctAnswer": "11"
+  },
+  {
+    "category": "sports",
+    "question": "Which country won the FIFA World Cup in 2018?",
+    "options": ["Brazil", "Germany", "France", "Argentina"],
+    "correctAnswer": "France"
+  },
+  {
+    "category": "sports",
+    "question": "Who holds the record for the most home runs in MLB history?",
+    "options": ["Babe Ruth", "Hank Aaron", "Barry Bonds", "Willie Mays"],
+    "correctAnswer": "Barry Bonds"
+  },
+  {
+    "category": "sports",
+    "question": "In tennis, what piece of fruit is found at the top of the men's Wimbledon trophy?",
+    "options": ["Apple", "Pineapple", "Grapes", "Banana"],
+    "correctAnswer": "Pineapple"
+  },
+  {
+    "category": "sports",
+    "question": "Which sport is known as the 'king of sports'?",
+    "options": ["Cricket", "Football (Soccer)", "Basketball", "Tennis"],
+    "correctAnswer": "Football (Soccer)"
+  },
+  {
+    "category": "sports",
+    "question": "How many rings are there in the Olympic flag?",
+    "options": ["4", "5", "6", "7"],
+    "correctAnswer": "5"
+  },
+  {
+    "category": "sports",
+    "question": "Which country hosts the Tour de France cycling race?",
+    "options": ["Italy", "Spain", "France", "Belgium"],
+    "correctAnswer": "France"
+  },
+  {
+    "category": "sports",
+    "question": "In which sport would you perform a slam dunk?",
+    "options": ["Volleyball", "Basketball", "Football", "Baseball"],
+    "correctAnswer": "Basketball"
+  },
+  {
+    "category": "sports",
+    "question": "Who has won the most Formula 1 World Championships?",
+    "options": ["Lewis Hamilton", "Michael Schumacher", "Sebastian Vettel", "Ayrton Senna"],
+    "correctAnswer": "Lewis Hamilton"
+  },
+  {
+    "category": "sports",
+    "question": "How long is an Olympic swimming pool?",
+    "options": ["25 meters", "50 meters", "100 meters", "75 meters"],
+    "correctAnswer": "50 meters"
+  },
+  {
+    "category": "sports",
+    "question": "What is the maximum score in a single frame of bowling?",
+    "options": ["30", "20", "50", "10"],
+    "correctAnswer": "30"
+  },
+  {
+    "category": "sports",
+    "question": "Which sport uses the terms 'birdie' and 'eagle'?",
+    "options": ["Tennis", "Golf", "Badminton", "Cricket"],
+    "correctAnswer": "Golf"
+  },
+  {
+    "category": "sports",
+    "question": "Which country won the first Cricket World Cup in 1975?",
+    "options": ["England", "Australia", "West Indies", "India"],
+    "correctAnswer": "West Indies"
+  },
+  {
+    "category": "sports",
+    "question": "Which sport is associated with the Stanley Cup?",
+    "options": ["Basketball", "Ice Hockey", "Baseball", "Football"],
+    "correctAnswer": "Ice Hockey"
+  },
+  {
+    "category": "sports",
+    "question": "How many players are there in a rugby union team?",
+    "options": ["11", "13", "15", "17"],
+    "correctAnswer": "15"
+  },
+
+  {
+    "category": "science",
+    "question": "What is the chemical formula of water?",
+    "options": ["H2O", "CO2", "O2", "H2SO4"],
+    "correctAnswer": "H2O"
+  },
+  {
+    "category": "science",
+    "question": "What gas do plants absorb from the atmosphere?",
+    "options": ["Oxygen", "Nitrogen", "Carbon dioxide", "Helium"],
+    "correctAnswer": "Carbon dioxide"
+  },
+  {
+    "category": "science",
+    "question": "What is the speed of light?",
+    "options": ["300,000 km/s", "150,000 km/s", "299,792 km/s", "1,080,000 km/s"],
+    "correctAnswer": "299,792 km/s"
+  },
+  {
+    "category": "science",
+    "question": "What part of the cell contains genetic material?",
+    "options": ["Nucleus", "Cytoplasm", "Ribosome", "Mitochondria"],
+    "correctAnswer": "Nucleus"
+  },
+  {
+    "category": "science",
+    "question": "Which vitamin is produced when a person is exposed to sunlight?",
+    "options": ["Vitamin A", "Vitamin B12", "Vitamin C", "Vitamin D"],
+    "correctAnswer": "Vitamin D"
+  },
+  {
+    "category": "science",
+    "question": "What planet is known for its rings?",
+    "options": ["Jupiter", "Saturn", "Mars", "Venus"],
+    "correctAnswer": "Saturn"
+  },
+  {
+    "category": "science",
+    "question": "What is the center of an atom called?",
+    "options": ["Electron", "Neutron", "Nucleus", "Proton"],
+    "correctAnswer": "Nucleus"
+  },
+  {
+    "category": "science",
+    "question": "Which organ in the human body produces insulin?",
+    "options": ["Liver", "Pancreas", "Kidneys", "Heart"],
+    "correctAnswer": "Pancreas"
+  },
+  {
+    "category": "science",
+    "question": "What force keeps us on the ground?",
+    "options": ["Magnetism", "Gravity", "Friction", "Electricity"],
+    "correctAnswer": "Gravity"
+  },
+  {
+    "category": "science",
+    "question": "What is the boiling point of water in Celsius?",
+    "options": ["90°C", "100°C", "80°C", "120°C"],
+    "correctAnswer": "100°C"
+  },
+  {
+    "category": "science",
+    "question": "What is the main gas found in the air we breathe?",
+    "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"],
+    "correctAnswer": "Nitrogen"
+  },
+  {
+    "category": "science",
+    "question": "Which instrument is used to measure temperature?",
+    "options": ["Barometer", "Thermometer", "Hygrometer", "Anemometer"],
+    "correctAnswer": "Thermometer"
+  },
+  {
+    "category": "science",
+    "question": "What is the hardest natural substance on Earth?",
+    "options": ["Gold", "Diamond", "Iron", "Silver"],
+    "correctAnswer": "Diamond"
+  },
+  {
+    "category": "science",
+    "question": "What gas do humans exhale?",
+    "options": ["Oxygen", "Carbon dioxide", "Nitrogen", "Helium"],
+    "correctAnswer": "Carbon dioxide"
+  },
+  {
+    "category": "science",
+    "question": "Which planet is closest to the Sun?",
+    "options": ["Earth", "Venus", "Mercury", "Mars"],
+    "correctAnswer": "Mercury"
+  },
+
+  {
+    "category": "movies",
+    "question": "Who directed the movie 'Titanic'?",
+    "options": ["Steven Spielberg", "James Cameron", "Christopher Nolan", "Martin Scorsese"],
+    "correctAnswer": "James Cameron"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie features the quote, 'I'll be back'?",
+    "options": ["Rambo", "Predator", "Terminator", "Die Hard"],
+    "correctAnswer": "Terminator"
+  },
+  {
+    "category": "movies",
+    "question": "Who played the character of Jack Sparrow in 'Pirates of the Caribbean'?",
+    "options": ["Orlando Bloom", "Johnny Depp", "Brad Pitt", "Leonardo DiCaprio"],
+    "correctAnswer": "Johnny Depp"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie won the Academy Award for Best Picture in 2020?",
+    "options": ["1917", "Parasite", "Joker", "Once Upon a Time in Hollywood"],
+    "correctAnswer": "Parasite"
+  },
+  {
+    "category": "movies",
+    "question": "Who played the Joker in 'The Dark Knight'?",
+    "options": ["Joaquin Phoenix", "Heath Ledger", "Jared Leto", "Jack Nicholson"],
+    "correctAnswer": "Heath Ledger"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie series features a character named 'Frodo Baggins'?",
+    "options": ["Harry Potter", "The Hobbit", "The Lord of the Rings", "Chronicles of Narnia"],
+    "correctAnswer": "The Lord of the Rings"
+  },
+  {
+    "category": "movies",
+    "question": "Which actress played Hermione Granger in the Harry Potter series?",
+    "options": ["Emma Watson", "Jennifer Lawrence", "Natalie Portman", "Scarlett Johansson"],
+    "correctAnswer": "Emma Watson"
+  },
+  {
+    "category": "movies",
+    "question": "Who directed 'Inception'?",
+    "options": ["Christopher Nolan", "Steven Spielberg", "Quentin Tarantino", "Ridley Scott"],
+    "correctAnswer": "Christopher Nolan"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie is famous for the line, 'May the Force be with you'?",
+    "options": ["Star Wars", "Star Trek", "Guardians of the Galaxy", "The Matrix"],
+    "correctAnswer": "Star Wars"
+  },
+  {
+    "category": "movies",
+    "question": "Who played the lead role in 'Forrest Gump'?",
+    "options": ["Tom Hanks", "Brad Pitt", "Johnny Depp", "Leonardo DiCaprio"],
+    "correctAnswer": "Tom Hanks"
+  },
+  {
+    "category": "movies",
+    "question": "What is the highest-grossing film of all time?",
+    "options": ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens"],
+    "correctAnswer": "Avengers: Endgame"
+  },
+  {
+    "category": "movies",
+    "question": "Which actor played Iron Man in the Marvel Cinematic Universe?",
+    "options": ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
+    "correctAnswer": "Robert Downey Jr."
+  },
+  {
+    "category": "movies",
+    "question": "Which animated movie features the song 'Let It Go'?",
+    "options": ["Frozen", "Moana", "Tangled", "Brave"],
+    "correctAnswer": "Frozen"
+  },
+  {
+    "category": "movies",
+    "question": "Which movie is based on a novel by J.K. Rowling?",
+    "options": ["Fantastic Beasts", "The Hunger Games", "Divergent", "The Maze Runner"],
+    "correctAnswer": "Fantastic Beasts"
+  },
+  {
+    "category": "movies",
+    "question": "Who played the character Neo in 'The Matrix'?",
+    "options": ["Keanu Reeves", "Will Smith", "Tom Cruise", "Brad Pitt"],
+    "correctAnswer": "Keanu Reeves"
+  }
+]

@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>₹20 Entry Quiz Game - Quizania</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+	  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+  </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .timer-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            animation: countdown 20s linear forwards;
+        }
+        
+        @keyframes countdown {
+            to { stroke-dashoffset: 0; }
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        
+        .question-card {
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            animation: confetti-fall 3s linear infinite;
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+<body class="gradient-bg min-h-screen text-gray-900 dark:text-white ">
+
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="/play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="/setting">⚙️ Setting</a>
+      <a href="/feedback">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 animate-fadeIn">
+  
+    <!-- Home Screen -->
+    <div id="homeScreen" class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 pulse-animation">
+                    ₹20 Entry Quiz Game
+                </h1>
+                <button id="playNowBtn" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-4 px-12 rounded-full text-xl shadow-lg transform hover:scale-105 transition-all duration-300" disabled>
+                    <i class="fas fa-play mr-2"></i>Play Now
+                </button>
+
+            </div>
+
+            <!-- Prize Breakdown -->
+            <div class="glass-effect rounded-2xl p-6 mb-8 slide-in">
+                <h2 class="text-2xl font-bold text-white mb-6 text-center">
+                    <i class="fas fa-trophy text-yellow-400 mr-2"></i>Prize Breakdown
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-xl p-4 text-center">
+                        <div class="text-2xl">🥇</div>
+                        <div class="font-bold text-gray-900">1st Prize</div>
+                        <div class="text-2xl font-bold text-gray-900">₹1000</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-gray-300 to-gray-500 rounded-xl p-4 text-center">
+                        <div class="text-2xl">🥈</div>
+                        <div class="font-bold text-gray-900">2nd Prize</div>
+                        <div class="text-2xl font-bold text-gray-900">₹500</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl p-4 text-center">
+                        <div class="text-2xl">🥉</div>
+                        <div class="font-bold text-gray-900">3rd Prize</div>
+                        <div class="text-2xl font-bold text-gray-900">₹300</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-xl p-4 text-center">
+                        <div class="text-2xl">🎯</div>
+                        <div class="font-bold text-gray-900">4th to 10th</div>
+                        <div class="text-2xl font-bold text-gray-900">₹100 each</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Date -->
+            <div class="glass-effect rounded-2xl p-6 mb-8 text-center slide-in">
+                <h3 class="text-xl font-bold text-white mb-2">
+                    🎉 Result Date: 30 July 2025 🎉
+                </h3>
+            </div>
+
+            <!-- Game Rules -->
+            <div class="glass-effect rounded-2xl p-6 slide-in">
+                <h2 class="text-2xl font-bold text-white mb-4">
+                    <i class="fas fa-book text-blue-400 mr-2"></i>Game Rules
+                </h2>
+                <div class="text-white space-y-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-question-circle text-blue-400 mr-3"></i>
+                        <span>Each player gets 10 questions</span>
+                    </div>
+					<div class="flex items-center">
+                        <i class="fas fa-random text-blue-400 mr-3"></i>
+                        <span>If You Switch tab Between game you will disqualified</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-blue-400 mr-3"></i>
+                        <span>Total 20 seconds per quiz</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-random text-blue-400 mr-3"></i>
+                        <span>Each time you play, you get different quiz questions!</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-star text-yellow-400 mr-3"></i>
+                        <span>Play more times to increase your chance of winning big!</span>
+                    </div>
+                </div>
+            </div>
+
+<div id="walletBalance" style="display: none;"></div>
+
+
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="container mx-auto px-4 py-8 hidden">
+        <div class="max-w-2xl mx-auto">
+            <!-- Quiz Header -->
+            <div class="glass-effect rounded-2xl p-4 mb-6 text-center">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-white">
+                        <span>Question <span id="currentQuestion">1</span> of 10</span>
+                    </div>
+                    <div class="relative w-16 h-16">
+                        <svg class="w-16 h-16 transform -rotate-90">
+                            <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.3)" stroke-width="4" fill="none"/>
+                            <circle id="timerCircle" cx="32" cy="32" r="28" stroke="#f39c12" stroke-width="4" fill="none" class="timer-circle"/>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="timeLeft" class="text-white font-bold text-lg">20</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-3">
+                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full progress-bar" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="questionCard" class="glass-effect rounded-2xl p-6 mb-6 question-card">
+                <h3 id="questionText" class="text-xl font-semibold text-white mb-6 text-center"></h3>
+                <div id="optionsContainer" class="space-y-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="container mx-auto px-4 py-8 hidden">
+        <div class="max-w-2xl mx-auto">
+            <!-- Result Header -->
+            <div class="text-center mb-8">
+                <div id="resultIcon" class="text-6xl mb-4">🎉</div>
+                <h1 class="text-4xl font-bold text-white mb-4">Quiz Completed!</h1>
+            </div>
+
+            <!-- Result Summary -->
+            <div class="glass-effect rounded-2xl p-6 mb-6">
+                <h2 class="text-2xl font-bold text-white mb-4 text-center">Your Performance</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                    <div class="bg-green-500 rounded-xl p-4">
+                        <div class="text-2xl font-bold text-white" id="correctAnswers">0</div>
+                        <div class="text-white">Correct Answers</div>
+                    </div>
+                    <div class="bg-blue-500 rounded-xl p-4">
+                        <div class="text-2xl font-bold text-white" id="averageTime">0s</div>
+                        <div class="text-white">Average Time</div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <div class="text-white">Player: <span id="resultPlayerName"></span></div>
+                    <div class="text-white">Score: <span id="finalScore">0</span>/10</div>
+                </div>
+            </div>
+
+            <!-- Play Again Button -->
+            <div class="text-center">
+
+                    <div class="flex items-center">
+                        <h2 class="text-white font-bold"><i class="fas fa-star text-yellow-400 mr-3"></i>
+                        <span>Play more times to increase your chance of winning big!</span></h2>
+                    </div>
+					<br></br>
+                <button id="homeBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-play mr-2"></i>Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+            <div class="text-white text-xl">Loading...</div>
+        </div>
+    </div>
+
+  </main>
+  
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+ 
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+ 
+
+<!-- Firebase Auth & Profile Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, addDoc, collection } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+  import { arrayUnion } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+let currentUser = null; // ✅ At global scope
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePreview.addEventListener("click", () => profilePhotoInput.click());
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+    if (data.secure_url) {
+      const user = auth.currentUser;
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+
+
+  currentUser = user;
+  document.getElementById("playNowBtn").disabled = false; 
+
+  const docRef = doc(db, "users", user.uid);
+  let docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    await setDoc(docRef, {
+      name: user.email,
+      rechargeWallet: 0,
+      winningWallet: 0,
+      profilePhoto: "",
+      isAdmin: false,
+      matchHistory: []
+    }, { merge: true });
+
+    docSnap = await getDoc(docRef);
+  }
+
+  const data = docSnap.data();
+  if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+  walletBalance.textContent = `₹${(data.rechargeWallet || 0) + (data.winningWallet || 0)}`;
+});
+
+
+  
+  // Deduct ₹20 from Recharge Wallet first, then Winning Wallet
+window.deductFromWallet = async function () {
+  if (!auth.currentUser) {
+    alert("Please sign in to play!");
+    return false;
+  }
+
+  const user = auth.currentUser;
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    alert("User data not found.");
+    return false;
+  }
+
+  const userData = userSnap.data();
+  let recharge = userData.rechargeWallet || 0;
+  let winning = userData.winningWallet || 0;
+  const entryFee = 20;
+
+  if (recharge + winning < entryFee) {
+    alert("Not enough balance to play. Please recharge.");
+    return false;
+  }
+
+  let rechargeDeduct = 0;
+  let winningDeduct = 0;
+
+  if (recharge >= entryFee) {
+    rechargeDeduct = entryFee;
+  } else {
+    rechargeDeduct = recharge;
+    winningDeduct = entryFee - recharge;
+  }
+
+  // 🔄 Update Firestore balances
+  await updateDoc(userRef, {
+    rechargeWallet: recharge - rechargeDeduct,
+    winningWallet: winning - winningDeduct,
+  });
+
+  // 💸 Update on-screen balance
+  const newBalance = (recharge - rechargeDeduct + winning - winningDeduct);
+  walletBalance.textContent = `₹${newBalance}`;
+
+  return true;
+};
+
+
+    // Deduct and update wallet
+
+
+
+async function saveQuizResult(correct, avgTime) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No user found while saving quiz result.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "quiz20_results"), {
+      uid: user.uid,
+      name: user.displayName || "Anonymous",
+      email: user.email,
+      correctAnswers: correct,
+      averageTime: parseFloat(avgTime),
+      totalQuestions: 10,
+      timestamp: new Date()
+    });
+  } catch (error) {
+    console.error('Error saving quiz result:', error);
+  }
+}
+
+window.endQuiz = async function () {
+    clearInterval(questionTimer); // 🧠 Stop per-question timer
+	
+	    // 🚫 Stop watching for tab switches
+    document.removeEventListener('visibilitychange', handleTabSwitch);
+
+    // Calculate average response time
+    const avgTime = responseTimes.length > 0 
+        ? (responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length).toFixed(2)
+        : "0.00";
+
+    // Save result to Firestore
+    await saveQuizResult(correctAnswers, avgTime);
+
+    // Show result screen
+    showResult(correctAnswers, avgTime);
+}
+
+window.handleTabSwitch = function () {
+  if (document.hidden) {
+    alert("You switched tabs. Quiz ended!");
+    document.removeEventListener('visibilitychange', handleTabSwitch); // cleanup
+    endQuiz(); // ⛔ end quiz immediately
+  }
+}
+
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+  window.withdraw = function () {
+    alert("Withdraw coming soon!");
+  }
+  window.logout = function () {
+    signOut(auth).then(() => window.location.href = 'login.html');
+  }
+    window.recharge = async function () {
+    const amountStr = prompt("Enter recharge amount:");
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Invalid amount.");
+    const fee = amount <= 100 ? 2 : 0;
+    const net = amount - fee;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, { rechargeWallet: increment(net) });
+
+    const adminRef = doc(db, "admin", "fees");
+    await updateDoc(adminRef, { totalRechargeFee: increment(fee) }).catch(() =>
+      setDoc(adminRef, { totalRechargeFee: fee }, { merge: true })
+    );
+
+    alert(`₹${net} added. ₹${fee} fee charged.`);
+    const snap = await getDoc(userRef);
+    document.getElementById("recharge-wallet").innerText = snap.data().rechargeWallet || 0;
+  }
+
+        // Play Now Button
+playNowBtn.addEventListener('click', async () => {
+  if (!currentUser) {
+    alert("Still loading user. Please wait 1–2 seconds and try again.");
+    return;
+  }
+
+  const allowed = await deductFromWallet();
+  if (allowed) startQuiz();
+});
+
+
+  window.currentUser = currentUser;
+</script>
+
+    <script>
+
+
+        // Question Pool (30+ questions)
+        const questionPool = [
+		
+		   {
+        "question": "In Computer Science, what is the key concept behind Turing Machine?",
+        "options": [
+            "Explanation of Turing Machine",
+            "Explanation of NP-Hard",
+            "Explanation of Big-O Notation",
+            "Explanation of Boolean Algebra"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "In Biology, what is the key concept behind Photosynthesis?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "In Biology, what is the key concept behind Genome?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Exoplanets?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Exoplanets?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Black Holes?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Black Holes?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Biology, what is the key concept behind Photosynthesis?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "In Ancient India, what is the key concept behind Vedic Period?",
+        "options": [
+            "Explanation of Harappan Civilization",
+            "Explanation of Gupta Dynasty",
+            "Explanation of Vedic Period",
+            "Explanation of Mauryan Empire"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "In Biology, what is the key concept behind CRISPR?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Biology, what is the key concept behind Mitochondria?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "In Mathematics, what is the key concept behind Topology?",
+        "options": [
+            "Explanation of Number Theory",
+            "Explanation of Topology",
+            "Explanation of Set Theory",
+            "Explanation of Graph Theory"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Computer Science, what is the key concept behind NP-Hard?",
+        "options": [
+            "Explanation of Turing Machine",
+            "Explanation of NP-Hard",
+            "Explanation of Big-O Notation",
+            "Explanation of Boolean Algebra"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Biology, what is the key concept behind Photosynthesis?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Exoplanets?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 0
+    },
+    {
+        "question": "In Astronomy, what is the key concept behind Pulsars?",
+        "options": [
+            "Explanation of Exoplanets",
+            "Explanation of Black Holes",
+            "Explanation of Pulsars",
+            "Explanation of Cosmic Inflation"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "In Biology, what is the key concept behind CRISPR?",
+        "options": [
+            "Explanation of Mitochondria",
+            "Explanation of CRISPR",
+            "Explanation of Genome",
+            "Explanation of Photosynthesis"
+        ],
+        "correct": 1
+    },
+    {
+        "question": "In Ancient India, what is the key concept behind Vedic Period?",
+        "options": [
+            "Explanation of Harappan Civilization",
+            "Explanation of Gupta Dynasty",
+            "Explanation of Vedic Period",
+            "Explanation of Mauryan Empire"
+        ],
+        "correct": 2
+    },
+    {
+        "question": "In Ancient India, what is the key concept behind Mauryan Empire?",
+        "options": [
+            "Explanation of Harappan Civilization",
+            "Explanation of Gupta Dynasty",
+            "Explanation of Vedic Period",
+            "Explanation of Mauryan Empire"
+        ],
+        "correct": 3
+    },
+    {
+        "question": "In Computer Science, what is the key concept behind NP-Hard?",
+        "options": [
+            "Explanation of Turing Machine",
+            "Explanation of NP-Hard",
+            "Explanation of Big-O Notation",
+            "Explanation of Boolean Algebra"
+        ],
+        "correct": 1
+    },
+		    {
+        question: "Which article of the Indian Constitution defines 'Fundamental Rights'?",
+        options: ["Article 12-35", "Article 21-32", "Article 36-50", "Article 51-65"],
+        correct: 0
+    },
+    {
+        question: "Which was the first Indian satellite launched into space?",
+        options: ["Rohini", "Aryabhata", "INSAT-1", "Bhaskara"],
+        correct: 1
+    },
+    {
+        question: "What is the term for a word that is the same forwards and backwards?",
+        options: ["Palindrome", "Anagram", "Homonym", "Synonym"],
+        correct: 0
+    },
+    {
+        question: "Which layer of the atmosphere contains the ozone layer?",
+        options: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere"],
+        correct: 1
+    },
+    {
+        question: "Which planet has the most moons?",
+        options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
+        correct: 1
+    },
+    {
+        question: "In which Indian city is the ISRO headquarters located?",
+        options: ["Hyderabad", "Bengaluru", "Thiruvananthapuram", "Chennai"],
+        correct: 1
+    },
+    {
+        question: "Which Indian river is known as the 'Sorrow of Bihar'?",
+        options: ["Ganga", "Kosi", "Son", "Gandak"],
+        correct: 1
+    },
+    {
+        question: "Which among these is not a primary color in additive color model?",
+        options: ["Red", "Green", "Blue", "Yellow"],
+        correct: 3
+    },
+    {
+        question: "Which blood component fights infections?",
+        options: ["Red blood cells", "Platelets", "White blood cells", "Plasma"],
+        correct: 2
+    },
+    {
+        question: "Which programming language is primarily used for data science?",
+        options: ["C++", "Python", "Java", "HTML"],
+        correct: 1
+    },
+    {
+        question: "In a right triangle, which function equals opposite/hypotenuse?",
+        options: ["cos", "tan", "sin", "cot"],
+        correct: 2
+    },
+    {
+        question: "Who was the first President of independent India?",
+        options: ["Jawaharlal Nehru", "Dr. Rajendra Prasad", "S. Radhakrishnan", "V.V. Giri"],
+        correct: 1
+    },
+    {
+        question: "What is the cube root of 27?",
+        options: ["2", "3", "4", "5"],
+        correct: 1
+    },
+    {
+        question: "Which Indian state is the largest producer of coal?",
+        options: ["Jharkhand", "Odisha", "Chhattisgarh", "West Bengal"],
+        correct: 0
+    },
+    {
+        question: "Which is the lightest element in the periodic table?",
+        options: ["Hydrogen", "Helium", "Oxygen", "Lithium"],
+        correct: 0
+    },
+	
+    {
+        question: "What is the full form of 'LASER'?",
+        options: ["Light Amplification by Stimulated Emission of Radiation", "Light Acquisition by Systematic Energy Radiation", "Linear Amplification of Solid Emission Ray", "Localized Atomic Stimulated Energy Ray"],
+        correct: 1
+    },
+    {
+        question: "Which Indian economist won the Nobel Prize in 1998?",
+        options: ["Raghuram Rajan", "Amartya Sen", "Manmohan Singh", "Montek Singh Ahluwalia"],
+        correct: 1
+    },
+    {
+        question: "Which law states that pressure is inversely proportional to volume at constant temperature?",
+        options: ["Charles’s Law", "Boyle’s Law", "Avogadro’s Law", "Newton’s Law"],
+        correct: 1
+    },
+    {
+        question: "Which organ in the human body produces insulin?",
+        options: ["Liver", "Pancreas", "Kidney", "Gallbladder"],
+        correct: 1
+    },
+    {
+        question: "In which year was the United Nations founded?",
+        options: ["1942", "1945", "1950", "1939"],
+        correct: 1
+    },
+    {
+        question: "What is the binary equivalent of the decimal number 25?",
+        options: ["11001", "10101", "10011", "11100"],
+        correct: 0
+    },
+    {
+        question: "Which Indian state has the highest literacy rate as per recent data?",
+        options: ["Tamil Nadu", "Kerala", "Maharashtra", "Karnataka"],
+        correct: 1
+    },
+    {
+        question: "Who developed the General Theory of Employment, Interest and Money?",
+        options: ["Milton Friedman", "Adam Smith", "John Maynard Keynes", "Karl Marx"],
+        correct: 2
+    },
+    {
+        question: "What is the SI unit of electric resistance?",
+        options: ["Ampere", "Volt", "Ohm", "Watt"],
+        correct: 2
+    },
+    {
+        question: "Which battle marked the beginning of British rule in India?",
+        options: ["Battle of Buxar", "Battle of Plassey", "Third Battle of Panipat", "Battle of Talikota"],
+        correct: 1
+    },
+    {
+        question: "What is the chemical formula of ozone?",
+        options: ["O2", "O3", "O4", "O"],
+        correct: 1
+    },
+    {
+        question: "Which planet has the most moons?",
+        options: ["Jupiter", "Saturn", "Uranus", "Neptune"],
+        correct: 1
+    },
+    {
+        question: "Which instrument is used to measure humidity?",
+        options: ["Barometer", "Thermometer", "Hygrometer", "Anemometer"],
+        correct: 2
+    },
+    {
+        question: "What does GDP stand for in economics?",
+        options: ["Gross Domestic Product", "Global Development Plan", "Gross Domestic Percentage", "Government Data Processing"],
+        correct: 0
+    },
+    {
+        question: "Who is known as the 'Missile Man of India'?",
+        options: ["Homi Bhabha", "APJ Abdul Kalam", "Vikram Sarabhai", "Rakesh Sharma"],
+        correct: 1
+    },
+    {
+        question: "Which metal is used in the filament of an electric bulb?",
+        options: ["Copper", "Iron", "Tungsten", "Aluminum"],
+        correct: 2
+    },
+    {
+        question: "In computer science, what does 'IP' stand for in IP address?",
+        options: ["Internal Protocol", "Internet Protocol", "Instant Processing", "Input Port"],
+        correct: 1
+    },
+    {
+        question: "Which Indian classical dance form originated from Odisha?",
+        options: ["Kathak", "Bharatanatyam", "Odissi", "Manipuri"],
+        correct: 2
+    },
+    {
+        question: "Who invented the World Wide Web?",
+        options: ["Steve Jobs", "Bill Gates", "Tim Berners-Lee", "Alan Turing"],
+        correct: 2
+    },
+    {
+        question: "Which blood component helps in clotting?",
+        options: ["RBC", "WBC", "Plasma", "Platelets"],
+        correct: 3
+    },
+	
+	{
+        question: "Which Indian physicist formulated the 'Raman Effect'?",
+        options: ["Meghnad Saha", "Homi Bhabha", "C.V. Raman", "Satyendra Nath Bose"],
+        correct: 2
+    },
+    {
+        question: "What is the minimum escape velocity required to leave Earth’s gravity?",
+        options: ["7.9 km/s", "9.8 km/s", "11.2 km/s", "13.5 km/s"],
+        correct: 2
+    },
+    {
+        question: "Which Indus Valley site is located in modern-day Haryana?",
+        options: ["Mohenjo-Daro", "Lothal", "Rakhigarhi", "Dholavira"],
+        correct: 2
+    },
+    {
+        question: "What is the derivative of sin(x) with respect to x?",
+        options: ["cos(x)", "-cos(x)", "-sin(x)", "tan(x)"],
+        correct: 0
+    },
+    {
+        question: "Which one of these is a *Linux* distribution?",
+        options: ["Windows", "Ubuntu", "macOS", "Solaris"],
+        correct: 1
+    },
+    {
+        question: "Who wrote the book 'Discovery of India'?",
+        options: ["Mahatma Gandhi", "Jawaharlal Nehru", "B.R. Ambedkar", "Sardar Patel"],
+        correct: 1
+    },
+    {
+        question: "Which enzyme breaks down starch into sugar?",
+        options: ["Lipase", "Pepsin", "Amylase", "Trypsin"],
+        correct: 2
+    },
+    {
+        question: "Which Indian satellite was the first to be launched into space?",
+        options: ["INSAT-1A", "Aryabhata", "Bhaskara I", "Rohini"],
+        correct: 1
+    },
+    {
+        question: "Which logic gate outputs HIGH only when all inputs are HIGH?",
+        options: ["OR", "NAND", "AND", "NOR"],
+        correct: 2
+    },
+    {
+        question: "Which Mughal ruler was defeated in the Battle of Buxar (1764)?",
+        options: ["Shah Alam II", "Bahadur Shah Zafar", "Humayun", "Akbar II"],
+        correct: 0
+    },
+    {
+        question: "Which of the following is NOT a prime number?",
+        options: ["29", "37", "51", "59"],
+        correct: 2
+    },
+    {
+        question: "In which year did the French Revolution begin?",
+        options: ["1789", "1776", "1804", "1815"],
+        correct: 0
+    },
+    {
+        question: "Which component of the computer is considered the 'brain'?",
+        options: ["RAM", "Hard Disk", "Motherboard", "CPU"],
+        correct: 3
+    },
+    {
+        question: "What does the acronym 'HTTP' stand for?",
+        options: ["Hyperlink Transfer Text Protocol", "Hyper Text Transfer Protocol", "High Transmission Text Protocol", "Hyper Tool Transfer Process"],
+        correct: 1
+    },
+    {
+        question: "Which Indian freedom fighter founded the 'Azad Hind Fauj'?",
+        options: ["Lala Lajpat Rai", "Bhagat Singh", "Subhas Chandra Bose", "Bal Gangadhar Tilak"],
+        correct: 2
+    },
+    {
+        question: "Which of these is NOT a programming language?",
+        options: ["Python", "HTML", "C++", "Adobe"],
+        correct: 3
+    },
+    {
+        question: "Which metal is liquid at room temperature?",
+        options: ["Mercury", "Lead", "Zinc", "Aluminum"],
+        correct: 0
+    },
+    {
+        question: "What is the acceleration due to gravity on Earth (approx)?",
+        options: ["8.8 m/s²", "9.2 m/s²", "9.8 m/s²", "10.2 m/s²"],
+        correct: 2
+    },
+    {
+        question: "Which country hosted the first modern Olympic Games?",
+        options: ["Italy", "France", "Greece", "Germany"],
+        correct: 2
+    },
+    {
+        question: "Which process converts atmospheric nitrogen into usable forms for plants?",
+        options: ["Photosynthesis", "Nitrogen Fixation", "Respiration", "Evaporation"],
+        correct: 1
+    },	
+	
+    {
+        question: "Which Indian mathematician is known for contributions to number theory without formal training?",
+        options: ["C.V. Raman", "Srinivasa Ramanujan", "Aryabhata", "Bhaskara I"],
+        correct: 1
+    },
+    {
+        question: "What is the Heisenberg Uncertainty Principle related to?",
+        options: ["Light refraction", "Wave-particle duality", "Electron position & momentum", "String theory"],
+        correct: 2
+    },
+    {
+        question: "In which year did the Battle of Plassey take place?",
+        options: ["1757", "1857", "1707", "1805"],
+        correct: 0
+    },
+    {
+        question: "What is the value of Planck's constant (approx)?",
+        options: ["6.63×10⁻³⁴ Js", "9.81 m/s²", "1.6×10⁻¹⁹ C", "3×10⁸ m/s"],
+        correct: 0
+    },
+    {
+        question: "Which of these is **not** a noble gas?",
+        options: ["Argon", "Neon", "Chlorine", "Xenon"],
+        correct: 2
+    },
+    {
+        question: "Who was the first Indian to win a Nobel Prize?",
+        options: ["Rabindranath Tagore", "C.V. Raman", "Amartya Sen", "Mother Teresa"],
+        correct: 0
+    },
+    {
+        question: "Which of the following rivers does **not** originate in India?",
+        options: ["Yamuna", "Ganga", "Brahmaputra", "Godavari"],
+        correct: 2
+    },
+    {
+        question: "What is the unit of electric capacitance?",
+        options: ["Watt", "Ohm", "Farad", "Coulomb"],
+        correct: 2
+    },
+    {
+        question: "Which Mughal emperor built the **Red Fort** in Delhi?",
+        options: ["Babur", "Akbar", "Shah Jahan", "Aurangzeb"],
+        correct: 2
+    },
+    {
+        question: "Which type of lens is used to correct **myopia**?",
+        options: ["Convex", "Concave", "Cylindrical", "Bifocal"],
+        correct: 1
+    },
+    {
+        question: "What is the function of ribosomes in a cell?",
+        options: ["Energy production", "Protein synthesis", "DNA replication", "Detoxification"],
+        correct: 1
+    },
+    {
+        question: "Which country was the first to reach **Mars orbit** in its first attempt?",
+        options: ["USA", "India", "Russia", "China"],
+        correct: 1
+    },
+    {
+        question: "Who propounded the **Theory of Relativity**?",
+        options: ["Newton", "Einstein", "Tesla", "Bohr"],
+        correct: 1
+    },
+    {
+        question: "Which Indian king is known for his **naval expeditions** and trade across Southeast Asia?",
+        options: ["Ashoka", "Raja Raja Chola", "Chandragupta Maurya", "Samudragupta"],
+        correct: 1
+    },
+    {
+        question: "Which programming language is mainly used in **AI & Machine Learning**?",
+        options: ["Java", "C++", "Python", "HTML"],
+        correct: 2
+    },
+    {
+        question: "Who among the following is a **Fields Medal** winner from India?",
+        options: ["Venkatraman Ramakrishnan", "Manjul Bhargava", "C.N.R. Rao", "Har Gobind Khorana"],
+        correct: 1
+    },
+    {
+        question: "Which layer of the atmosphere contains the **ozone layer**?",
+        options: ["Troposphere", "Mesosphere", "Thermosphere", "Stratosphere"],
+        correct: 3
+    },
+    {
+        question: "What is the result of the logical expression: **(true && false) || true**?",
+        options: ["true", "false", "undefined", "null"],
+        correct: 0
+    },
+    {
+        question: "What is the full form of **URL**?",
+        options: ["Uniform Resource Locator", "Universal Routing Link", "Unified Resource Language", "Unilateral Reference Line"],
+        correct: 0
+    },
+    {
+        question: "Which among these is a **prime number**?",
+        options: ["87", "91", "97", "99"],
+        correct: 2
+    }
+];
+
+
+        // Game State
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let questionStartTime = 0;
+        let responseTimes = [];
+
+
+        // DOM Elements
+        const homeScreen = document.getElementById('homeScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const playNowBtn = document.getElementById('playNowBtn');
+        const walletBalance = document.getElementById('walletBalance');
+
+        // Auth State Observer
+
+
+
+
+
+        // Deduct from Walle
+
+        // Start Quiz
+        function startQuiz() {
+            // Reset game state
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            timeLeft = timePerQuestion;
+            responseTimes = [];
+
+            // Select 10 random questions
+            currentQuiz = getRandomQuestions(10);
+
+            // Show quiz screen
+            homeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+			
+			
+
+            // Start first question
+            showQuestion();
+            startQuestionTimer();
+        }
+
+        // Get Random Questions
+        function getRandomQuestions(count) {
+            const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Show Question
+let questionTimer = null;
+const timePerQuestion = 20;
+
+function showQuestion() {
+    const question = currentQuiz[currentQuestionIndex];
+    questionStartTime = Date.now();
+    timeLeft = timePerQuestion;
+
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+    document.getElementById('questionText').textContent = question.question;
+
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+
+    question.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'w-full p-4 text-left bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl text-white transition-all duration-300 transform hover:scale-105';
+        button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+        button.addEventListener('click', () => selectAnswer(index));
+        optionsContainer.appendChild(button);
+    });
+
+    // 🚨 Watch for tab switches
+    document.addEventListener('visibilitychange', handleTabSwitch);
+	
+    updateProgressBar();
+    startQuestionTimer();
+}
+
+
+function startQuestionTimer() {
+    clearInterval(questionTimer); // Clear any previous timer
+
+    const timerCircle = document.getElementById('timerCircle');
+    const timeLeftElement = document.getElementById('timeLeft');
+    timeLeftElement.textContent = timePerQuestion;
+
+    // Animate timer circle
+    timerCircle.style.animation = 'none';
+    timerCircle.offsetHeight;
+    timerCircle.style.animation = `countdown ${timePerQuestion}s linear forwards`;
+
+    questionTimer = setInterval(() => {
+        timeLeft--;
+        timeLeftElement.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(questionTimer);
+            selectAnswer(null); // Time's up — no answer
+        }
+    }, 1000);
+}
+function selectAnswer(selectedIndex) {
+    clearInterval(questionTimer); // Stop timer for current question
+
+    const responseTime = (Date.now() - questionStartTime) / 1000;
+    responseTimes.push(responseTime);
+
+    const question = currentQuiz[currentQuestionIndex];
+    const isCorrect = selectedIndex !== null && selectedIndex === question.correct;
+
+    if (isCorrect) {
+        correctAnswers++;
+        showFeedback(true);
+    } else {
+        showFeedback(false);
+    }
+
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < currentQuiz.length) {
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }, 1000);
+}
+        // Show Feedback
+        function showFeedback(isCorrect) {
+            const optionsContainer = document.getElementById('optionsContainer');
+            const buttons = optionsContainer.querySelectorAll('button');
+            
+            buttons.forEach((button, index) => {
+                if (index === currentQuiz[currentQuestionIndex].correct) {
+                    button.classList.add('bg-green-500');
+                } else if (isCorrect === false && button.classList.contains('bg-opacity-30')) {
+                    button.classList.add('bg-red-500');
+                }
+                button.disabled = true;
+            });
+        }
+
+
+
+        // Update Progress Bar
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+// End Quiz (for 10 sec per question format)
+
+
+
+
+// Show Result
+function showResult(correct, avgTime) {
+    quizScreen.classList.add('hidden');
+    resultScreen.classList.remove('hidden');
+
+    // Update result display
+    document.getElementById('correctAnswers').textContent = correct;
+    document.getElementById('averageTime').textContent = `${avgTime}s`;
+    document.getElementById('finalScore').textContent = correct;
+
+    // Performance Emoji
+    const resultIcon = document.getElementById('resultIcon');
+    if (correct >= 9) {
+        resultIcon.textContent = '🏆';
+        createConfetti();
+    } else if (correct >= 8) {
+        resultIcon.textContent = '🎉';
+    } else if (correct >= 7) {
+        resultIcon.textContent = '😊';
+    } else {
+        resultIcon.textContent = '😔';
+    }
+}
+        // Create Confetti Effect
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+
+
+
+        // Home Button
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            resultScreen.classList.add('hidden');
+            homeScreen.classList.remove('hidden');
+        });
+
+        // Show/Hide Loading
+        function showLoading(show) {
+            if (show) {
+                loadingScreen.classList.remove('hidden');
+            } else {
+                loadingScreen.classList.add('hidden');
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add some initial animations
+            setTimeout(() => {
+                document.querySelectorAll('.slide-in').forEach((el, index) => {
+                    setTimeout(() => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    }, index * 200);
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

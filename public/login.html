@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizania - Login</title>
+    <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .form-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #4b00ff;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4b00ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #3600cc;
+    }
+
+    .link {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #4b00ff;
+      text-decoration: none;
+    }
+
+    #google-login-btn {
+      background: #db4437;
+      color: white;
+      margin-top: 15px;
+    }
+
+    /* New style for forgot password link */
+    .forgot-password {
+      text-align: right;
+      font-size: 14px;
+      margin-top: -8px;
+      margin-bottom: 15px;
+    }
+    .forgot-password a {
+      color: #4b00ff;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-box">
+    <h2>Login to Quizania</h2>
+    <form id="loginForm">
+      <input type="email" placeholder="Email" required />
+      <input type="password" placeholder="Password" required />
+      
+      <!-- Forgot Password link -->
+      <div class="forgot-password">
+        <a href="forgot-password.html">Forgot Password?</a>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+
+    <button id="google-login-btn" style="margin-top: 20px; background: white; border: 1px solid #ccc; color: #444; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500;">
+      <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width: 20px; height: 20px;" />
+      Sign in with Google
+    </button>
+
+    <div class="link">
+      Don't have an account? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Email-password login
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const email = document.querySelector('input[placeholder="Email"]').value;
+    const password = document.querySelector('input[placeholder="Password"]').value;
+
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      const userData = docSnap.exists() ? docSnap.data() : { name: user.email };
+
+      localStorage.setItem("quizaniaUser", JSON.stringify(userData));
+      alert("Login successful");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      alert("Login failed: " + error.message);
+      console.error(error);
+    }
+  });
+
+  // Google login
+  document.getElementById("google-login-btn").addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName,
+          email: user.email,
+          wallet: 0
+        });
+      }
+
+      localStorage.setItem("quizaniaUser", JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        wallet: userSnap.exists() ? userSnap.data().wallet : 0
+      }));
+
+      alert("Google Sign-in successful");
+      window.location.href = "dashboard.html";
+    } catch (error) {
+      console.error(error);
+      alert("Google Sign-in failed: " + error.message);
+    }
+  });
+
+
+
+</script>
+
+</body>
+</html>

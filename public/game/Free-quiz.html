@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania - Free Quiz Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+	  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+    <style>
+        .quiz-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .category-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ff6a88 0%, #ff99ac 100%);
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .timer-ring {
+            transform: rotate(-90deg);
+            transition: stroke-dasharray 1s linear;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .answer-option {
+            transition: all 0.3s ease;
+        }
+        .answer-option:hover {
+            transform: scale(1.02);
+        }
+        .answer-option.selected {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        .answer-option.correct {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+        .answer-option.incorrect {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .bounce-in {
+            animation: bounceIn 0.6s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+		    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+		html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="dashboard.html">🏠 Home</a>
+      <a href="profile-edit.html">👤 Profile</a>
+      <a href="msg.html">✉️ Messages</a>
+      <a href="play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="#">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+    <div class="quiz-container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="min-h-screen flex flex-col">
+
+
+            <!-- Categories Grid -->
+            <main class="flex-1 container mx-auto px-4 py-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-4">Choose Your Category</h2>
+                    <p class="text-white opacity-90">Select from 33 exciting categories and test your knowledge!</p>
+                </div>
+
+                <div id="categoriesGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="min-h-screen hidden">
+            <!-- Quiz Header -->
+            <header class="bg-white bg-opacity-20 backdrop-blur-lg shadow-lg">
+                <div class="container mx-auto px-4 py-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <button id="quitButton" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg mr-4 transition-colors">
+                                <i class="fas fa-times mr-2"></i>Quit
+                            </button>
+                            <h2 id="categoryTitle" class="text-xl font-bold text-white"></h2>
+                        </div>
+                        <div class="text-white">
+                            <span id="questionCounter">1</span> / 20
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="mt-4 bg-white bg-opacity-30 rounded-full h-2">
+                        <div id="progressBar" class="progress-bar bg-yellow-400 h-2 rounded-full" style="width: 5%"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Quiz Content -->
+            <main class="container mx-auto px-4 py-8">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Timer -->
+                    <div class="text-center mb-8">
+                        <div class="relative inline-block">
+                            <svg class="w-24 h-24" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="8"/>
+                                <circle id="timerRing" class="timer-ring" cx="60" cy="60" r="50" fill="none" stroke="#FFD700" stroke-width="8" stroke-linecap="round" stroke-dasharray="314 314"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="timeLeft" class="text-2xl font-bold text-white">20</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div class="bg-white rounded-xl shadow-2xl p-8 mb-8">
+                        <div id="questionImage" class="hidden mb-6">
+                            <img id="questionImg" src="" alt="Question Image" class="w-full max-w-md mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <h3 id="questionText" class="text-xl md:text-2xl font-semibold text-gray-800 mb-8 text-center leading-relaxed"></h3>
+                        
+                        <div id="optionsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Options will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="min-h-screen hidden flex items-center justify-center">
+            <div class="max-w-2xl mx-auto px-4">
+                <div class="bg-white rounded-xl shadow-2xl p-8 text-center bounce-in">
+                    <div class="mb-6">
+                        <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Quiz Complete!</h2>
+                        <p id="categoryResult" class="text-lg text-gray-600"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-green-100 rounded-lg p-6">
+                            <i class="fas fa-check-circle text-3xl text-green-500 mb-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">Correct Answers</h3>
+                            <p id="correctAnswers" class="text-3xl font-bold text-green-600">0 / 20</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-lg p-6">
+                            <i class="fas fa-clock text-3xl text-blue-500 mb-2"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">Average Time</h3>
+                            <p id="averageTime" class="text-3xl font-bold text-blue-600">0s</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <div id="scorePercentage" class="text-4xl font-bold text-purple-600 mb-2">0%</div>
+                        <div id="performanceMessage" class="text-lg text-gray-600"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <button id="playAgainButton" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                            <i class="fas fa-redo mr-2"></i>Play Again
+                        </button>
+                        <button id="homeButton" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                            <i class="fas fa-home mr-2"></i>Back to Categories
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePreview.addEventListener("click", () => profilePhotoInput.click());
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+    if (data.secure_url) {
+      const user = auth.currentUser;
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const docRef = doc(db, "users", uid);
+      let docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const defaultData = {
+          name: user.email,
+          rechargeWallet: 0,
+          winningWallet: 0,
+          profilePhoto: "",
+          isAdmin: false,
+          matchHistory: []
+        };
+        await setDoc(docRef, defaultData);
+        docSnap = await getDoc(docRef);
+      }
+
+      const data = docSnap.data();
+      document.getElementById("recharge-wallet").innerText = data.rechargeWallet || 0;
+      document.getElementById("winning-wallet").innerText = data.winningWallet || 0;
+      if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+  window.withdraw = function () {
+    alert("Withdraw coming soon!");
+  }
+  window.logout = function () {
+    signOut(auth).then(() => window.location.href = 'login.html');
+  }
+  
+  </script>
+
+    <script>
+        // Quiz Data Structure
+        const quizData = {
+            'General Knowledge': [
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], correct: 2 },
+                { question: "Which planet is known as the Red Planet?", options: ["Venus", "Mars", "Jupiter", "Saturn"], correct: 1 },
+                { question: "What is the largest mammal?", options: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"], correct: 1 },
+                { question: "Who painted the Mona Lisa?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"], correct: 2 },
+                { question: "What is the smallest country in the world?", options: ["Monaco", "San Marino", "Vatican City", "Liechtenstein"], correct: 2 },
+                { question: "Which element has the chemical symbol 'Au'?", options: ["Silver", "Gold", "Aluminum", "Argon"], correct: 1 },
+                { question: "What is the longest river in the world?", options: ["Amazon", "Nile", "Mississippi", "Yangtze"], correct: 1 },
+                { question: "How many continents are there?", options: ["5", "6", "7", "8"], correct: 2 },
+                { question: "What is the hardest natural substance?", options: ["Gold", "Iron", "Diamond", "Platinum"], correct: 2 },
+                { question: "Which ocean is the largest?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], correct: 3 },
+                { question: "What year did World War II end?", options: ["1944", "1945", "1946", "1947"], correct: 1 },
+                { question: "Which country has the most time zones?", options: ["USA", "Russia", "China", "Canada"], correct: 1 },
+                { question: "What is the currency of Japan?", options: ["Yuan", "Won", "Yen", "Rupiah"], correct: 2 },
+                { question: "Which vitamin is produced when skin is exposed to sunlight?", options: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"], correct: 3 },
+                { question: "What is the largest desert in the world?", options: ["Sahara", "Gobi", "Antarctica", "Arabian"], correct: 2 },
+                { question: "How many bones are in an adult human body?", options: ["206", "208", "210", "212"], correct: 0 },
+                { question: "Which gas makes up most of Earth's atmosphere?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], correct: 2 },
+                { question: "What is the fastest land animal?", options: ["Lion", "Cheetah", "Leopard", "Tiger"], correct: 1 },
+                { question: "Which planet is closest to the Sun?", options: ["Venus", "Earth", "Mercury", "Mars"], correct: 2 },
+                { question: "What is the largest organ in the human body?", options: ["Heart", "Brain", "Liver", "Skin"], correct: 3 }
+            ],
+            'Science': [
+                { question: "What is the chemical formula for water?", options: ["H2O", "CO2", "NaCl", "O2"], correct: 0 },
+                { question: "What is the speed of light?", options: ["300,000 km/s", "150,000 km/s", "450,000 km/s", "600,000 km/s"], correct: 0 },
+                { question: "Which scientist developed the theory of relativity?", options: ["Newton", "Darwin", "Einstein", "Galileo"], correct: 2 },
+                { question: "What is the atomic number of carbon?", options: ["4", "6", "8", "12"], correct: 1 },
+                { question: "Which blood type is known as the universal donor?", options: ["A", "B", "AB", "O"], correct: 3 },
+                { question: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Cytoplasm"], correct: 2 },
+                { question: "Which planet has the most moons?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], correct: 1 },
+                { question: "What is the pH of pure water?", options: ["6", "7", "8", "9"], correct: 1 },
+                { question: "Which organ produces insulin?", options: ["Liver", "Kidney", "Pancreas", "Heart"], correct: 2 },
+                { question: "What is the most abundant gas in the universe?", options: ["Oxygen", "Nitrogen", "Hydrogen", "Helium"], correct: 2 },
+                { question: "How many chambers does a human heart have?", options: ["2", "3", "4", "5"], correct: 2 },
+                { question: "What is the study of earthquakes called?", options: ["Geology", "Seismology", "Meteorology", "Oceanography"], correct: 1 },
+                { question: "Which metal is liquid at room temperature?", options: ["Lead", "Mercury", "Tin", "Zinc"], correct: 1 },
+                { question: "What is the smallest unit of matter?", options: ["Molecule", "Atom", "Electron", "Proton"], correct: 1 },
+                { question: "Which force keeps planets in orbit?", options: ["Magnetic", "Electric", "Gravitational", "Nuclear"], correct: 2 },
+                { question: "What is the chemical symbol for sodium?", options: ["S", "So", "Na", "N"], correct: 2 },
+                { question: "How many bones are babies born with approximately?", options: ["206", "250", "300", "350"], correct: 2 },
+                { question: "What is the study of heredity called?", options: ["Biology", "Genetics", "Anatomy", "Physiology"], correct: 1 },
+                { question: "Which scientist is known for the laws of motion?", options: ["Einstein", "Newton", "Galileo", "Kepler"], correct: 1 },
+                { question: "What is the largest artery in the human body?", options: ["Pulmonary artery", "Aorta", "Carotid artery", "Femoral artery"], correct: 1 }
+            ],
+            'History': [
+                { question: "In which year did World War I begin?", options: ["1912", "1914", "1916", "1918"], correct: 1 },
+                { question: "Who was the first President of the United States?", options: ["Thomas Jefferson", "John Adams", "George Washington", "Benjamin Franklin"], correct: 2 },
+                { question: "Which empire was ruled by Julius Caesar?", options: ["Greek", "Roman", "Persian", "Byzantine"], correct: 1 },
+                { question: "In which year did the Berlin Wall fall?", options: ["1987", "1989", "1991", "1993"], correct: 1 },
+                { question: "Who was known as the 'Iron Lady'?", options: ["Queen Elizabeth", "Margaret Thatcher", "Indira Gandhi", "Golda Meir"], correct: 1 },
+                { question: "Which ancient wonder was located in Alexandria?", options: ["Hanging Gardens", "Lighthouse", "Colossus", "Mausoleum"], correct: 1 },
+                { question: "Who wrote 'The Communist Manifesto'?", options: ["Lenin", "Stalin", "Marx and Engels", "Trotsky"], correct: 2 },
+                { question: "Which war was fought between the North and South in America?", options: ["Revolutionary War", "Civil War", "War of 1812", "Spanish-American War"], correct: 1 },
+                { question: "Who was the last Tsar of Russia?", options: ["Nicholas I", "Nicholas II", "Alexander III", "Peter III"], correct: 1 },
+                { question: "In which year did India gain independence?", options: ["1945", "1946", "1947", "1948"], correct: 2 },
+                { question: "Which city was the first to be struck by an atomic bomb?", options: ["Nagasaki", "Hiroshima", "Tokyo", "Kyoto"], correct: 1 },
+                { question: "Who was the first man to walk on the moon?", options: ["Buzz Aldrin", "Neil Armstrong", "John Glenn", "Alan Shepard"], correct: 1 },
+                { question: "Which European explorer is credited with discovering America?", options: ["Vasco da Gama", "Ferdinand Magellan", "Christopher Columbus", "Marco Polo"], correct: 2 },
+                { question: "In which year did the Titanic sink?", options: ["1910", "1912", "1914", "1916"], correct: 1 },
+                { question: "Who painted the ceiling of the Sistine Chapel?", options: ["Leonardo da Vinci", "Raphael", "Michelangelo", "Donatello"], correct: 2 },
+                { question: "Which ancient civilization built Machu Picchu?", options: ["Maya", "Aztec", "Inca", "Olmec"], correct: 2 },
+                { question: "Who was the first female Prime Minister of the United Kingdom?", options: ["Margaret Thatcher", "Theresa May", "Elizabeth I", "Victoria"], correct: 0 },
+                { question: "In which year did the French Revolution begin?", options: ["1787", "1789", "1791", "1793"], correct: 1 },
+                { question: "Which empire was known as the 'Land of the Rising Sun'?", options: ["Chinese", "Korean", "Japanese", "Mongolian"], correct: 2 },
+                { question: "Who was assassinated in Sarajevo in 1914?", options: ["Kaiser Wilhelm", "Tsar Nicholas", "Archduke Franz Ferdinand", "King George V"], correct: 2 }
+            ],
+            'Geography': [
+                { question: "Which is the longest river in Africa?", options: ["Congo", "Niger", "Nile", "Zambezi"], correct: 2 },
+                { question: "What is the capital of Canada?", options: ["Toronto", "Vancouver", "Montreal", "Ottawa"], correct: 3 },
+                { question: "Which mountain range contains Mount Everest?", options: ["Alps", "Andes", "Himalayas", "Rockies"], correct: 2 },
+                { question: "Which country has the most natural lakes?", options: ["USA", "Canada", "Russia", "Finland"], correct: 1 },
+                { question: "What is the smallest continent?", options: ["Europe", "Antarctica", "Australia", "South America"], correct: 2 },
+                { question: "Which desert is the largest hot desert?", options: ["Kalahari", "Sahara", "Arabian", "Thar"], correct: 1 },
+                { question: "What is the deepest ocean trench?", options: ["Puerto Rico Trench", "Java Trench", "Mariana Trench", "Peru-Chile Trench"], correct: 2 },
+                { question: "Which country is both in Europe and Asia?", options: ["Russia", "Turkey", "Kazakhstan", "All of the above"], correct: 3 },
+                { question: "What is the capital of Brazil?", options: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador"], correct: 2 },
+                { question: "Which strait separates Europe and Africa?", options: ["Bering Strait", "Strait of Gibraltar", "Strait of Hormuz", "Bass Strait"], correct: 1 },
+                { question: "What is the highest waterfall in the world?", options: ["Niagara Falls", "Victoria Falls", "Angel Falls", "Iguazu Falls"], correct: 2 },
+                { question: "Which country has the longest coastline?", options: ["Australia", "Canada", "Russia", "Norway"], correct: 1 },
+                { question: "What is the largest island in the world?", options: ["Australia", "Greenland", "New Guinea", "Borneo"], correct: 1 },
+                { question: "Which African country is completely surrounded by South Africa?", options: ["Swaziland", "Lesotho", "Botswana", "Mozambique"], correct: 1 },
+                { question: "What is the capital of New Zealand?", options: ["Auckland", "Christchurch", "Wellington", "Hamilton"], correct: 2 },
+                { question: "Which sea is the saltiest?", options: ["Dead Sea", "Red Sea", "Baltic Sea", "Caspian Sea"], correct: 0 },
+                { question: "What is the largest country in South America?", options: ["Argentina", "Peru", "Colombia", "Brazil"], correct: 3 },
+                { question: "Which river flows through Paris?", options: ["Thames", "Rhine", "Seine", "Danube"], correct: 2 },
+                { question: "What is the most populous city in the world?", options: ["Shanghai", "Tokyo", "Delhi", "São Paulo"], correct: 1 },
+                { question: "Which country is shaped like a boot?", options: ["Greece", "Spain", "Italy", "Portugal"], correct: 2 }
+            ],
+            'Sports': [
+                { question: "How many players are on a basketball team on the court?", options: ["4", "5", "6", "7"], correct: 1 },
+                { question: "Which sport is known as 'The Beautiful Game'?", options: ["Basketball", "Tennis", "Football/Soccer", "Cricket"], correct: 2 },
+                { question: "How often are the Summer Olympics held?", options: ["Every 2 years", "Every 3 years", "Every 4 years", "Every 5 years"], correct: 2 },
+                { question: "Which country has won the most FIFA World Cups?", options: ["Germany", "Argentina", "Italy", "Brazil"], correct: 3 },
+                { question: "What is the maximum score possible in ten-pin bowling?", options: ["200", "250", "300", "350"], correct: 2 },
+                { question: "Which tennis tournament is played on clay courts?", options: ["Wimbledon", "US Open", "Australian Open", "French Open"], correct: 3 },
+                { question: "How many holes are there in a round of golf?", options: ["16", "18", "20", "22"], correct: 1 },
+                { question: "Which sport uses terms like 'slam dunk' and 'free throw'?", options: ["Volleyball", "Basketball", "Handball", "Water polo"], correct: 1 },
+                { question: "In which sport would you perform a slam?", options: ["Tennis", "Badminton", "Volleyball", "All of the above"], correct: 3 },
+                { question: "How many minutes are in a soccer match?", options: ["80", "90", "100", "120"], correct: 1 },
+                { question: "Which sport is Michael Jordan famous for?", options: ["Baseball", "Football", "Basketball", "Tennis"], correct: 2 },
+                { question: "What is the diameter of a basketball hoop?", options: ["16 inches", "18 inches", "20 inches", "22 inches"], correct: 1 },
+                { question: "Which country originated the sport of rugby?", options: ["Australia", "New Zealand", "South Africa", "England"], correct: 3 },
+                { question: "How many periods are in an ice hockey game?", options: ["2", "3", "4", "5"], correct: 1 },
+                { question: "Which sport uses a shuttlecock?", options: ["Tennis", "Squash", "Badminton", "Table tennis"], correct: 2 },
+                { question: "What is the standard distance of a marathon?", options: ["26.2 miles", "25 miles", "27 miles", "24.8 miles"], correct: 0 },
+                { question: "In baseball, how many strikes result in an out?", options: ["2", "3", "4", "5"], correct: 1 },
+                { question: "Which sport is Tiger Woods famous for?", options: ["Tennis", "Golf", "Swimming", "Athletics"], correct: 1 },
+                { question: "How many players are on a volleyball team on the court?", options: ["4", "5", "6", "7"], correct: 2 },
+                { question: "Which swimming stroke is the fastest?", options: ["Breaststroke", "Backstroke", "Butterfly", "Freestyle"], correct: 3 }
+            ],
+            'Bollywood': [
+                { question: "Which actor is known as the 'King of Bollywood'?", options: ["Amitabh Bachchan", "Shah Rukh Khan", "Aamir Khan", "Salman Khan"], correct: 1 },
+                { question: "Who directed the movie '3 Idiots'?", options: ["Karan Johar", "Rajkumar Hirani", "Anurag Kashyap", "Imtiaz Ali"], correct: 1 },
+                { question: "Which was the first Indian film to win an Academy Award?", options: ["Mother India", "Salaam Bombay", "Lagaan", "Slumdog Millionaire"], correct: 3 },
+                { question: "Who is known as the 'Tragedy King' of Bollywood?", options: ["Dilip Kumar", "Raj Kapoor", "Dev Anand", "Ashok Kumar"], correct: 0 },
+                { question: "Which actress is called the 'Dream Girl'?", options: ["Madhuri Dixit", "Sridevi", "Hema Malini", "Rekha"], correct: 2 },
+                { question: "In which movie did Amitabh Bachchan play a double role as father and son?", options: ["Don", "Sholay", "Coolie", "Laawaris"], correct: 3 },
+                { question: "Who composed music for the movie 'Mughal-E-Azam'?", options: ["Lata Mangeshkar", "Naushad", "R.D. Burman", "A.R. Rahman"], correct: 1 },
+                { question: "Which movie features the song 'Jai Ho'?", options: ["3 Idiots", "Rang De Basanti", "Slumdog Millionaire", "Zindagi Na Milegi Dobara"], correct: 2 },
+                { question: "Who directed the movie 'Sholay'?", options: ["Yash Chopra", "Ramesh Sippy", "Raj Kapoor", "Guru Dutt"], correct: 1 },
+                { question: "Which actress won the National Film Award for 'Queen'?", options: ["Deepika Padukone", "Priyanka Chopra", "Kangana Ranaut", "Alia Bhatt"], correct: 2 },
+                { question: "Who is the highest-paid actor in Bollywood currently?", options: ["Shah Rukh Khan", "Salman Khan", "Akshay Kumar", "Aamir Khan"], correct: 2 },
+                { question: "Which movie won the Filmfare Award for Best Film in 2019?", options: ["Gully Boy", "Uri", "Article 15", "Kabir Singh"], correct: 0 },
+                { question: "Who sang the famous song 'Ae Mere Watan Ke Logo'?", options: ["Asha Bhosle", "Lata Mangeshkar", "Geeta Dutt", "Shamshad Begum"], correct: 1 },
+                { question: "Which actor made his debut with 'Student of the Year'?", options: ["Varun Dhawan", "Sidharth Malhotra", "Both A and B", "Arjun Kapoor"], correct: 2 },
+                { question: "Who directed 'Dangal'?", options: ["Aamir Khan", "Nitesh Tiwari", "Rajkumar Hirani", "Imtiaz Ali"], correct: 1 },
+                { question: "Which movie is based on the novel 'The White Tiger'?", options: ["Slumdog Millionaire", "The White Tiger", "Lion", "Life of Pi"], correct: 1 },
+                { question: "Who is known as the 'Perfectionist' of Bollywood?", options: ["Shah Rukh Khan", "Aamir Khan", "Salman Khan", "Hrithik Roshan"], correct: 1 },
+                { question: "Which was Rajesh Khanna's debut film?", options: ["Aradhana", "Amar Prem", "Aap Ki Kasam", "Daag"], correct: 2 },
+                { question: "Who directed the movie 'Zindagi Na Milegi Dobara'?", options: ["Zoya Akhtar", "Farhan Akhtar", "Karan Johar", "Imtiaz Ali"], correct: 0 },
+                { question: "Which movie features the dialogue 'Mogambo khush hua'?", options: ["Sholay", "Mr. India", "Tezaab", "Ram Lakhan"], correct: 1 }
+            ],
+            'Hollywood': [
+                { question: "Who directed the movie 'Titanic'?", options: ["Steven Spielberg", "James Cameron", "Christopher Nolan", "Martin Scorsese"], correct: 1 },
+                { question: "Which actor played Iron Man in the Marvel movies?", options: ["Chris Evans", "Chris Hemsworth", "Robert Downey Jr.", "Mark Ruffalo"], correct: 2 },
+                { question: "Who won the Oscar for Best Actor in 2020?", options: ["Leonardo DiCaprio", "Joaquin Phoenix", "Adam Driver", "Antonio Banderas"], correct: 1 },
+                { question: "Which movie won the Oscar for Best Picture in 2020?", options: ["1917", "Joker", "Parasite", "Once Upon a Time in Hollywood"], correct: 2 },
+                { question: "Who directed 'The Dark Knight'?", options: ["Christopher Nolan", "Zack Snyder", "Tim Burton", "Sam Raimi"], correct: 0 },
+                { question: "Which actress played Wonder Woman?", options: ["Scarlett Johansson", "Gal Gadot", "Margot Robbie", "Brie Larson"], correct: 1 },
+                { question: "Who composed the music for 'Star Wars'?", options: ["Hans Zimmer", "John Williams", "Danny Elfman", "Alan Silvestri"], correct: 1 },
+                { question: "Which movie features the line 'May the Force be with you'?", options: ["Star Trek", "Star Wars", "Guardians of the Galaxy", "Avatar"], correct: 1 },
+                { question: "Who played the Joker in 'The Dark Knight'?", options: ["Jack Nicholson", "Joaquin Phoenix", "Heath Ledger", "Jared Leto"], correct: 2 },
+                { question: "Which movie is the highest-grossing film of all time?", options: ["Titanic", "Avatar", "Avengers: Endgame", "Star Wars: The Force Awakens"], correct: 2 },
+                { question: "Who directed 'Pulp Fiction'?", options: ["Martin Scorsese", "Quentin Tarantino", "David Fincher", "Paul Thomas Anderson"], correct: 1 },
+                { question: "Which actress won the Oscar for 'La La Land'?", options: ["Emma Stone", "Natalie Portman", "Amy Adams", "She didn't win"], correct: 0 },
+                { question: "Who played Forrest Gump?", options: ["Tom Cruise", "Tom Hanks", "Brad Pitt", "Will Smith"], correct: 1 },
+                { question: "Which movie features the song 'My Heart Will Go On'?", options: ["The Bodyguard", "Ghost", "Titanic", "Dirty Dancing"], correct: 2 },
+                { question: "Who directed 'Inception'?", options: ["Denis Villeneuve", "Christopher Nolan", "Ridley Scott", "David Fincher"], correct: 1 },
+                { question: "Which actor played Spider-Man in the original trilogy?", options: ["Andrew Garfield", "Tom Holland", "Tobey Maguire", "Jake Gyllenhaal"], correct: 2 },
+                { question: "Who won the Oscar for Best Director for 'Birdman'?", options: ["Alejandro González Iñárritu", "Christopher Nolan", "Damien Chazelle", "Barry Jenkins"], correct: 0 },
+                { question: "Which movie features the character Hermione Granger?", options: ["The Chronicles of Narnia", "Harry Potter", "Percy Jackson", "The Hunger Games"], correct: 1 },
+                { question: "Who played the lead role in 'John Wick'?", options: ["Keanu Reeves", "Tom Cruise", "Jason Statham", "Liam Neeson"], correct: 0 },
+                { question: "Which movie won the first ever Academy Award for Best Picture?", options: ["Wings", "Sunrise", "The Jazz Singer", "7th Heaven"], correct: 0 }
+            ],
+            'Technology': [
+                { question: "Who founded Microsoft?", options: ["Steve Jobs", "Bill Gates", "Larry Page", "Mark Zuckerberg"], correct: 1 },
+                { question: "What does 'AI' stand for?", options: ["Automated Intelligence", "Artificial Intelligence", "Advanced Intelligence", "Assisted Intelligence"], correct: 1 },
+                { question: "Which company developed the Android operating system?", options: ["Apple", "Microsoft", "Google", "Samsung"], correct: 2 },
+                { question: "What year was the first iPhone released?", options: ["2006", "2007", "2008", "2009"], correct: 1 },
+                { question: "What does 'URL' stand for?", options: ["Universal Resource Locator", "Uniform Resource Locator", "Universal Reference Link", "Uniform Reference Locator"], correct: 1 },
+                { question: "Which programming language is known for its use in data science?", options: ["Java", "C++", "Python", "JavaScript"], correct: 2 },
+                { question: "What does 'IoT' stand for?", options: ["Internet of Things", "International of Technology", "Interface of Technology", "Internet of Technology"], correct: 0 },
+                { question: "Who founded Tesla?", options: ["Bill Gates", "Elon Musk", "Jeff Bezos", "Larry Page"], correct: 1 },
+                { question: "What is the most popular social media platform?", options: ["Twitter", "Instagram", "Facebook", "TikTok"], correct: 2 },
+                { question: "Which company created the first commercial computer?", options: ["IBM", "Microsoft", "Apple", "Intel"], correct: 0 },
+                { question: "What does 'VR' stand for?", options: ["Virtual Reality", "Visual Reality", "Video Reality", "Variable Reality"], correct: 0 },
+                { question: "Which search engine is most widely used?", options: ["Bing", "Yahoo", "Google", "DuckDuckGo"], correct: 2 },
+                { question: "What is the name of Apple's virtual assistant?", options: ["Alexa", "Cortana", "Siri", "Google Assistant"], correct: 2 },
+                { question: "Which company owns WhatsApp?", options: ["Google", "Apple", "Microsoft", "Facebook/Meta"], correct: 3 },
+                { question: "What does 'RAM' stand for?", options: ["Random Access Memory", "Read Access Memory", "Rapid Access Memory", "Real Access Memory"], correct: 0 },
+                { question: "Which programming language is primarily used for web development?", options: ["Python", "Java", "JavaScript", "C++"], correct: 2 },
+                { question: "What is the latest version of USB?", options: ["USB 3.0", "USB 3.1", "USB 4.0", "USB-C"], correct: 2 },
+                { question: "Which company developed the Java programming language?", options: ["Microsoft", "Sun Microsystems", "Apple", "IBM"], correct: 1 },
+                { question: "What does 'GPU' stand for?", options: ["General Processing Unit", "Graphics Processing Unit", "Global Processing Unit", "Gaming Processing Unit"], correct: 1 },
+                { question: "Which cloud service is provided by Amazon?", options: ["Azure", "Google Cloud", "AWS", "iCloud"], correct: 2 }
+            ],
+            'Mathematics': [
+                { question: "What is the value of π (pi) approximately?", options: ["3.14", "2.71", "1.41", "1.73"], correct: 0 },
+                { question: "What is 12² (12 squared)?", options: ["124", "144", "134", "154"], correct: 1 },
+                { question: "What is the sum of angles in a triangle?", options: ["90°", "180°", "270°", "360°"], correct: 1 },
+                { question: "What is the square root of 64?", options: ["6", "7", "8", "9"], correct: 2 },
+                { question: "What is 15% of 200?", options: ["25", "30", "35", "40"], correct: 1 },
+                { question: "What is the next prime number after 7?", options: ["9", "10", "11", "12"], correct: 2 },
+                { question: "What is 8 × 7?", options: ["54", "56", "58", "64"], correct: 1 },
+                { question: "What is the area of a circle with radius 5?", options: ["25π", "10π", "15π", "20π"], correct: 0 },
+                { question: "What is the value of 2³ (2 cubed)?", options: ["6", "8", "9", "12"], correct: 1 },
+                { question: "What is 100 ÷ 4?", options: ["20", "25", "30", "35"], correct: 1 },
+                { question: "What is the perimeter of a square with side 6?", options: ["12", "18", "24", "36"], correct: 2 },
+                { question: "What is 0.25 as a fraction?", options: ["1/2", "1/3", "1/4", "1/5"], correct: 2 },
+                { question: "What is the factorial of 4 (4!)?", options: ["12", "16", "20", "24"], correct: 3 },
+                { question: "What is the hypotenuse of a right triangle with sides 3 and 4?", options: ["5", "6", "7", "8"], correct: 0 },
+                { question: "What is 2/3 + 1/3?", options: ["2/6", "3/6", "3/3", "4/3"], correct: 2 },
+                { question: "What is the median of 3, 7, 2, 9, 5?", options: ["3", "5", "7", "9"], correct: 1 },
+                { question: "What is 20% of 50?", options: ["8", "10", "12", "15"], correct: 1 },
+                { question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], correct: 1 },
+                { question: "What is the cube root of 27?", options: ["2", "3", "4", "5"], correct: 1 },
+                { question: "What is the slope of a horizontal line?", options: ["-1", "0", "1", "Undefined"], correct: 1 }
+            ],
+            'Indian Culture': [
+                { question: "Which festival is known as the Festival of Lights?", options: ["Holi", "Diwali", "Dussehra", "Navratri"], correct: 1 },
+                { question: "What is the national flower of India?", options: ["Rose", "Lotus", "Jasmine", "Marigold"], correct: 1 },
+                { question: "Which classical dance form originated in Kerala?", options: ["Bharatanatyam", "Kathak", "Kathakali", "Odissi"], correct: 2 },
+                { question: "What is the traditional greeting in India?", options: ["Hello", "Namaste", "Salaam", "Adaab"], correct: 1 },
+                { question: "Which is the oldest religion in India?", options: ["Buddhism", "Jainism", "Hinduism", "Sikhism"], correct: 2 },
+                { question: "What is the national animal of India?", options: ["Lion", "Tiger", "Elephant", "Peacock"], correct: 1 },
+                { question: "Which festival celebrates the victory of good over evil?", options: ["Diwali", "Dussehra", "Holi", "Karva Chauth"], correct: 1 },
+                { question: "What is the traditional Indian system of medicine called?", options: ["Ayurveda", "Homeopathy", "Unani", "Siddha"], correct: 0 },
+                { question: "Which river is considered most sacred in Hinduism?", options: ["Yamuna", "Ganga", "Godavari", "Narmada"], correct: 1 },
+                { question: "What is the festival of colors called?", options: ["Diwali", "Holi", "Navratri", "Karva Chauth"], correct: 1 },
+                { question: "Which classical dance is from Tamil Nadu?", options: ["Kathak", "Bharatanatyam", "Kuchipudi", "Manipuri"], correct: 1 },
+                { question: "What is the national bird of India?", options: ["Eagle", "Peacock", "Sparrow", "Crow"], correct: 1 },
+                { question: "Which epic tells the story of Lord Rama?", options: ["Mahabharata", "Ramayana", "Bhagavad Gita", "Puranas"], correct: 1 },
+                { question: "What is the traditional dress for Indian men?", options: ["Dhoti", "Kurta", "Both A and B", "Lungi"], correct: 2 },
+                { question: "Which spice is known as the 'Queen of Spices'?", options: ["Turmeric", "Cardamom", "Black pepper", "Cinnamon"], correct: 1 },
+                { question: "What is yoga originally meant for?", options: ["Exercise", "Spiritual practice", "Dance", "Meditation only"], correct: 1 },
+                { question: "Which festival marks the beginning of the harvest season?", options: ["Makar Sankranti", "Baisakhi", "Pongal", "All of the above"], correct: 3 },
+                { question: "What does 'Atithi Devo Bhava' mean?", options: ["God is great", "Guest is God", "Truth is God", "Work is worship"], correct: 1 },
+                { question: "Which ancient university was located in Bihar?", options: ["Takshashila", "Nalanda", "Vikramashila", "Both B and C"], correct: 3 },
+                { question: "What is the traditional art of henna painting called?", options: ["Rangoli", "Mehendi", "Kolam", "Alpana"], correct: 1 }
+            ],
+            'Space & Universe': [
+                { question: "What is the closest star to Earth?", options: ["Alpha Centauri", "Sirius", "The Sun", "Proxima Centauri"], correct: 2 },
+                { question: "How many planets are in our solar system?", options: ["7", "8", "9", "10"], correct: 1 },
+                { question: "What is the largest planet in our solar system?", options: ["Saturn", "Jupiter", "Neptune", "Uranus"], correct: 1 },
+                { question: "Which planet is known for its rings?", options: ["Jupiter", "Saturn", "Uranus", "All of the above"], correct: 3 },
+                { question: "What is a light-year?", options: ["Time", "Distance", "Speed", "Energy"], correct: 1 },
+                { question: "Which planet has the most moons?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], correct: 1 },
+                { question: "What is the name of our galaxy?", options: ["Andromeda", "Milky Way", "Whirlpool", "Sombrero"], correct: 1 },
+                { question: "Which planet is called the 'Morning Star'?", options: ["Mars", "Venus", "Mercury", "Jupiter"], correct: 1 },
+                { question: "What causes tides on Earth?", options: ["Sun", "Moon", "Wind", "Earth's rotation"], correct: 1 },
+                { question: "Which space agency landed the first humans on the moon?", options: ["ESA", "NASA", "Roscosmos", "ISRO"], correct: 1 },
+                { question: "What is the hottest planet in our solar system?", options: ["Mercury", "Venus", "Mars", "Jupiter"], correct: 1 },
+                { question: "How long does it take for light from the Sun to reach Earth?", options: ["8 minutes", "1 hour", "1 day", "1 second"], correct: 0 },
+                { question: "What is a black hole?", options: ["Empty space", "Collapsed star", "Dark matter", "Asteroid"], correct: 1 },
+                { question: "Which planet rotates on its side?", options: ["Mars", "Jupiter", "Uranus", "Neptune"], correct: 2 },
+                { question: "What is the asteroid belt?", options: ["Ring around Earth", "Space between Mars and Jupiter", "Edge of solar system", "Moon's orbit"], correct: 1 },
+                { question: "Which comet is visible from Earth every 76 years?", options: ["Hale-Bopp", "Halley's Comet", "Hyakutake", "NEOWISE"], correct: 1 },
+                { question: "What is the International Space Station?", options: ["Moon base", "Mars rover", "Orbiting laboratory", "Telescope"], correct: 2 },
+                { question: "Which planet has a day longer than its year?", options: ["Mercury", "Venus", "Mars", "Jupiter"], correct: 1 },
+                { question: "What is the Great Red Spot?", options: ["Mars feature", "Jupiter's storm", "Saturn's ring", "Sun's spot"], correct: 1 },
+                { question: "How many Earth days is one year on Mars?", options: ["365", "687", "225", "88"], correct: 1 }
+            ],
+            'Computer Science': [
+                { question: "What does 'CPU' stand for?", options: ["Central Processing Unit", "Computer Processing Unit", "Core Processing Unit", "Central Program Unit"], correct: 0 },
+                { question: "Which of these is a programming language?", options: ["HTML", "Python", "CSS", "HTTP"], correct: 1 },
+                { question: "What is the binary representation of decimal 5?", options: ["101", "110", "011", "100"], correct: 0 },
+                { question: "What does 'HTTP' stand for?", options: ["HyperText Transfer Protocol", "High Transfer Text Protocol", "HyperText Transport Protocol", "High Text Transfer Protocol"], correct: 0 },
+                { question: "Which sorting algorithm has the best average time complexity?", options: ["Bubble Sort", "Quick Sort", "Selection Sort", "Insertion Sort"], correct: 1 },
+                { question: "What is the purpose of an operating system?", options: ["Run applications", "Manage hardware", "Provide user interface", "All of the above"], correct: 3 },
+                { question: "What does 'SQL' stand for?", options: ["Structured Query Language", "Simple Query Language", "Standard Query Language", "System Query Language"], correct: 0 },
+                { question: "Which data structure follows LIFO principle?", options: ["Queue", "Stack", "Array", "Linked List"], correct: 1 },
+                { question: "What is the time complexity of binary search?", options: ["O(n)", "O(log n)", "O(n²)", "O(1)"], correct: 1 },
+                { question: "Which protocol is used for secure web browsing?", options: ["HTTP", "HTTPS", "FTP", "SMTP"], correct: 1 },
+                { question: "What is a compiler?", options: ["Hardware component", "Translates high-level code", "Database", "Operating system"], correct: 1 },
+                { question: "Which of these is NOT a database management system?", options: ["MySQL", "Oracle", "MongoDB", "JavaScript"], correct: 3 },
+                { question: "What does 'API' stand for?", options: ["Application Programming Interface", "Advanced Programming Interface", "Application Program Interface", "Automated Programming Interface"], correct: 0 },
+                { question: "Which algorithm is used for shortest path in graphs?", options: ["BFS", "DFS", "Dijkstra's", "Prim's"], correct: 2 },
+                { question: "What is the maximum number that can be stored in 8 bits?", options: ["127", "255", "256", "128"], correct: 1 },
+                { question: "Which programming paradigm does Java primarily follow?", options: ["Procedural", "Functional", "Object-Oriented", "Logic"], correct: 2 },
+                { question: "What is the purpose of DNS?", options: ["Security", "Translate domain names to IP", "File transfer", "Email"], correct: 1 },
+                { question: "Which data structure is best for implementing recursion?", options: ["Array", "Queue", "Stack", "Tree"], correct: 2 },
+                { question: "What does 'RAM' stand for?", options: ["Random Access Memory", "Read Access Memory", "Rapid Access Memory", "Real Access Memory"], correct: 0 },
+                { question: "Which sorting algorithm is most efficient for small datasets?", options: ["Merge Sort", "Quick Sort", "Insertion Sort", "Heap Sort"], correct: 2 }
+            ],
+            'English Grammar': [
+                { question: "What is the plural of 'child'?", options: ["Childs", "Children", "Childrens", "Child"], correct: 1 },
+                { question: "Which is the correct past tense of 'go'?", options: ["Goed", "Gone", "Went", "Going"], correct: 2 },
+                { question: "What type of word is 'quickly'?", options: ["Noun", "Verb", "Adjective", "Adverb"], correct: 3 },
+                { question: "Which sentence is grammatically correct?", options: ["She don't like apples", "She doesn't like apples", "She not like apples", "She no like apples"], correct: 1 },
+                { question: "What is the superlative form of 'good'?", options: ["Gooder", "Goodest", "Better", "Best"], correct: 3 },
+                { question: "Which word is a conjunction?", options: ["Beautiful", "Quickly", "And", "Table"], correct: 2 },
+                { question: "What is the past participle of 'eat'?", options: ["Ate", "Eaten", "Eating", "Eats"], correct: 1 },
+                { question: "Which sentence uses correct punctuation?", options: ["Hello, how are you.", "Hello how are you?", "Hello, how are you?", "Hello; how are you."], correct: 2 },
+                { question: "What type of pronoun is 'myself'?", options: ["Personal", "Possessive", "Reflexive", "Demonstrative"], correct: 2 },
+                { question: "Which is the correct comparative form of 'bad'?", options: ["Badder", "More bad", "Worse", "Worst"], correct: 2 },
+                { question: "What is the plural of 'sheep'?", options: ["Sheeps", "Sheep", "Sheepies", "Sheepes"], correct: 1 },
+                { question: "Which word is an interjection?", options: ["Run", "Beautiful", "Wow", "Table"], correct: 2 },
+                { question: "What is the present continuous form of 'write'?", options: ["Wrote", "Written", "Writing", "Writes"], correct: 2 },
+                { question: "Which sentence is in passive voice?", options: ["She wrote a letter", "A letter was written by her", "She is writing", "She will write"], correct: 1 },
+                { question: "What is the opposite of 'antonym'?", options: ["Homonym", "Synonym", "Acronym", "Pseudonym"], correct: 1 },
+                { question: "Which is the correct possessive form?", options: ["The dogs bone", "The dog's bone", "The dogs' bone", "The dogs's bone"], correct: 1 },
+                { question: "What type of sentence is 'Close the door!'?", options: ["Declarative", "Interrogative", "Imperative", "Exclamatory"], correct: 2 },
+                { question: "Which word is spelled correctly?", options: ["Recieve", "Receive", "Receve", "Receiv"], correct: 1 },
+                { question: "What is the past tense of 'swim'?", options: ["Swam", "Swum", "Swimmed", "Swimming"], correct: 0 },
+                { question: "Which is a compound sentence?", options: ["I went to the store", "I went to the store, and I bought milk", "Because I was hungry", "What a beautiful day!"], correct: 1 }
+            ],
+            'Capitals & Countries': [
+                { question: "What is the capital of France?", options: ["Lyon", "Marseille", "Paris", "Nice"], correct: 2 },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], correct: 2 },
+                { question: "Which country's capital is Ottawa?", options: ["USA", "Canada", "Mexico", "Brazil"], correct: 1 },
+                { question: "What is the capital of Japan?", options: ["Osaka", "Kyoto", "Tokyo", "Hiroshima"], correct: 2 },
+                { question: "What is the capital of Egypt?", options: ["Alexandria", "Cairo", "Luxor", "Aswan"], correct: 1 },
+                { question: "Which country's capital is Bern?", options: ["Austria", "Switzerland", "Netherlands", "Belgium"], correct: 1 },
+                { question: "What is the capital of South Korea?", options: ["Busan", "Seoul", "Incheon", "Daegu"], correct: 1 },
+                { question: "What is the capital of Argentina?", options: ["Buenos Aires", "Córdoba", "Rosario", "Mendoza"], correct: 0 },
+                { question: "Which country's capital is Bangkok?", options: ["Vietnam", "Cambodia", "Thailand", "Laos"], correct: 2 },
+                { question: "What is the capital of Nigeria?", options: ["Lagos", "Abuja", "Kano", "Ibadan"], correct: 1 },
+                { question: "What is the capital of Russia?", options: ["St. Petersburg", "Moscow", "Novosibirsk", "Yekaterinburg"], correct: 1 },
+                { question: "Which country's capital is Stockholm?", options: ["Norway", "Denmark", "Finland", "Sweden"], correct: 3 },
+                { question: "What is the capital of Chile?", options: ["Valparaíso", "Santiago", "Concepción", "La Serena"], correct: 1 },
+                { question: "What is the capital of Kenya?", options: ["Mombasa", "Nairobi", "Kisumu", "Nakuru"], correct: 1 },
+                { question: "Which country's capital is Vienna?", options: ["Switzerland", "Austria", "Hungary", "Czech Republic"], correct: 1 },
+                { question: "What is the capital of Morocco?", options: ["Casablanca", "Marrakech", "Rabat", "Fez"], correct: 2 },
+                { question: "What is the capital of Peru?", options: ["Cusco", "Arequipa", "Lima", "Trujillo"], correct: 2 },
+                { question: "Which country's capital is Copenhagen?", options: ["Sweden", "Norway", "Finland", "Denmark"], correct: 3 },
+                { question: "What is the capital of Vietnam?", options: ["Ho Chi Minh City", "Hanoi", "Da Nang", "Hue"], correct: 1 },
+                { question: "What is the capital of Turkey?", options: ["Istanbul", "Ankara", "Izmir", "Antalya"], correct: 1 }
+            ],
+            'Mythology': [
+                { question: "Who is the king of gods in Greek mythology?", options: ["Poseidon", "Hades", "Zeus", "Apollo"], correct: 2 },
+                { question: "In Hindu mythology, who is known as the destroyer?", options: ["Brahma", "Vishnu", "Shiva", "Indra"], correct: 2 },
+                { question: "What is Thor's hammer called in Norse mythology?", options: ["Gungnir", "Mjolnir", "Gram", "Laevateinn"], correct: 1 },
+                { question: "Who is the messenger of gods in Greek mythology?", options: ["Apollo", "Hermes", "Ares", "Dionysus"], correct: 1 },
+                { question: "In Egyptian mythology, who is the god of the dead?", options: ["Ra", "Anubis", "Horus", "Osiris"], correct: 3 },
+                { question: "Who is Hanuman's devotee in Hindu mythology?", options: ["Krishna", "Shiva", "Rama", "Vishnu"], correct: 2 },
+                { question: "What creature is half-man, half-horse in Greek mythology?", options: ["Minotaur", "Centaur", "Satyr", "Cyclops"], correct: 1 },
+                { question: "In Norse mythology, what is Valhalla?", options: ["A weapon", "A tree", "Hall of the slain", "A ship"], correct: 2 },
+                { question: "Who opened the box that released evils into the world?", options: ["Pandora", "Medusa", "Cassandra", "Helen"], correct: 0 },
+                { question: "In Hindu mythology, who is the preserver?", options: ["Brahma", "Vishnu", "Shiva", "Ganesha"], correct: 1 },
+                { question: "What is the name of Odin's eight-legged horse?", options: ["Fenrir", "Sleipnir", "Jormungandr", "Huginn"], correct: 1 },
+                { question: "Who is the goddess of wisdom in Greek mythology?", options: ["Hera", "Aphrodite", "Artemis", "Athena"], correct: 3 },
+                { question: "In Roman mythology, who is the god of war?", options: ["Jupiter", "Neptune", "Mars", "Apollo"], correct: 2 },
+                { question: "What did Prometheus steal from the gods?", options: ["Gold", "Fire", "Wine", "Knowledge"], correct: 1 },
+                { question: "Who is the elephant-headed god in Hindu mythology?", options: ["Hanuman", "Ganesha", "Kartikeya", "Surya"], correct: 1 },
+                { question: "In Greek mythology, who turned everything he touched to gold?", options: ["Midas", "Croesus", "Tantalus", "Sisyphus"], correct: 0 },
+                { question: "What is the name of the Norse tree of life?", options: ["Yggdrasil", "Glasir", "Læraðr", "Mimameiðr"], correct: 0 },
+                { question: "Who is the Roman equivalent of Greek goddess Artemis?", options: ["Venus", "Minerva", "Diana", "Juno"], correct: 2 },
+                { question: "In Hindu mythology, who is the god of destruction and recreation?", options: ["Brahma", "Vishnu", "Shiva", "Krishna"], correct: 2 },
+                { question: "What creature has the head of a bull and body of a man?", options: ["Centaur", "Minotaur", "Satyr", "Sphinx"], correct: 1 }
+            ],
+            'Politics': [
+                { question: "How many members are there in the Lok Sabha?", options: ["543", "545", "550", "552"], correct: 1 },
+                { question: "Who is the current President of the United States?", options: ["Donald Trump", "Joe Biden", "Barack Obama", "Kamala Harris"], correct: 1 },
+                { question: "What is the minimum age to become President of India?", options: ["25", "30", "35", "40"], correct: 2 },
+                { question: "Which party symbol is 'Lotus'?", options: ["Congress", "BJP", "AAP", "BSP"], correct: 1 },
+                { question: "How many years is the term of a Lok Sabha?", options: ["4", "5", "6", "7"], correct: 1 },
+                { question: "Who appoints the Chief Justice of India?", options: ["Prime Minister", "President", "Parliament", "Supreme Court"], correct: 1 },
+                { question: "What is the upper house of Indian Parliament called?", options: ["Lok Sabha", "Rajya Sabha", "Vidhan Sabha", "Vidhan Parishad"], correct: 1 },
+                { question: "Which article of Indian Constitution deals with Right to Education?", options: ["Article 19", "Article 21A", "Article 25", "Article 32"], correct: 1 },
+                { question: "Who was the first Prime Minister of India?", options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Sardar Patel", "Subhas Chandra Bose"], correct: 1 },
+                { question: "What is the maximum strength of Rajya Sabha?", options: ["245", "250", "255", "260"], correct: 1 },
+                { question: "Which country has the largest democracy in the world?", options: ["USA", "China", "India", "Brazil"], correct: 2 },
+                { question: "How many fundamental rights are there in Indian Constitution?", options: ["5", "6", "7", "8"], correct: 1 },
+                { question: "Who is known as the 'Father of Indian Constitution'?", options: ["Mahatma Gandhi", "B.R. Ambedkar", "Jawaharlal Nehru", "Sardar Patel"], correct: 1 },
+                { question: "What is the term of office for President of India?", options: ["4 years", "5 years", "6 years", "7 years"], correct: 1 },
+                { question: "Which body conducts elections in India?", options: ["Parliament", "Supreme Court", "Election Commission", "President"], correct: 2 },
+                { question: "What is the minimum age to vote in India?", options: ["16", "18", "21", "25"], correct: 1 },
+                { question: "Who is the head of state in India?", options: ["Prime Minister", "President", "Chief Justice", "Speaker"], correct: 1 },
+                { question: "Which amendment introduced GST in India?", options: ["100th", "101st", "102nd", "103rd"], correct: 1 },
+                { question: "What does 'PIL' stand for in legal terms?", options: ["Public Interest Litigation", "Private Interest Litigation", "Political Interest Litigation", "Personal Interest Litigation"], correct: 0 },
+                { question: "How many schedules are there in Indian Constitution?", options: ["10", "11", "12", "13"], correct: 2 }
+            ],
+            'Current Affairs': [
+                { question: "Who won the Nobel Peace Prize in 2023?", options: ["Narges Mohammadi", "Maria Ressa", "Dmitry Muratov", "World Food Programme"], correct: 0 },
+                { question: "Which country hosted the G20 summit in 2023?", options: ["Indonesia", "India", "Brazil", "South Africa"], correct: 1 },
+                { question: "What is the name of India's lunar mission that landed on the Moon?", options: ["Chandrayaan-2", "Chandrayaan-3", "Mangalyaan", "Aditya-L1"], correct: 1 },
+                { question: "Who became Twitter's CEO after Elon Musk?", options: ["Linda Yaccarino", "Parag Agrawal", "Jack Dorsey", "Susan Wojcicki"], correct: 0 },
+                { question: "Which AI chatbot was launched by OpenAI?", options: ["Bard", "ChatGPT", "Claude", "Copilot"], correct: 1 },
+                { question: "Who won the 2023 Cricket World Cup?", options: ["India", "Australia", "England", "New Zealand"], correct: 1 },
+                { question: "Which company became the most valuable company in 2023?", options: ["Apple", "Microsoft", "Saudi Aramco", "NVIDIA"], correct: 0 },
+                { question: "What is the new name of Twitter?", options: ["Meta", "X", "Threads", "Blue"], correct: 1 },
+                { question: "Who won the 2023 Formula 1 World Championship?", options: ["Lewis Hamilton", "Max Verstappen", "Charles Leclerc", "George Russell"], correct: 1 },
+                { question: "Which country left the European Union completely?", options: ["Norway", "Switzerland", "United Kingdom", "Iceland"], correct: 2 },
+                { question: "What is the name of Meta's new social media platform?", options: ["Instagram Reels", "Threads", "WhatsApp Status", "Facebook Stories"], correct: 1 },
+                { question: "Who is the current Secretary-General of the United Nations?", options: ["Ban Ki-moon", "António Guterres", "Kofi Annan", "Boutros Boutros-Ghali"], correct: 1 },
+                { question: "Which cryptocurrency reached an all-time high in 2021?", options: ["Ethereum", "Bitcoin", "Dogecoin", "Cardano"], correct: 1 },
+                { question: "What is India's digital payment system called?", options: ["PhonePe", "Paytm", "UPI", "Google Pay"], correct: 2 },
+                { question: "Which streaming service has the most subscribers globally?", options: ["Amazon Prime", "Disney+", "Netflix", "HBO Max"], correct: 2 },
+                { question: "Who is the richest person in the world as of 2023?", options: ["Jeff Bezos", "Elon Musk", "Bill Gates", "Warren Buffett"], correct: 1 },
+                { question: "What is the minimum wage in India (as per latest revision)?", options: ["₹100", "₹150", "₹176", "₹200"], correct: 2 },
+                { question: "Which country has banned TikTok completely?", options: ["USA", "India", "Australia", "Canada"], correct: 1 },
+                { question: "What is the name of India's 5G rollout?", options: ["Digital India", "BharatNet", "Jio 5G", "Airtel 5G"], correct: 2 },
+                { question: "Who won the 2023 Nobel Prize in Literature?", options: ["Jon Fosse", "Annie Ernaux", "Abdulrazak Gurnah", "Louise Glück"], correct: 0 }
+            ],
+            'Business & Economy': [
+                { question: "What does 'GDP' stand for?", options: ["Gross Domestic Product", "General Domestic Product", "Global Domestic Product", "Government Domestic Product"], correct: 0 },
+                { question: "Which is the most valuable company by market cap?", options: ["Apple", "Microsoft", "Saudi Aramco", "Amazon"], correct: 0 },
+                { question: "What is inflation?", options: ["Decrease in prices", "Increase in prices", "Stable prices", "Currency devaluation"], correct: 1 },
+                { question: "Who founded Amazon?", options: ["Bill Gates", "Steve Jobs", "Jeff Bezos", "Elon Musk"], correct: 2 },
+                { question: "What does 'IPO' stand for?", options: ["Initial Public Offering", "International Public Offering", "Internal Public Offering", "Indian Public Offering"], correct: 0 },
+                { question: "Which country has the largest economy?", options: ["China", "USA", "Japan", "Germany"], correct: 1 },
+                { question: "What is the currency of European Union?", options: ["Pound", "Dollar", "Euro", "Franc"], correct: 2 },
+                { question: "Who founded Facebook?", options: ["Bill Gates", "Mark Zuckerberg", "Larry Page", "Jack Dorsey"], correct: 1 },
+                { question: "What does 'CEO' stand for?", options: ["Chief Executive Officer", "Chief Economic Officer", "Central Executive Officer", "Corporate Executive Officer"], correct: 0 },
+                { question: "Which stock exchange is the largest in the world?", options: ["NASDAQ", "NYSE", "London Stock Exchange", "Tokyo Stock Exchange"], correct: 1 },
+                { question: "What is the process of a company going public called?", options: ["Merger", "Acquisition", "IPO", "Bankruptcy"], correct: 2 },
+                { question: "Who is the founder of Tesla?", options: ["Jeff Bezos", "Elon Musk", "Bill Gates", "Warren Buffett"], correct: 1 },
+                { question: "What does 'FDI' stand for?", options: ["Foreign Direct Investment", "Foreign Domestic Investment", "Federal Direct Investment", "Financial Direct Investment"], correct: 0 },
+                { question: "Which Indian company is the largest by market cap?", options: ["TCS", "Reliance", "HDFC Bank", "Infosys"], correct: 1 },
+                { question: "What is a recession?", options: ["Economic growth", "Economic decline", "Stable economy", "High inflation"], correct: 1 },
+                { question: "Who founded Microsoft?", options: ["Steve Jobs", "Bill Gates", "Larry Ellison", "Michael Dell"], correct: 1 },
+                { question: "What is the main function of RBI?", options: ["Tax collection", "Monetary policy", "Defense", "Education"], correct: 1 },
+                { question: "Which company owns WhatsApp?", options: ["Google", "Apple", "Meta", "Microsoft"], correct: 2 },
+                { question: "What does 'SME' stand for?", options: ["Small and Medium Enterprises", "Small Manufacturing Enterprises", "Social Media Enterprises", "Software Management Enterprises"], correct: 0 },
+                { question: "Which is the oldest stock exchange in Asia?", options: ["BSE", "NSE", "Tokyo Stock Exchange", "Shanghai Stock Exchange"], correct: 0 }
+            ],
+            'Food & Health': [
+                { question: "Which vitamin is essential for blood clotting?", options: ["Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K"], correct: 3 },
+                { question: "What is the main source of Vitamin C?", options: ["Milk", "Citrus fruits", "Meat", "Grains"], correct: 1 },
+                { question: "Which mineral is important for bone health?", options: ["Iron", "Calcium", "Potassium", "Zinc"], correct: 1 },
+                { question: "What is the recommended daily water intake?", options: ["4-6 glasses", "6-8 glasses", "8-10 glasses", "10-12 glasses"], correct: 2 },
+                { question: "Which food group provides the most energy?", options: ["Proteins", "Carbohydrates", "Fats", "Vitamins"], correct: 1 },
+                { question: "What is BMI?", options: ["Blood Mass Index", "Body Mass Index", "Bone Mass Index", "Brain Mass Index"], correct: 1 },
+                { question: "Which nutrient helps in muscle building?", options: ["Carbohydrates", "Fats", "Proteins", "Vitamins"], correct: 2 },
+                { question: "What causes scurvy?", options: ["Vitamin A deficiency", "Vitamin B deficiency", "Vitamin C deficiency", "Vitamin D deficiency"], correct: 2 },
+                { question: "Which organ produces insulin?", options: ["Liver", "Kidney", "Pancreas", "Heart"], correct: 2 },
+                { question: "What is the normal human body temperature?", options: ["96.8°F", "98.6°F", "100.4°F", "102.2°F"], correct: 1 },
+                { question: "Which type of fat is considered healthy?", options: ["Saturated fat", "Trans fat", "Monounsaturated fat", "Hydrogenated fat"], correct: 2 },
+                { question: "What is the main function of fiber in diet?", options: ["Energy", "Digestion", "Muscle building", "Blood clotting"], correct: 1 },
+                { question: "Which disease is caused by iron deficiency?", options: ["Diabetes", "Anemia", "Scurvy", "Rickets"], correct: 1 },
+                { question: "What is the ideal blood pressure reading?", options: ["140/90", "120/80", "100/60", "160/100"], correct: 1 },
+                { question: "Which food is highest in potassium?", options: ["Apple", "Banana", "Orange", "Grapes"], correct: 1 },
+                { question: "What does 'organic food' mean?", options: ["Grown without chemicals", "Artificially grown", "Genetically modified", "Processed food"], correct: 0 },
+                { question: "Which vitamin is produced when skin is exposed to sunlight?", options: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"], correct: 3 },
+                { question: "What is the main cause of Type 2 diabetes?", options: ["Genetics only", "Poor diet and lifestyle", "Age", "Gender"], correct: 1 },
+                { question: "Which nutrient is most important for brain function?", options: ["Protein", "Carbohydrates", "Omega-3 fatty acids", "Vitamin C"], correct: 2 },
+                { question: "What is the best way to prevent heart disease?", options: ["Medication only", "Surgery", "Healthy diet and exercise", "Avoid water"], correct: 2 }
+            ],
+            'Animals & Nature': [
+                { question: "What is the largest mammal in the world?", options: ["African Elephant", "Blue Whale", "Giraffe", "Polar Bear"], correct: 1 },
+                { question: "Which bird cannot fly?", options: ["Eagle", "Penguin", "Sparrow", "Parrot"], correct: 1 },
+                { question: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], correct: 2 },
+                { question: "What is the fastest land animal?", options: ["Lion", "Cheetah", "Leopard", "Tiger"], correct: 1 },
+                { question: "Which animal is known as the 'Ship of the Desert'?", options: ["Horse", "Elephant", "Camel", "Donkey"], correct: 2 },
+                { question: "What do pandas mainly eat?", options: ["Fish", "Meat", "Bamboo", "Fruits"], correct: 2 },
+                { question: "Which snake is the longest in the world?", options: ["Python", "Anaconda", "Cobra", "Viper"], correct: 0 },
+                { question: "What is a group of lions called?", options: ["Pack", "Herd", "Pride", "Flock"], correct: 2 },
+                { question: "Which animal has the longest neck?", options: ["Elephant", "Giraffe", "Camel", "Ostrich"], correct: 1 },
+                { question: "What is the smallest bird in the world?", options: ["Sparrow", "Hummingbird", "Finch", "Wren"], correct: 1 },
+                { question: "Which animal is known for its intelligence?", options: ["Dog", "Cat", "Dolphin", "Horse"], correct: 2 },
+                { question: "What is the largest cat species?", options: ["Lion", "Tiger", "Leopard", "Jaguar"], correct: 1 },
+                { question: "Which animal can change its color?", options: ["Frog", "Chameleon", "Snake", "Lizard"], correct: 1 },
+                { question: "What is the national bird of India?", options: ["Eagle", "Peacock", "Parrot", "Dove"], correct: 1 },
+                { question: "Which animal is known as the 'King of the Jungle'?", options: ["Tiger", "Lion", "Elephant", "Leopard"], correct: 1 },
+                { question: "What is the largest fish in the ocean?", options: ["Great White Shark", "Whale Shark", "Blue Whale", "Tuna"], correct: 1 },
+                { question: "Which animal has black and white stripes?", options: ["Tiger", "Leopard", "Zebra", "Cheetah"], correct: 2 },
+                { question: "What is the process by which plants make food?", options: ["Respiration", "Photosynthesis", "Digestion", "Absorption"], correct: 1 },
+                { question: "Which gas do plants absorb from the atmosphere?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"], correct: 2 },
+                { question: "What is the largest rainforest in the world?", options: ["Congo", "Amazon", "Taiga", "Temperate"], correct: 1 }
+            ],
+            'Art & Literature': [
+                { question: "Who wrote 'Romeo and Juliet'?", options: ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"], correct: 1 },
+                { question: "Which artist painted 'The Starry Night'?", options: ["Pablo Picasso", "Leonardo da Vinci", "Vincent van Gogh", "Claude Monet"], correct: 2 },
+                { question: "Who wrote '1984'?", options: ["Aldous Huxley", "George Orwell", "Ray Bradbury", "H.G. Wells"], correct: 1 },
+                { question: "Which sculpture is located in Rio de Janeiro?", options: ["Statue of Liberty", "David", "Christ the Redeemer", "The Thinker"], correct: 2 },
+                { question: "Who wrote 'Pride and Prejudice'?", options: ["Emily Brontë", "Charlotte Brontë", "Jane Austen", "Virginia Woolf"], correct: 2 },
+                { question: "Which art movement was Pablo Picasso associated with?", options: ["Impressionism", "Cubism", "Surrealism", "Expressionism"], correct: 1 },
+                { question: "Who wrote 'To Kill a Mockingbird'?", options: ["Harper Lee", "Toni Morrison", "Maya Angelou", "Zora Neale Hurston"], correct: 0 },
+                { question: "Which museum houses the Mona Lisa?", options: ["British Museum", "Louvre", "Metropolitan Museum", "Uffizi Gallery"], correct: 1 },
+                { question: "Who wrote 'The Great Gatsby'?", options: ["Ernest Hemingway", "F. Scott Fitzgerald", "John Steinbeck", "William Faulkner"], correct: 1 },
+                { question: "Which artist cut off his own ear?", options: ["Pablo Picasso", "Salvador Dalí", "Vincent van Gogh", "Claude Monet"], correct: 2 },
+                { question: "Who wrote 'Harry Potter' series?", options: ["J.R.R. Tolkien", "C.S. Lewis", "J.K. Rowling", "Roald Dahl"], correct: 2 },
+                { question: "Which painting technique uses small dots of color?", options: ["Impressionism", "Pointillism", "Cubism", "Fauvism"], correct: 1 },
+                { question: "Who wrote 'The Lord of the Rings'?", options: ["J.K. Rowling", "C.S. Lewis", "J.R.R. Tolkien", "George R.R. Martin"], correct: 2 },
+                { question: "Which artist painted 'The Persistence of Memory'?", options: ["Pablo Picasso", "Salvador Dalí", "René Magritte", "Joan Miró"], correct: 1 },
+                { question: "Who wrote 'One Hundred Years of Solitude'?", options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Jorge Luis Borges", "Pablo Neruda"], correct: 1 },
+                { question: "Which art period came after the Renaissance?", options: ["Medieval", "Baroque", "Classical", "Romantic"], correct: 1 },
+                { question: "Who wrote 'The Catcher in the Rye'?", options: ["J.D. Salinger", "Jack Kerouac", "Allen Ginsberg", "William S. Burroughs"], correct: 0 },
+                { question: "Which architect designed the Sydney Opera House?", options: ["Frank Lloyd Wright", "Le Corbusier", "Jørn Utzon", "Zaha Hadid"], correct: 2 },
+                { question: "Who wrote 'Wuthering Heights'?", options: ["Charlotte Brontë", "Emily Brontë", "Anne Brontë", "Jane Austen"], correct: 1 },
+                { question: "Which movement did Andy Warhol belong to?", options: ["Abstract Expressionism", "Pop Art", "Minimalism", "Conceptual Art"], correct: 1 }
+            ],
+            'Famous Personalities': [
+                { question: "Who was known as the 'Iron Man of India'?", options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Sardar Vallabhbhai Patel", "Subhas Chandra Bose"], correct: 2 },
+                { question: "Who is known as the 'Father of the Nation' in India?", options: ["Jawaharlal Nehru", "Mahatma Gandhi", "B.R. Ambedkar", "A.P.J. Abdul Kalam"], correct: 1 },
+                { question: "Who was the first woman to win a Nobel Prize?", options: ["Mother Teresa", "Marie Curie", "Jane Addams", "Bertha von Suttner"], correct: 1 },
+                { question: "Who invented the telephone?", options: ["Thomas Edison", "Alexander Graham Bell", "Nikola Tesla", "Benjamin Franklin"], correct: 1 },
+                { question: "Who painted the Sistine Chapel ceiling?", options: ["Leonardo da Vinci", "Raphael", "Michelangelo", "Donatello"], correct: 2 },
+                { question: "Who was the first man to walk on the moon?", options: ["Buzz Aldrin", "Neil Armstrong", "John Glenn", "Alan Shepard"], correct: 1 },
+                { question: "Who wrote the theory of relativity?", options: ["Isaac Newton", "Albert Einstein", "Galileo Galilei", "Stephen Hawking"], correct: 1 },
+                { question: "Who was known as the 'Nightingale of India'?", options: ["Lata Mangeshkar", "Sarojini Naidu", "Asha Bhosle", "M.S. Subbulakshmi"], correct: 1 },
+                { question: "Who founded the Mughal Empire in India?", options: ["Akbar", "Babur", "Humayun", "Shah Jahan"], correct: 1 },
+                { question: "Who was the first President of India?", options: ["Jawaharlal Nehru", "Dr. Rajendra Prasad", "Sarvepalli Radhakrishnan", "Zakir Hussain"], correct: 1 },
+                { question: "Who composed the Indian National Anthem?", options: ["Bankim Chandra Chatterjee", "Rabindranath Tagore", "Sarojini Naidu", "Subramanya Bharathi"], correct: 1 },
+                { question: "Who was known as the 'Missile Man of India'?", options: ["Vikram Sarabhai", "Homi Bhabha", "A.P.J. Abdul Kalam", "C.V. Raman"], correct: 2 },
+                { question: "Who founded Microsoft?", options: ["Steve Jobs", "Bill Gates", "Larry Page", "Mark Zuckerberg"], correct: 1 },
+                { question: "Who was the first woman Prime Minister of India?", options: ["Sarojini Naidu", "Indira Gandhi", "Sushma Swaraj", "Pratibha Patil"], correct: 1 },
+                { question: "Who invented the light bulb?", options: ["Nikola Tesla", "Thomas Edison", "Alexander Graham Bell", "Benjamin Franklin"], correct: 1 },
+                { question: "Who was known as 'Netaji'?", options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Subhas Chandra Bose", "Bhagat Singh"], correct: 2 },
+                { question: "Who founded Apple Inc.?", options: ["Bill Gates", "Steve Jobs", "Michael Dell", "Larry Ellison"], correct: 1 },
+                { question: "Who was the youngest Nobel Prize winner?", options: ["Marie Curie", "Mother Teresa", "Malala Yousafzai", "Tawakkol Karman"], correct: 2 },
+                { question: "Who was known as the 'Grand Old Man of India'?", options: ["Dadabhai Naoroji", "Bal Gangadhar Tilak", "Gopal Krishna Gokhale", "Lala Lajpat Rai"], correct: 0 },
+                { question: "Who founded Facebook?", options: ["Larry Page", "Jack Dorsey", "Mark Zuckerberg", "Evan Spiegel"], correct: 2 }
+            ],
+            'Music & Instruments': [
+                { question: "How many strings does a standard guitar have?", options: ["4", "5", "6", "7"], correct: 2 },
+                { question: "Which instrument is Ustad Zakir Hussain famous for?", options: ["Sitar", "Tabla", "Flute", "Violin"], correct: 1 },
+                { question: "What is the highest male singing voice?", options: ["Bass", "Baritone", "Tenor", "Countertenor"], correct: 3 },
+                { question: "Which composer wrote 'The Four Seasons'?", options: ["Bach", "Mozart", "Vivaldi", "Beethoven"], correct: 2 },
+                { question: "How many keys does a standard piano have?", options: ["76", "88", "92", "96"], correct: 1 },
+                { question: "Which instrument is also called a mouth organ?", options: ["Flute", "Clarinet", "Harmonica", "Saxophone"], correct: 2 },
+                { question: "Who composed 'Für Elise'?", options: ["Mozart", "Beethoven", "Bach", "Chopin"], correct: 1 },
+                { question: "Which Indian classical instrument has no frets?", options: ["Sitar", "Veena", "Violin", "Tabla"], correct: 2 },
+                { question: "What is the lowest female singing voice?", options: ["Soprano", "Mezzo-soprano", "Alto", "Contralto"], correct: 3 },
+                { question: "Which Beatles member was known as the 'Quiet Beatle'?", options: ["John Lennon", "Paul McCartney", "George Harrison", "Ringo Starr"], correct: 2 },
+                { question: "How many holes does a standard flute have?", options: ["6", "8", "16", "It varies"], correct: 3 },
+                { question: "Which instrument is Pandit Ravi Shankar famous for?", options: ["Tabla", "Sitar", "Flute", "Violin"], correct: 1 },
+                { question: "What does 'forte' mean in music?", options: ["Soft", "Loud", "Fast", "Slow"], correct: 1 },
+                { question: "Which family does the trumpet belong to?", options: ["String", "Woodwind", "Brass", "Percussion"], correct: 2 },
+                { question: "Who is known as the 'King of Pop'?", options: ["Elvis Presley", "Michael Jackson", "Prince", "Stevie Wonder"], correct: 1 },
+                { question: "Which scale has no sharps or flats?", options: ["C major", "G major", "D major", "A major"], correct: 0 },
+                { question: "What is a person who writes music called?", options: ["Conductor", "Composer", "Performer", "Producer"], correct: 1 },
+                { question: "Which percussion instrument is played with mallets?", options: ["Drums", "Cymbals", "Xylophone", "Triangle"], correct: 2 },
+                { question: "How many movements does a typical symphony have?", options: ["2", "3", "4", "5"], correct: 2 },
+                { question: "Which note is one semitone above C?", options: ["C#", "D", "B", "F"], correct: 0 }
+            ]
+        };
+
+        // Game State
+        let currentCategory = '';
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeLeft = 20;
+        let timer = null;
+        let startTime = null;
+        let questionStartTime = null;
+        let totalTime = 0;
+
+        // DOM Elements
+        const homeScreen = document.getElementById('homeScreen');
+        const quizScreen = document.getElementById('quizScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const categoriesGrid = document.getElementById('categoriesGrid');
+        const categoryTitle = document.getElementById('categoryTitle');
+        const questionCounter = document.getElementById('questionCounter');
+        const progressBar = document.getElementById('progressBar');
+        const timeLeftDisplay = document.getElementById('timeLeft');
+        const timerRing = document.getElementById('timerRing');
+        const questionImage = document.getElementById('questionImage');
+        const questionImg = document.getElementById('questionImg');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const quitButton = document.getElementById('quitButton');
+        const categoryResult = document.getElementById('categoryResult');
+        const correctAnswers = document.getElementById('correctAnswers');
+        const averageTime = document.getElementById('averageTime');
+        const scorePercentage = document.getElementById('scorePercentage');
+        const performanceMessage = document.getElementById('performanceMessage');
+        const playAgainButton = document.getElementById('playAgainButton');
+        const homeButton = document.getElementById('homeButton');
+
+        // Initialize the game
+        function initializeGame() {
+            renderCategories();
+            setupEventListeners();
+        }
+
+        // Render categories grid
+        function renderCategories() {
+            const categories = Object.keys(quizData);
+            const categoryIcons = {
+                'General Knowledge': 'fa-brain',
+                'Science': 'fa-flask',
+                'History': 'fa-landmark',
+                'Geography': 'fa-globe-americas',
+                'Sports': 'fa-football-ball',
+                'Bollywood': 'fa-film',
+                'Hollywood': 'fa-video',
+                'Politics': 'fa-balance-scale',
+                'Mythology': 'fa-dragon',
+                'Indian Culture': 'fa-temple-hindu',
+                'Space & Universe': 'fa-rocket',
+                'Technology': 'fa-microchip',
+                'Computer Science': 'fa-laptop-code',
+                'Mathematics': 'fa-calculator',
+                'English Grammar': 'fa-language',
+                'Logical Reasoning': 'fa-puzzle-piece',
+                'Current Affairs': 'fa-newspaper',
+                'Inventions & Discoveries': 'fa-lightbulb',
+                'World Leaders': 'fa-crown',
+                'Capitals & Countries': 'fa-flag',
+                'Indian Constitution': 'fa-book-open',
+                'Business & Economy': 'fa-chart-line',
+                'Famous Personalities': 'fa-user-friends',
+                'Books & Authors': 'fa-book',
+                'Food & Health': 'fa-apple-alt',
+                'Indian Festivals': 'fa-calendar-alt',
+                'Animals & Nature': 'fa-leaf',
+                'Art & Literature': 'fa-palette',
+                'Cartoons & Comics': 'fa-smile',
+                'Music & Instruments': 'fa-music',
+                'Famous Monuments': 'fa-monument',
+                'Freedom Fighters': 'fa-fist-raised',
+                'International Organisations': 'fa-globe'
+            };
+
+            categoriesGrid.innerHTML = categories.map(category => `
+                <div class="category-card p-6 text-center cursor-pointer rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300" 
+                     onclick="selectCategory('${category}')">
+                    <i class="fas ${categoryIcons[category] || 'fa-question'} text-4xl text-white mb-4"></i>
+                    <h3 class="text-lg font-bold text-white mb-2">${category}</h3>
+                    <p class="text-sm text-white opacity-90">20 Questions</p>
+                </div>
+            `).join('');
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            quitButton.addEventListener('click', quitGame);
+            playAgainButton.addEventListener('click', playAgain);
+            homeButton.addEventListener('click', goHome);
+        }
+
+        // Select category and start quiz
+        function selectCategory(category) {
+            currentCategory = category;
+            currentQuestions = shuffleArray([...quizData[category]]).slice(0, 20);
+            currentQuestionIndex = 0;
+            score = 0;
+            totalTime = 0;
+            startTime = Date.now();
+            
+            categoryTitle.textContent = category;
+            showScreen('quiz');
+            showQuestion();
+        }
+
+        // Show current question
+        function showQuestion() {
+            const question = currentQuestions[currentQuestionIndex];
+            questionStartTime = Date.now();
+            
+            // Update UI
+            questionCounter.textContent = currentQuestionIndex + 1;
+            progressBar.style.width = `${((currentQuestionIndex + 1) / 20) * 100}%`;
+            questionText.textContent = question.question;
+            
+            // Handle image if present
+            if (question.imageUrl) {
+                questionImg.src = question.imageUrl;
+                questionImage.classList.remove('hidden');
+            } else {
+                questionImage.classList.add('hidden');
+            }
+            
+            // Render options
+            optionsContainer.innerHTML = question.options.map((option, index) => `
+                <button class="answer-option w-full p-4 text-left bg-white border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-all"
+                        onclick="selectAnswer(${index})">
+                    <span class="font-medium">${String.fromCharCode(65 + index)}.</span> ${option}
+                </button>
+            `).join('');
+            
+            // Start timer
+            startTimer();
+        }
+
+        // Start question timer
+        function startTimer() {
+            timeLeft = 20;
+            timeLeftDisplay.textContent = timeLeft;
+            updateTimerRing();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timeLeftDisplay.textContent = timeLeft;
+                updateTimerRing();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    selectAnswer(-1); // Auto-select with no answer
+                }
+            }, 1000);
+        }
+
+        // Update timer ring visual
+        function updateTimerRing() {
+            const circumference = 2 * Math.PI * 50;
+            const progress = (timeLeft / 20) * circumference;
+            timerRing.style.strokeDasharray = `${progress} ${circumference}`;
+        }
+
+        // Select answer
+        function selectAnswer(selectedIndex) {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            
+            const question = currentQuestions[currentQuestionIndex];
+            const isCorrect = selectedIndex === question.correct;
+            const questionTime = Date.now() - questionStartTime;
+            totalTime += questionTime;
+            
+            if (isCorrect) {
+                score++;
+            }
+            
+            // Show correct answer
+            const options = document.querySelectorAll('.answer-option');
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && !isCorrect) {
+                    option.classList.add('incorrect');
+                }
+                option.disabled = true;
+            });
+            
+            // Move to next question after delay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < 20) {
+                    showQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        // Show results screen
+        function showResults() {
+            const averageTimePerQuestion = Math.round(totalTime / (20 * 1000));
+            const percentage = Math.round((score / 20) * 100);
+            
+            categoryResult.textContent = currentCategory;
+            correctAnswers.textContent = `${score} / 20`;
+            averageTime.textContent = `${averageTimePerQuestion}s`;
+            scorePercentage.textContent = `${percentage}%`;
+            
+            // Performance message
+            let message = '';
+            if (percentage >= 90) {
+                message = 'Outstanding! You\'re a genius! 🌟';
+            } else if (percentage >= 80) {
+                message = 'Excellent work! Very impressive! 👏';
+            } else if (percentage >= 70) {
+                message = 'Good job! Keep it up! 👍';
+            } else if (percentage >= 60) {
+                message = 'Not bad! Room for improvement. 📚';
+            } else {
+                message = 'Keep learning and try again! 💪';
+            }
+            performanceMessage.textContent = message;
+            
+            showScreen('results');
+        }
+
+        // Quit game
+        function quitGame() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            showScreen('home');
+        }
+
+        // Play again with same category
+        function playAgain() {
+            selectCategory(currentCategory);
+        }
+
+        // Go to home screen
+        function goHome() {
+            showScreen('home');
+        }
+
+        // Show specific screen
+        function showScreen(screen) {
+            homeScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            
+            switch(screen) {
+                case 'home':
+                    homeScreen.classList.remove('hidden');
+                    break;
+                case 'quiz':
+                    quizScreen.classList.remove('hidden');
+                    break;
+                case 'results':
+                    resultsScreen.classList.remove('hidden');
+                    break;
+            }
+        }
+
+        // Utility function to shuffle array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initializeGame);
+    </script>
+</body>
+</html>

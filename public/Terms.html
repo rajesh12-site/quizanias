@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms and Conditions - Quizania</title>
+
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+        }
+        
+        .stats-counter {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-3xl font-bold gradient-text">
+                        <i class="fas fa-brain mr-2"></i><a href="index.html">Quizania</a>
+                    </h1>
+                </div>
+                
+                <!-- Auth Buttons -->
+<div class="flex space-x-4" id="auth-buttons">
+  <!-- These buttons will be replaced by Firebase JS -->
+  <a href="login.html" class="px-6 py-2 border-2 border-purple-600 text-purple-600 rounded-full font-semibold hover:bg-purple-600 hover:text-white transition duration-300">
+    Login
+  </a>
+  <a href="signup.html" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+    Sign Up
+  </a>
+</div>
+
+
+            </div>
+        </div>
+    </header>
+	
+	
+	
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-center">Terms and Conditions</h1>
+    <p class="text-sm text-gray-500 text-center mb-8">Effective Date: June 21, 2025</p>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">1. Eligibility</h2>
+      <p>You must be at least 18 years old to use Quizania and participate in cash-based games. By registering, you confirm that your details are accurate and that you are eligible to earn and withdraw money in accordance with Indian law.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">2. Platform Description</h2>
+      <p>Quizania is a skill-based quiz gaming platform where users can play quizzes, add money to their wallet, win rewards, and withdraw their earnings.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">3. User Responsibilities</h2>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Keep your account credentials secure.</li>
+        <li>Do not use the platform for illegal activities.</li>
+        <li>Avoid using multiple accounts for unfair advantages.</li>
+        <li>Automated methods to manipulate games or wallet are prohibited.</li>
+      </ul>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">4. Wallet and Transactions</h2>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Users can add money using supported payment methods.</li>
+        <li>Withdrawals are only possible after KYC and verification.</li>
+        <li>A platform fee is deducted from every paid entry.</li>
+        <li>Winnings go into the wallet and can be withdrawn based on policy.</li>
+      </ul>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">5. Game Fairness & Bugs</h2>
+      <p>While all games are designed to be fair and skill-based, unforeseen bugs or server errors may occasionally affect matches, scores, or wallet balances. If any such issue is detected, we may reverse or adjust the match and transaction results. Users must not misuse bugs or delays to their advantage.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">6. Refunds and Disputes</h2>
+      <p>Entry fees are non-refundable after a game begins. Refunds may be provided at our discretion in cases like server failure or technical issues. Disputes can be raised via the Feedback section.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">7. Prohibited Conduct and Misuse</h2>
+      <p>Users must not:</p>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Use abusive or misleading language.</li>
+        <li>Exploit bugs or manipulate outcomes.</li>
+        <li>Use bots or cheat systems.</li>
+        <li>Harass other users or attempt fraud.</li>
+      </ul>
+      <p class="mt-2">Violating these rules may result in suspension, wallet freezing, permanent ban, data deletion, and legal action.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">8. Termination of Access</h2>
+      <p>We may suspend or terminate access without prior notice if a user is found violating these Terms.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">9. Data Handling and Privacy</h2>
+      <p>We follow a secure data policy. In cases of permanent bans or policy violations, we may delete your account and all associated data.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">10. Modifications to Terms</h2>
+      <p>We may update these Terms at any time. Continued use after updates implies your acceptance of the new Terms.</p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-xl font-semibold mb-2">11. Contact Us</h2>
+      <p>If you have questions, contact us at:</p>
+      <ul class="list-inside">
+        <li>Email: <a href="mailto:support@quizania.in" class="text-blue-600">support@quizania.in</a></li>
+      </ul>
+    </section>	
+	  </div>
+	
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-3xl font-bold gradient-text mb-4">
+                        <i class="fas fa-brain mr-2"></i>Quizania
+                    </h3>
+                    <p class="text-gray-300 mb-4 max-w-md">
+                        India's most trusted quiz gaming platform where knowledge meets rewards. Play smart, win big!
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-youtube text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="about.html" class="text-gray-300 hover:text-white transition duration-300">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-300 hover:text-white transition duration-300">Contact Us</a></li>
+                        <li><a href="privacy-policy.html" class="text-gray-300 hover:text-white transition duration-300">Privacy Policy</a></li>
+                        <li><a href="terms.html" class="text-gray-300 hover:text-white transition duration-300">Terms of Use</a></li>
+                        <li><a href="game-policy.html" class="text-gray-300 hover:text-white transition duration-300">Game Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li class="text-gray-300"><i class="fas fa-envelope mr-2"></i>help@quizania.com</li>
+                        <li class="text-gray-300"><i class="fas fa-clock mr-2"></i>24/7 Support</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">
+                    © 2025 Quizania. All rights reserved. | Made with ❤️ in India
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

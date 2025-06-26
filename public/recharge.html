@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recharge Wallet | Quizania</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: { fadeIn: 'fadeIn 0.5s ease-in-out' },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+<div class="flex min-h-screen">
+
+  <!-- Sidebar (Copied from Dashboard) -->
+  <div class="sidebar w-20 sm:w-60 bg-blue-900 text-white flex flex-col items-center sm:items-start px-2 py-4">
+    <div class="flex items-center space-x-2 mb-4 w-full justify-center sm:justify-start">
+      <img id="profilePreview" src="" alt="Profile" class="w-12 h-12 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+    </div>
+    <nav class="flex-1 w-full">
+      <a href="dashboard.html" class="flex items-center space-x-2 py-2 px-2 hover:bg-blue-700 rounded">
+        <span>🏠</span><span class="hidden sm:inline">Home</span>
+      </a>
+      <a href="recharge.html" class="flex items-center space-x-2 py-2 px-2 hover:bg-blue-700 rounded bg-blue-700">
+        <span>💰</span><span class="hidden sm:inline">Recharge</span>
+      </a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-3 bg-red-500 hover:bg-red-800 text-white px-2 py-1 rounded">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 animate-fadeIn">
+    <h1 class="text-2xl font-bold mb-4">Recharge Wallet</h1>
+
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow max-w-md">
+      <label class="block mb-2 font-medium text-lg">Enter Amount</label>
+      <input type="number" id="amountInput" class="w-full px-4 py-2 rounded border dark:bg-gray-900" placeholder="₹100" min="1">
+      <button onclick="startRecharge()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded text-lg">Recharge</button>
+
+      <p class="text-sm mt-4 text-gray-600 dark:text-gray-300">
+        🔒 Transactions are secure via Pay0. <br>
+        💡 Minimum amount is ₹1. <br>
+        📜 By proceeding, you agree to our <a href="#" class="underline text-blue-600">Terms & Conditions</a>.
+      </p>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  let currentUser;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      currentUser = user;
+    }
+  });
+
+  window.toggleTheme = () => document.documentElement.classList.toggle("dark");
+
+  window.logout = () => {
+    signOut(auth).then(() => window.location.href = "login.html");
+  };
+
+  window.startRecharge = async () => {
+    const amount = parseInt(document.getElementById("amountInput").value);
+    if (!amount || amount < 1) return alert("Please enter a valid amount (min ₹1)");
+
+    // --- Step 1: Create Pay0 order here or redirect ---
+    const callbackUrl = `http://localhost:5500/payment-success.html?amount=${amount}`; // Pay0 should redirect here
+    const pay0Url = `https://pay0.shop/paylink?link=851?amount=${amount}`;
+    
+    window.location.href = pay0Url;
+  };
+</script>
+</body>
+</html>

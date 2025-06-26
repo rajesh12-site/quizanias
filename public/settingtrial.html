@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania Settings - Manage Your Gaming Profile</title>
+	  <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+	 <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	  @keyframes glow {
+    0%   { box-shadow: 0 0 5px #a855f7; }
+    50%  { box-shadow: 0 0 10px #a855f7; }
+    100% { box-shadow: 0 0 5px #a855f7; }
+  }
+
+  .glow {
+    animation: glow 2s infinite;
+  }
+  
+.goog-te-banner-frame.skiptranslate, 
+  .goog-te-gadget-icon,
+  .goog-te-gadget-simple {
+    display: none !important;
+  }
+
+  body {
+    top: 0px !important;
+  }
+
+  #google_translate_element {
+    display: none !important;
+  }
+  html body > .skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+  </style>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+
+        .gradient-primary {
+            background: var(--primary-gradient);
+        }
+
+        .gradient-success {
+            background: var(--success-gradient);
+        }
+
+        .gradient-warning {
+            background: var(--warning-gradient);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--primary-gradient);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        .winning-card {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-highlight {
+            background-color: yellow;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="dashboard.html">🏠 Home</a>
+      <a href="profile-edit.html">👤 Profile</a>
+      <a href="msg.html">✉️ Messages</a>
+      <a href="play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="setting.html">⚙️ Setting</a>
+      <a href="feedback.html">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+  
+  
+  <main class="flex-1 p-4 animate-fadeIn">
+  
+    <!-- Navigation Header -->
+    <nav class="gradient-primary text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-arrow-left text-xl cursor-pointer hover:text-gray-200" onclick="goBack()"></i>
+                    <h1 class="text-2xl font-bold">Settings</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Search settings..."
+                            class="bg-white bg-opacity-20 text-white placeholder-gray-200 px-4 py-2 rounded-full w-48 focus:outline-none focus:bg-opacity-30 transition-all"
+                            onkeyup="searchSettings()"
+                        >
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-200"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        <!-- Account Settings -->
+        <div class="settings-section mb-8" data-section="account">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Account Settings</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input id="user-name" type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+
+
+
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <div class="flex space-x-2">
+                            <input id="user-email" type="email" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button id="verify-email-btn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                Verify
+                            </button>
+                        </div>
+                    </div>
+					
+					
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <div class="flex space-x-2">
+                            <input id="user-phone" type="tel"  class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+							<!-- OTP Modal -->
+
+
+                        </div>	
+                    </div>	<div id="recaptcha-container"></div>
+
+
+                    <!-- Password Change -->
+                    <div id="password-section" class="border-t pt-6">
+                        <h3 class="font-semibold text-gray-800 mb-4">Change Password</h3>
+                        <div class="space-y-4">
+                            <input id="old-password" type="password" placeholder="Current Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input id="new-password" type="password" placeholder="New Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button onclick="changePassword()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Password</button>
+						</div>
+                    </div>
+					
+
+</div>
+
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet & Payment Settings -->
+        <div class="settings-section mb-8" data-section="wallet">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 gradient-success rounded-lg flex items-center justify-center">
+                            <i class="fas fa-wallet text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Wallet & Payment Settings</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <!-- Wallet Balances -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="balance-card text-white p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-blue-100 text-sm">Recharge Balance</p>
+                                    <p class="text-2xl font-bold">₹<span id="recharge-wallet">0</span></p>
+                                </div>
+                                <i class="fas fa-credit-card text-3xl text-blue-200"></i>
+                            </div>
+                        </div>
+                        <div class="winning-card text-white p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-green-100 text-sm">Winning Balance</p>
+                                    <p class="text-2xl font-bold">₹<span id="winning-wallet">0</span></p>
+                                </div>
+                                <i class="fas fa-trophy text-3xl text-green-200"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy & Security -->
+        <div class="settings-section mb-8" data-section="privacy">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 gradient-warning rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Privacy & Security</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <!-- 2FA -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Two-Factor Authentication</h3>
+                            <p class="text-sm text-gray-600">Add an extra layer of security</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Online Status -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Show Online Status</h3>
+                            <p class="text-sm text-gray-600">Let others see when you're online</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-section mb-8" data-section="notifications">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bell text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Notification Preferences</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6" id="realtimeNotifications">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Match Found Alerts</h3>
+                                <p class="text-sm text-gray-600">Get notified when a match is found</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Quiz Results</h3>
+                                <p class="text-sm text-gray-600">Notifications about your quiz performance</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">New Tournaments</h3>
+                                <p class="text-sm text-gray-600">Alert me about upcoming tournaments</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-800">Offers & Bonuses</h3>
+                                <p class="text-sm text-gray-600">Special offers and bonus notifications</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                    </div>
+                    <div class="border-t pt-6">
+                        <button onclick="enablePushNotifications()" class="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-bell mr-2"></i>Save Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History & Records -->
+        <div class="settings-section mb-8" data-section="history">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-history text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">History & Records</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <button class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-receipt text-blue-600"></i>
+                            <span class="font-medium">Transaction History</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <button class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-gamepad text-green-600"></i>
+                            <span class="font-medium">Match History</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Support & Feedback -->
+        <div class="settings-section mb-8" data-section="support">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-headset text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Support & Feedback</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <button class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-question-circle text-blue-600"></i>
+                            <span class="font-medium">Help Center / FAQ</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <button class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-green-600"></i>
+                            <span class="font-medium">Contact Support</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <button onclick="location.href='feedback.html'"class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-bug text-red-600"></i>
+                            <span class="font-medium">Report a Problem</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance & UI -->
+        <div class="settings-section mb-8" data-section="appearance">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-palette text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Appearance & UI</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-gray-800">Dark Mode</h3>
+                            <p class="text-sm text-gray-600">Switch to dark theme</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" onchange="toggleDarkMode()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-800 mb-3">Font Size</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" onclick="setFontSize('small')">Small</button>
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg" onclick="setFontSize('medium')">Medium</button>
+                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" onclick="setFontSize('large')">Large</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-800 mb-3">Language</h3>
+                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="bn">বাংলা</option>
+                            <option value="te">తెలుగు</option>
+                            <option value="ta">தமிழ்</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legal & Info -->
+        <div class="settings-section mb-8" data-section="legal">
+            <div class="bg-white rounded-xl shadow-lg card-hover">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gray-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-balance-scale text-white"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">Legal & Information</h2>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <button onclick="location.href='terms.html'" class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-file-contract text-blue-600"></i>
+                            <span class="font-medium">Terms & Conditions</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <button onclick="location.href='privacy-policy.html'" class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user-shield text-green-600"></i>
+                            <span class="font-medium">Privacy Policy</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <button onclick="location.href='game-policy.html'" class="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-gamepad text-purple-600"></i>
+                            <span class="font-medium">Responsible Gaming Policy</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </button>
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h3 class="font-medium mb-3">About Quizania</h3>
+                        <p class="text-sm text-gray-600 mb-3">
+                            Quizania is India's leading skill-based quiz gaming platform where knowledge meets rewards. 
+                            Join millions of players in exciting quiz battles and tournaments.
+                        </p>
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>Version 2.1.0</span>
+                            <span>•</span>
+                            <span>Build 210428</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="sticky bottom-4 z-40">
+            <button onclick="saveSettings()" class="w-full gradient-primary text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all">
+                <i class="fas fa-save mr-2"></i>Save All Changes
+            </button>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="bg-white rounded-xl p-6 m-4 max-w-md mx-auto">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Delete Account</h3>
+                <p class="text-gray-600 mb-6">
+                    Are you sure you want to delete your account? All earnings, transaction history, and profile data will be permanently deleted. This action cannot be undone.
+                </p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="confirmDelete()" class="flex-1 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-check-circle"></i>
+            <span id="toastMessage">Settings saved successfully!</span>
+        </div>
+    </div>
+  </main>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut,
+    sendEmailVerification,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword
+  } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc
+  } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  
+import {
+  getMessaging,
+  getToken,
+  onMessage
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-messaging.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+const messaging = getMessaging(app);
+  let currentUser = null;
+
+
+  function showToast(message, type = "info") {
+    const div = document.createElement("div");
+    div.textContent = message;
+    div.className = `fixed top-5 right-5 px-4 py-2 rounded text-white z-50 shadow ${
+      type === "success" ? "bg-green-600" :
+      type === "error" ? "bg-red-600" :
+      "bg-blue-600"
+    }`;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+  }
+
+
+window.enablePushNotifications = async function () {
+  if (Notification.permission === "denied") {
+    alert("❌ You have blocked notifications. Please allow them in your browser settings.");
+    return;
+  }
+
+  try {
+	const token = await getToken(messaging, {
+  vapidKey: 'BEfcM9OR-ez3qopHbMLHEIK3XLGPjf87_Io_O6O2Kf7UfsKUK77S4SUoY321ACRqEGaL7V_IxHN0wVWmHE57RhU',
+  serviceWorkerRegistration: await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+    scope: '/'
+  })
+});
+
+
+    await setDoc(doc(db, "users", currentUser.uid), {
+      fcmToken: token
+    }, { merge: true });
+
+    showToast("✅ Push notifications enabled!", "success");
+  } catch (err) {
+    console.error("Push error:", err);
+    showToast("Failed: " + err.message, "error");
+  }
+}
+
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+    currentUser = user;
+
+    const docRef = doc(db, "users", user.uid);
+
+    let docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        name: user.displayName || user.email,
+        rechargeWallet: 0,
+        winningWallet: 0,
+      emailVerified: false // 🆕 add initial status as false
+      }, { merge: true });
+      docSnap = await getDoc(docRef);
+    }
+
+    const data = docSnap.data();
+    const nameEl = document.getElementById("user-name");
+    const emailEl = document.getElementById("user-email");
+    const verifyBtn = document.getElementById("verify-email-btn");
+    document.getElementById("recharge-wallet").innerText = data.rechargeWallet || 0;
+    document.getElementById("winning-wallet").innerText = data.winningWallet || 0;
+	
+    if (nameEl) nameEl.value = data.name || "";
+    if (emailEl) emailEl.value = user.email;
+
+
+
+    verifyBtn.addEventListener("click", async () => {
+      try {
+        await sendEmailVerification(user);
+        showToast("Verification email sent! Check Your Email Inbox", "success");
+		        setTimeout(async () => {
+          await user.reload();
+          if (user.emailVerified) {
+            await updateDoc(docRef, { emailVerified: true });
+            verifyBtn.textContent = "Verified";
+            verifyBtn.disabled = true;
+            verifyBtn.classList.remove("bg-blue-500");
+            verifyBtn.classList.add("bg-green-500");
+            showToast("✅ Email verified successfully!", "success");
+          } else {
+            showToast("❌ Email not verified yet. Check again later.", "error");
+          }
+        }, 9000);
+	
+    await updateDoc(docRef, { emailVerified: true });
+      } catch (err) {
+        showToast("Error: " + err.message, "error");
+      }
+    });
+
+    nameEl.addEventListener("change", async (e) => {
+      await updateDoc(docRef, { name: e.target.value });
+      showToast("Name updated", "success");
+    });
+
+
+  });
+
+
+		  
+  window.changePassword = async function () {
+    const oldPass = document.getElementById("old-password").value;
+    const newPass = document.getElementById("new-password").value;
+    if (!oldPass || !newPass) return alert("Fill both password fields");
+    if (currentUser.providerData[0].providerId !== "password") {
+      return alert("Password change not supported for Google login.");
+    }
+    try {
+      const credential = EmailAuthProvider.credential(currentUser.email, oldPass);
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPass);
+      alert("Password updated successfully");
+    } catch (err) {
+      alert("Error changing password: " + err.message);
+    }
+  };
+
+  window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+  window.toggleSidebar = () => {
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("mobileOverlay");
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+    overlay.onclick = () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("show");
+    };
+  };
+</script>
+
+
+    <script>
+        // Search functionality
+        function searchSettings() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sections = document.querySelectorAll('.settings-section');
+            
+            sections.forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm) || searchTerm === '') {
+                    section.style.display = 'block';
+                    // Highlight search terms
+                    if (searchTerm !== '') {
+                        highlightSearchTerm(section, searchTerm);
+                    } else {
+                        removeHighlights(section);
+                    }
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        function highlightSearchTerm(element, term) {
+            // Simple highlighting implementation
+            removeHighlights(element);
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                textNodes.push(node);
+            }
+            
+            textNodes.forEach(textNode => {
+                if (textNode.textContent.toLowerCase().includes(term)) {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    const newHTML = textNode.textContent.replace(regex, '<span class="search-highlight">$1</span>');
+                    if (newHTML !== textNode.textContent && textNode.parentNode.tagName !== 'SCRIPT') {
+                        const wrapper = document.createElement('span');
+                        wrapper.innerHTML = newHTML;
+                        textNode.parentNode.replaceChild(wrapper, textNode);
+                    }
+                }
+            });
+        }
+
+        function removeHighlights(element) {
+            const highlights = element.querySelectorAll('.search-highlight');
+            highlights.forEach(highlight => {
+                const parent = highlight.parentNode;
+                parent.replaceChild(document.createTextNode(highlight.textContent), highlight);
+                parent.normalize();
+            });
+        }
+
+        // Navigation
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // Fallback if no history
+                window.location.href = '/dashboard';
+            }
+        }
+
+        // Delete account modal
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDelete() {
+            showToast('Account deletion initiated. You will receive a confirmation email.', 'warning');
+            closeDeleteModal();
+        }
+
+        // Notifications
+        function testNotification() {
+            showToast('Test notification sent! Check your device for the alert.', 'success');
+        }
+
+        // Rating
+        function rateApp(rating) {
+            const stars = document.querySelectorAll('.fa-star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+            showToast(`Rated ${rating} stars. Thank you for your feedback!`, 'success');
+        }
+
+        // Appearance settings
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            showToast('Dark mode preference saved!', 'success');
+        }
+
+        function setFontSize(size) {
+            const buttons = document.querySelectorAll('button[onclick^="setFontSize"]');
+            buttons.forEach(button => {
+                button.classList.remove('bg-blue-500', 'text-white');
+                button.classList.add('border', 'border-gray-300', 'hover:bg-gray-50');
+            });
+            
+            event.target.classList.remove('border', 'border-gray-300', 'hover:bg-gray-50');
+            event.target.classList.add('bg-blue-500', 'text-white');
+            
+            showToast(`Font size changed to ${size}`, 'success');
+        }
+
+        // Save settings
+        function saveSettings() {
+            // Simulate saving process
+            showToast('All settings saved successfully!', 'success');
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Set message
+            toastMessage.textContent = message;
+            
+            // Set color based on type
+            toast.classList.remove('bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-blue-500');
+            switch(type) {
+                case 'success':
+                    toast.classList.add('bg-green-500');
+                    break;
+                case 'error':
+                    toast.classList.add('bg-red-500');
+                    break;
+                case 'warning':
+                    toast.classList.add('bg-yellow-500');
+                    break;
+                case 'info':
+                    toast.classList.add('bg-blue-500');
+                    break;
+            }
+            
+            // Show toast
+            toast.classList.add('show');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+
+        // Smooth scrolling for settings sections
+        function scrollToSection(sectionId) {
+            const section = document.querySelector(`[data-section="${sectionId}"]`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Handle toggle switches
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox' && e.target.closest('.toggle-switch')) {
+                const setting = e.target.closest('.flex').querySelector('h3').textContent;
+                const status = e.target.checked ? 'enabled' : 'disabled';
+                showToast(`${setting} ${status}`, 'info');
+            }
+        });
+    </script>
+
+</body>
+</html>

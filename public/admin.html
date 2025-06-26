@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 p-4">
+  <h1 class="text-2xl font-bold mb-4">Admin Dashboard</h1>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-sm text-gray-600">Total Users</p>
+      <p id="total-users" class="text-xl font-bold">0</p>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-sm text-gray-600">Total Recharge Fee</p>
+      <p id="recharge-fee" class="text-xl font-bold">₹0</p>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-sm text-gray-600">Total Withdrawal Fee</p>
+      <p id="withdrawal-fee" class="text-xl font-bold">₹0</p>
+    </div>
+  </div>
+
+  <!-- New Message sending section -->
+<div class="mb-6 p-4 bg-white rounded shadow">
+  <h2 class="text-lg font-semibold mb-2">Send Message</h2>
+  
+  <input id="msgTitle" type="text" placeholder="Message Title" class="p-2 w-full border rounded mb-2" />
+  
+  <textarea id="msgContent" placeholder="Message Content" rows="3" class="p-2 w-full border rounded mb-2"></textarea>
+  
+  <button id="sendMsgBtn" class="bg-indigo-600 text-white px-4 py-2 rounded">Send Message</button>
+  
+  <p id="msgStatus" class="mt-2 text-sm"></p>
+</div>
+
+
+  <div class="mb-4">
+    <input id="searchInput" type="text" placeholder="Search user..." class="p-2 w-full border rounded" />
+  </div>
+
+  <div class="flex gap-4 mb-4">
+    <button onclick="exportCSV()" class="bg-blue-600 text-white px-4 py-2 rounded">Export CSV</button>
+    <button onclick="filterTopEarners()" class="bg-green-600 text-white px-4 py-2 rounded">Top Earners</button>
+  </div>
+
+  <canvas id="walletChart" class="mb-8"></canvas>
+
+<h2 class="text-xl font-semibold mt-8 mb-2">Withdrawal Requests</h2><br></br>
+ <button class="bg-green-600 text-white px-3 py-1 rounded" onclick="location.href='admin-withdrawals.html'">Withdrawals Page</button>
+<br></br>
+  <h2 class="text-xl font-semibold mb-2">All Users</h2>
+  <div id="users-list" class="space-y-4"></div>
+
+
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, getDoc, addDoc, serverTimestamp, query, where, deleteDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+      authDomain: "quizania-b8292.firebaseapp.com",
+      projectId: "quizania-b8292",
+      storageBucket: "quizania-b8292.appspot.com",
+      messagingSenderId: "94747680142",
+      appId: "1:94747680142:web:520ef8559cfe766f0c58df"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const usersRef = collection(db, "users");
+    const usersList = document.getElementById('users-list');
+    const searchInput = document.getElementById('searchInput');
+
+    let allUsersData = [];
+
+    const walletChart = new Chart(document.getElementById('walletChart'), {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Recharge Wallet', backgroundColor: '#3b82f6', data: [] },
+          { label: 'Winning Wallet', backgroundColor: '#10b981', data: [] }
+        ]
+      },
+      options: { responsive: true }
+    });
+
+
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = 'login.html';
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists() || !userSnap.data().isAdmin) {
+        alert("Access denied. Not an admin.");
+        window.location.href = 'index.html';
+        return;
+      }
+      initDashboard();
+    });
+
+    function initDashboard() {
+	
+      onSnapshot(usersRef, snapshot => {
+        let totalRecharge = 0;
+        let totalWithdraw = 0;
+        allUsersData = [];
+
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          allUsersData.push({ ...data, id: docSnap.id });
+          totalRecharge += data.totalRechargeFee || 0;
+          totalWithdraw += data.totalWithdrawalFee || 0;
+        });
+
+        document.getElementById('total-users').textContent = snapshot.size;
+        document.getElementById('recharge-fee').textContent = `₹${totalRecharge}`;
+        document.getElementById('withdrawal-fee').textContent = `₹${totalWithdraw}`;
+
+        renderUsers(allUsersData);
+        monthlyChart.data.labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        monthlyChart.data.datasets[0].data = [20, 45, 30, 60, 40, totalRecharge];
+
+      });
+    }
+	
+	
+
+    function renderUsers(users) {
+      usersList.innerHTML = '';
+      walletChart.data.labels = [];
+      walletChart.data.datasets[0].data = [];
+      walletChart.data.datasets[1].data = [];
+
+      users.forEach(user => {
+        walletChart.data.labels.push(user.name || user.id);
+        walletChart.data.datasets[0].data.push(user.rechargeWallet || 0);
+        walletChart.data.datasets[1].data.push(user.winningWallet || 0);
+
+        const div = document.createElement('div');
+        div.className = 'bg-white p-4 rounded shadow';
+        div.innerHTML = `
+          <p><strong>${user.name}</strong></p>
+          <p>Recharge: ₹${user.rechargeWallet || 0}</p>
+          <p>Winning: ₹${user.winningWallet || 0}</p>
+          <p>Status: ${user.banned ? '<span class="text-red-500">Banned</span>' : '<span class="text-green-500">Active</span>'}</p>
+          <button class="bg-yellow-500 text-white px-2 py-1 rounded" onclick="window.adjustWallet('${user.id}', 'rechargeWallet')">+10 Recharge</button>
+          <button class="bg-green-500 text-white px-2 py-1 rounded" onclick="window.adjustWallet('${user.id}', 'winningWallet')">+10 Winning</button>
+          <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="window.toggleBan('${user.id}', ${user.banned})">${user.banned ? 'Unban' : 'Ban'}</button>
+        `;
+        usersList.appendChild(div);
+      });
+      walletChart.update();
+    }
+
+    searchInput.addEventListener('input', e => {
+      const val = e.target.value.toLowerCase();
+      const filtered = allUsersData.filter(u => (u.name || '').toLowerCase().includes(val));
+      renderUsers(filtered);
+    });
+
+    window.adjustWallet = async (uid, walletType) => {
+      const userRef = doc(db, 'users', uid);
+      await updateDoc(userRef, { [walletType]: increment(10) });
+    };
+
+    window.toggleBan = async (uid, current) => {
+      const userRef = doc(db, 'users', uid);
+      await updateDoc(userRef, { banned: !current });
+    };
+
+    window.exportCSV = () => {
+      let csv = 'Name,Recharge,Winning\n';
+      allUsersData.forEach(u => {
+        csv += `${u.name || u.id},${u.rechargeWallet || 0},${u.winningWallet || 0}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'users.csv';
+      link.click();
+    };
+
+    window.filterTopEarners = () => {
+      const sorted = [...allUsersData].sort((a, b) => ((b.rechargeWallet || 0) + (b.winningWallet || 0)) - ((a.rechargeWallet || 0) + (a.winningWallet || 0)));
+      renderUsers(sorted.slice(0, 10));
+    };
+
+
+
+    // New: Send message to all users via Firestore
+const messagesRef = collection(db, "messages");
+
+const msgTitleInput = document.getElementById('msgTitle');
+const msgContentInput = document.getElementById('msgContent');
+const sendMsgBtn = document.getElementById('sendMsgBtn');
+const msgStatus = document.getElementById('msgStatus');
+
+sendMsgBtn.addEventListener('click', async () => {
+  const title = msgTitleInput.value.trim();
+  const content = msgContentInput.value.trim();
+
+  if (!title || !content) {
+    msgStatus.textContent = "Please fill in both title and message.";
+    msgStatus.style.color = "red";
+    return;
+  }
+
+  try {
+    await addDoc(messagesRef, {
+      title: title,
+      content: content,
+      sentAt: new Date()
+    });
+
+    msgStatus.textContent = "Message sent successfully!";
+    msgStatus.style.color = "green";
+
+    // Clear inputs after send
+    msgTitleInput.value = '';
+    msgContentInput.value = '';
+
+  } catch (error) {
+    msgStatus.textContent = "Error sending message: " + error.message;
+    msgStatus.style.color = "red";
+  }
+});
+
+  </script>
+</body>
+</html>

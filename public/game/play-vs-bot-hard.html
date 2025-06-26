@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania - Hard Bot Battle</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+	 <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+  </style>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a40 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .option-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        .option-btn.selected {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .timer-bar {
+            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+        }
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .progress-item {
+            transition: all 0.3s ease;
+        }
+        .progress-item.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        .progress-item.completed {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white overflow-x-hidden">
+
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="/play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="#">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+    <!-- Entry Screen -->
+    <div id="entryScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="quiz-container rounded-2xl p-8 max-w-md w-full text-center">
+            <div class="mb-6">
+                <i class="fas fa-robot text-6xl text-blue-400 mb-4"></i>
+                <h1 class="text-3xl font-bold text-white mb-2">Hard Bot Battle</h1>
+                <p class="text-gray-300">Test your knowledge against our AI bot!</p>
+            </div>
+            
+            
+            <div class="mb-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+                <p class="text-green-300 text-sm">
+                    <i class="fas fa-trophy mr-2"></i>
+                    Beat the bot and win <span class="font-bold text-yellow-400">5x</span> your entry amount!
+                </p>
+            </div>
+            
+            <button onclick="startGame()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                <i class="fas fa-play mr-2"></i>Start Battle
+            </button>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="min-h-screen p-4 hidden">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="flex flex-col lg:flex-row gap-6 mb-6">
+                <div class="quiz-container rounded-xl p-6 flex-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">Question <span id="currentQuestion">1</span>/10</h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="text-sm text-gray-400">Time Left</p>
+                                <p class="text-2xl font-bold text-yellow-400" id="timeLeft">10</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mb-6">
+                        <div id="timerBar" class="timer-bar h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main Quiz Area -->
+                <div class="flex-1">
+                    <div class="quiz-container rounded-xl p-6 mb-6">
+                        <h3 id="questionText" class="text-xl mb-6 leading-relaxed"></h3>
+<img id="question-image" class="mb-4 max-w-full" alt="Question Image" style="display:none;" />
+
+
+
+                        <div id="optionsContainer" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Progress Sidebar -->
+                <div class="lg:w-80">
+                    <div class="quiz-container rounded-xl p-6">
+                        <h4 class="text-lg font-bold mb-4">Battle Progress</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-blue-400"><i class="fas fa-user mr-2"></i>You</span>
+                                <span class="text-red-400"><i class="fas fa-robot mr-2"></i>Bot</span>
+                            </div>
+                            <div id="progressContainer" class="space-y-2"></div>
+                        </div>
+                        
+                        <!-- Bot Status -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="quiz-container rounded-2xl p-8 max-w-2xl w-full">
+            <div class="text-center mb-8">
+                <div id="resultIcon" class="text-6xl mb-4"></div>
+                <h2 id="resultTitle" class="text-3xl font-bold mb-2"></h2>
+                <p id="resultSubtitle" class="text-gray-300"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 text-center">
+                    <i class="fas fa-user text-blue-400 text-2xl mb-2"></i>
+                    <h3 class="text-lg font-semibold mb-2">Your Score</h3>
+                    <p id="userScore" class="text-3xl font-bold text-blue-400"></p>
+                    <p class="text-sm text-gray-400 mt-1">Avg Time: <span id="userAvgTime"></span>s</p>
+                </div>
+                <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
+                    <i class="fas fa-robot text-red-400 text-2xl mb-2"></i>
+                    <h3 class="text-lg font-semibold mb-2">Bot Score</h3>
+                    <p id="botScore" class="text-3xl font-bold text-red-400"></p>
+                    <p class="text-sm text-gray-400 mt-1">Avg Time: <span id="botAvgTime"></span>s</p>
+                </div>
+            </div>
+
+            <div id="winningSection" class="bg-green-900/20 border border-green-500/30 rounded-lg p-6 mb-6 text-center hidden">
+                <i class="fas fa-trophy text-yellow-400 text-3xl mb-3"></i>
+                <h3 class="text-xl font-bold text-green-400 mb-2">Congratulations!</h3>
+                <p class="text-2xl font-bold text-yellow-400">You Won ₹<span id="winAmount"></span>!</p>
+                <p class="text-sm text-gray-300 mt-2">Amount added to your wallet</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="location.href='bot.html'" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fas fa-redo mr-2"></i>Play Again
+                </button>
+                <button onclick="goHome()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas" class="confetti hidden"></canvas>
+
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+ 
+  
+</div>
+
+<!-- Firebase Auth & Profile Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, increment, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePreview.addEventListener("click", () => profilePhotoInput.click());
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+    if (data.secure_url) {
+      const user = auth.currentUser;
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const docRef = doc(db, "users", uid);
+      let docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const defaultData = {
+          name: user.email,
+          rechargeWallet: 0,
+          winningWallet: 0,
+          profilePhoto: "",
+          isAdmin: false,
+          matchHistory: []
+        };
+        await setDoc(docRef, defaultData);
+        docSnap = await getDoc(docRef);
+      }
+
+
+      const data = docSnap.data();
+      document.getElementById("recharge-wallet").innerText = data.rechargeWallet || 0;
+      document.getElementById("winning-wallet").innerText = data.winningWallet || 0;
+      if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+  window.withdraw = function () {
+    alert("Withdraw coming soon!");
+  }
+  window.logout = function () {
+    signOut(auth).then(() => window.location.href = 'login.html');
+  }
+    window.recharge = async function () {
+    const amountStr = prompt("Enter recharge amount:");
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Invalid amount.");
+    const fee = amount <= 100 ? 2 : 0;
+    const net = amount - fee;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, { rechargeWallet: increment(net) });
+
+    const adminRef = doc(db, "admin", "fees");
+    await updateDoc(adminRef, { totalRechargeFee: increment(fee) }).catch(() =>
+      setDoc(adminRef, { totalRechargeFee: fee }, { merge: true })
+    );
+
+    alert(`₹${net} added. ₹${fee} fee charged.`);
+    const snap = await getDoc(userRef);
+    document.getElementById("recharge-wallet").innerText = snap.data().rechargeWallet || 0;
+  }
+
+  window.withdraw = () => alert("Withdraw coming soon!");
+  
+  // Expose Firebase functions and instances globally
+window.auth = auth;
+window.db = db;
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
+window.increment = increment;
+
+</script>
+
+    <script>
+        // Game State
+        let currentGameState = {
+            playAmount: 0,
+            currentQuestionIndex: 0,
+            userAnswers: [],
+            userScore: 0,
+            botScore: 0,
+            selectedQuestions: [],
+            startTime: 0,
+            questionStartTime: 0,
+            userTimes: [],
+            botTimes: [],
+            gameTimer: null,
+            botTimer: null,
+			gameEnded: false 
+        };
+
+        // Questions Pool (30 questions)	
+const botLevel = "Hard";		
+		
+		
+const questionsPool = 
+[
+
+    {
+        question: "Identify this astronomical object captured by the James Webb Telescope.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Webb%27s_First_Deep_Field.jpg/320px-Webb%27s_First_Deep_Field.jpg",
+        options: ["Andromeda Galaxy", "Cartwheel Galaxy", "Webb Deep Field", "Pillars of Creation"],
+        correct: 2
+    },
+    {
+        question: "Which neuron structure is shown in this image?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Neuron_structure.svg/320px-Neuron_structure.svg.png",
+        options: ["Axon", "Dendrite", "Myelin Sheath", "Soma"],
+        correct: 1
+    },
+    {
+        question: "Identify this famous scientist from his childhood photo.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Albert_Einstein_as_a_child.jpg/320px-Albert_Einstein_as_a_child.jpg",
+        options: ["Max Planck", "Albert Einstein", "Werner Heisenberg", "Richard Feynman"],
+        correct: 1
+    },
+    {
+        question: "Which historic manuscript is shown in this image?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Voynich_Manuscript_%2815%29.jpg/320px-Voynich_Manuscript_%2815%29.jpg",
+        options: ["Codex Gigas", "Voynich Manuscript", "Dead Sea Scroll", "Beale Ciphers"],
+        correct: 1
+    },
+    {
+        question: "Identify this ancient computer from WWII.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Colossus_rebuild_2007.jpg/320px-Colossus_rebuild_2007.jpg",
+        options: ["ENIAC", "Z3", "Colossus", "UNIVAC"],
+        correct: 2
+    },
+    {
+        question: "Which famous puzzle does this represent?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Klein_Bottle.svg/320px-Klein_Bottle.svg.png",
+        options: ["Mobius Strip", "Torus Knot", "Klein Bottle", "Penrose Triangle"],
+        correct: 2
+    },
+    {
+        question: "What biological process is shown in this image?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Transcription_translation.svg/320px-Transcription_translation.svg.png",
+        options: ["Transcription & Translation", "DNA Replication", "Protein Folding", "Mutation"],
+        correct: 0
+    },
+    {
+        question: "Which AI architecture does this image illustrate?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Transformer_Model.png/320px-Transformer_Model.png",
+        options: ["RNN", "CNN", "Transformer", "Autoencoder"],
+        correct: 2
+    },
+    {
+        question: "Identify the depicted structure from Islamic architecture.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Alhambra_Generalife.jpg/320px-Alhambra_Generalife.jpg",
+        options: ["Mezquita", "Blue Mosque", "Alhambra", "Hagia Sophia"],
+        correct: 2
+    },
+    {
+        question: "Which type of telescope is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Very_Large_Telescope_array.jpg/320px-Very_Large_Telescope_array.jpg",
+        options: ["Refracting", "Infrared", "Radio", "Optical"],
+        correct: 3
+    },
+    {
+        question: "Identify this complex topology object.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Moebius_strip.jpg/320px-Moebius_strip.jpg",
+        options: ["Klein Bottle", "Torus", "Mobius Strip", "Boyer Surface"],
+        correct: 2
+    },
+    {
+        question: "Which advanced robotic system is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Atlas_robot.png/320px-Atlas_robot.png",
+        options: ["ASIMO", "Atlas", "Spot", "Sophia"],
+        correct: 1
+    },
+    {
+        question: "Which Hindu temple complex is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Konark_Sun_Temple_Wheel.jpg/320px-Konark_Sun_Temple_Wheel.jpg",
+        options: ["Khajuraho", "Konark Sun Temple", "Brihadeeswarar Temple", "Ranakpur Jain Temple"],
+        correct: 1
+    },
+    {
+        question: "Which genetic tool is visualized here?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/CRISPR-Cas9_Mechanism.svg/320px-CRISPR-Cas9_Mechanism.svg.png",
+        options: ["Gene Cloning", "CRISPR-Cas9", "RNAi", "PCR"],
+        correct: 1
+    },
+    {
+        question: "Which extinct human species' skull is shown?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Homo_heidelbergensis_1.JPG/320px-Homo_heidelbergensis_1.JPG",
+        options: ["Homo habilis", "Homo neanderthalensis", "Homo erectus", "Homo heidelbergensis"],
+        correct: 3
+    },
+    {
+        question: "Which early writing system is shown?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Sumerian_26th_c_Adab.jpg/320px-Sumerian_26th_c_Adab.jpg",
+        options: ["Linear B", "Sumerian Cuneiform", "Phoenician", "Hieroglyphics"],
+        correct: 1
+    },
+    {
+        question: "Which space mission took this famous photo?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/320px-The_Earth_seen_from_Apollo_17.jpg",
+        options: ["Apollo 11", "Apollo 13", "Apollo 17", "Skylab"],
+        correct: 2
+    },
+    {
+        question: "What type of mathematical surface is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Saddle_surface.svg/320px-Saddle_surface.svg.png",
+        options: ["Paraboloid", "Hyperbolic Plane", "Saddle Surface", "Cone"],
+        correct: 2
+    },
+    {
+        question: "Which major machine learning concept does this graph depict?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Overfitting_Underfitting.svg/320px-Overfitting_Underfitting.svg.png",
+        options: ["Regularization", "Gradient Descent", "Bias-Variance Tradeoff", "Activation Function"],
+        correct: 2
+    },
+    {
+        question: "Which planet's surface is shown here?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Mars_-_August_2003.jpg/320px-Mars_-_August_2003.jpg",
+        options: ["Mercury", "Venus", "Mars", "Jupiter"],
+        correct: 2
+    },
+    {
+        question: "Which historical cipher device is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Enigma_machine_London_Science_Museum.jpg/320px-Enigma_machine_London_Science_Museum.jpg",
+        options: ["Caesar Cipher", "Lorenz Machine", "Enigma Machine", "Bombe"],
+        correct: 2
+    },
+    {
+        question: "Which art movement does this painting represent?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Picasso_Three_Musicians_1921.jpg/320px-Picasso_Three_Musicians_1921.jpg",
+        options: ["Expressionism", "Cubism", "Surrealism", "Realism"],
+        correct: 1
+    },
+    {
+        question: "Identify this real-life fractal structure.",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Romanesco_Broccoli.jpg/320px-Romanesco_Broccoli.jpg",
+        options: ["Coral Reef", "Barnacle", "Romanesco Broccoli", "Sea Anemone"],
+        correct: 2
+    },
+    {
+        question: "What type of geological formation is shown?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Zhangye_National_Geopark.jpg/320px-Zhangye_National_Geopark.jpg",
+        options: ["Igneous Ridge", "Glacial Moraine", "Rainbow Mountains", "Volcanic Tuff"],
+        correct: 2
+    },
+    {
+        question: "Which physics concept does this graph illustrate?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Black_body_curve_en.svg/320px-Black_body_curve_en.svg.png",
+        options: ["Planck Radiation Law", "Stefan-Boltzmann Law", "Wien’s Law", "Photoelectric Effect"],
+        correct: 0
+    },
+    {
+        question: "Which structure is this from particle physics?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/CERN_LHC_Tunnel1.jpg/320px-CERN_LHC_Tunnel1.jpg",
+        options: ["Synchrotron", "Cyclotron", "LHC Tunnel", "Fermilab Detector"],
+        correct: 2
+    },
+    {
+        question: "Which Indian space achievement does this represent?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/PSLV-C37.jpg/320px-PSLV-C37.jpg",
+        options: ["Chandrayaan-1", "PSLV-C37", "GSLV-MkIII", "IRNSS Launch"],
+        correct: 1
+    },
+    {
+        question: "Which deep learning technique is illustrated here?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Autoencoder_structure.png/320px-Autoencoder_structure.png",
+        options: ["GAN", "Autoencoder", "LSTM", "Transformer"],
+        correct: 1
+    },
+    {
+        question: "Which rare optical phenomenon is this?",
+        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Glory_Phenomenon.jpg/320px-Glory_Phenomenon.jpg",
+        options: ["Halo", "Aurora", "Glory", "Iridescence"],
+        correct: 2
+    },
+
+
+    {
+        question: "Which process is used to purify metals by electrolysis?",
+        options: ["Roasting", "Smelting", "Electrorefining", "Alloying"],
+        correct: 2
+    },
+    {
+        question: "Which Indian state has the largest geographical area?",
+        options: ["Rajasthan", "Madhya Pradesh", "Maharashtra", "Uttar Pradesh"],
+        correct: 0
+    },
+    {
+        question: "Which of the following uses backpropagation?",
+        options: ["Decision Tree", "K-Means", "Naive Bayes", "Neural Networks"],
+        correct: 3
+    },
+    {
+        question: "Which field of study focuses on classifying organisms?",
+        options: ["Anatomy", "Ecology", "Taxonomy", "Physiology"],
+        correct: 2
+    },
+    {
+        question: "Which branch of economics studies individual consumer behavior?",
+        options: ["Macroeconomics", "Microeconomics", "Fiscal Economics", "Monetary Economics"],
+        correct: 1
+    },
+    {
+        question: "Which programming language was used to create the first computer virus?",
+        options: ["Python", "Assembly", "C", "Basic"],
+        correct: 1
+    },
+    {
+        question: "Which Indian king defeated Alexander's general Seleucus?",
+        options: ["Ashoka", "Bindusara", "Chandragupta Maurya", "Samudragupta"],
+        correct: 2
+    },
+    {
+        question: "Which computer scientist is known for the concept of 'linked lists'?",
+        options: ["Donald Knuth", "John McCarthy", "Grace Hopper", "Allen Newell"],
+        correct: 0
+    },
+    {
+        question: "Which law of thermodynamics defines entropy?",
+        options: ["Zeroth Law", "First Law", "Second Law", "Third Law"],
+        correct: 2
+    },
+    {
+        question: "What is the primary function of mitochondria?",
+        options: ["Protein synthesis", "DNA replication", "Energy production", "Detoxification"],
+        correct: 2
+    },
+    {
+        question: "Which of these data structures provides LIFO access?",
+        options: ["Queue", "Stack", "Tree", "Graph"],
+        correct: 1
+    },
+    {
+        question: "Which Indian scientist proposed the Bose-Einstein statistics?",
+        options: ["Homi Bhabha", "Satyendra Nath Bose", "C.V. Raman", "Vikram Sarabhai"],
+        correct: 1
+    },
+    {
+        question: "Which hormone regulates glucose in the blood?",
+        options: ["Adrenaline", "Insulin", "Thyroxine", "Estrogen"],
+        correct: 1
+    },
+    {
+        question: "Which planet has the highest surface temperature in the solar system?",
+        options: ["Mercury", "Venus", "Mars", "Jupiter"],
+        correct: 1
+    },
+    {
+        question: "Which Indian state is the largest producer of coffee?",
+        options: ["Tamil Nadu", "Kerala", "Karnataka", "Assam"],
+        correct: 2
+    },
+    {
+        question: "What is the name of the world's first programmable computer?",
+        options: ["ENIAC", "Z3", "UNIVAC", "Colossus"],
+        correct: 1
+    },
+    {
+        question: "Which of the following minerals is a source of uranium?",
+        options: ["Bauxite", "Pitchblende", "Hematite", "Galena"],
+        correct: 1
+    },
+    {
+        question: "Which Indian constitution article defines the 'Fundamental Duties'?",
+        options: ["Article 21", "Article 39", "Article 51A", "Article 356"],
+        correct: 2
+    },
+    {
+        question: "Which law relates voltage, current, and inductance in an inductor?",
+        options: ["Faraday’s Law", "Lenz's Law", "Ohm’s Law", "Kirchhoff’s Law"],
+        correct: 0
+    },
+    {
+        question: "Which economic theory is associated with 'Invisible Hand'?",
+        options: ["Keynesian Theory", "Marxist Theory", "Classical Economics", "Modern Monetary Theory"],
+        correct: 2
+    },
+    {
+        question: "Which part of the cell synthesizes proteins?",
+        options: ["Mitochondria", "Ribosome", "Golgi Apparatus", "Lysosome"],
+        correct: 1
+    },
+	    {
+        question: "Which principle states that no two fermions can occupy the same quantum state simultaneously?",
+        options: ["Heisenberg Uncertainty Principle", "Pauli Exclusion Principle", "Bohr's Principle", "Superposition Principle"],
+        correct: 1
+    },
+    {
+        question: "Which algorithm solves the shortest path problem in a graph with negative weights?",
+        options: ["Dijkstra's Algorithm", "Prim's Algorithm", "Bellman-Ford Algorithm", "Kruskal's Algorithm"],
+        correct: 2
+    },
+    {
+        question: "Which enzyme is responsible for DNA replication in prokaryotes?",
+        options: ["DNA Ligase", "DNA Polymerase III", "Helicase", "Topoisomerase"],
+        correct: 1
+    },
+    {
+        question: "What is the result of the integral of 1/x from -1 to 1?",
+        options: ["0", "1", "Undefined", "Infinity"],
+        correct: 2
+    },
+    {
+        question: "Which machine learning algorithm is most suitable for spam detection?",
+        options: ["Linear Regression", "K-Means", "Naive Bayes", "Decision Tree"],
+        correct: 2
+    },
+    {
+        question: "Which element has the highest melting point?",
+        options: ["Carbon", "Iron", "Tungsten", "Osmium"],
+        correct: 2
+    },
+    {
+        question: "Which Indian satellite mission aimed at studying the sun?",
+        options: ["Chandrayaan-3", "Mangalyaan", "Aditya-L1", "RISAT"],
+        correct: 2
+    },
+    {
+        question: "Which philosopher's logic influenced the foundation of modern computer science?",
+        options: ["Aristotle", "Leibniz", "Frege", "Descartes"],
+        correct: 2
+    },
+    {
+        question: "Which sorting algorithm is best for nearly sorted arrays?",
+        options: ["Bubble Sort", "Insertion Sort", "Quick Sort", "Heap Sort"],
+        correct: 1
+    },
+    {
+        question: "Which protocol ensures secure communication over a computer network?",
+        options: ["HTTP", "FTP", "SSL/TLS", "TCP/IP"],
+        correct: 2
+    },
+    {
+        question: "Which economic concept explains why the value of money decreases over time?",
+        options: ["Inflation", "Deflation", "Stagflation", "Depreciation"],
+        correct: 0
+    },
+    {
+        question: "Which layer of the TCP/IP model handles error detection?",
+        options: ["Network", "Transport", "Internet", "Data Link"],
+        correct: 1
+    },
+    {
+        question: "What is the binary representation of the decimal number 255?",
+        options: ["11111111", "11001100", "10101010", "11110000"],
+        correct: 0
+    },
+    {
+        question: "Which compiler optimization technique eliminates dead code?",
+        options: ["Loop Unrolling", "Constant Folding", "Common Subexpression Elimination", "Dead Code Elimination"],
+        correct: 3
+    },
+    {
+        question: "Which psychological effect explains overestimating one’s knowledge?",
+        options: ["Confirmation Bias", "Dunning-Kruger Effect", "Anchoring Bias", "Cognitive Dissonance"],
+        correct: 1
+    },
+    {
+        question: "Which Indian mathematician gave an infinite series for π?",
+        options: ["Bhaskara I", "Ramanujan", "Brahmagupta", "Aryabhata"],
+        correct: 1
+    },
+    {
+        question: "Which SQL clause is used to filter groups?",
+        options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"],
+        correct: 1
+    },
+    {
+        question: "Which data structure is used in recursion?",
+        options: ["Queue", "Stack", "Array", "Linked List"],
+        correct: 1
+    },
+    {
+        question: "Which of the following is *not* a NP-complete problem?",
+        options: ["Traveling Salesman", "Boolean Satisfiability", "Vertex Cover", "Binary Search"],
+        correct: 3
+    },
+    {
+        question: "Which Nobel laureate developed game theory’s Nash Equilibrium?",
+        options: ["John Nash", "Robert Aumann", "Kenneth Arrow", "Paul Samuelson"],
+        correct: 0
+    },
+    {
+        question: "Which molecule plays the central role in cell energy transfer?",
+        options: ["DNA", "ATP", "RNA", "NADH"],
+        correct: 1
+    },
+    {
+        question: "Which sorting algorithm has the best average-case time complexity?",
+        options: ["Bubble Sort", "Selection Sort", "Quick Sort", "Merge Sort"],
+        correct: 3
+    },
+    {
+        question: "Which of these is not a fundamental force in nature?",
+        options: ["Gravitational", "Electromagnetic", "Centrifugal", "Weak Nuclear"],
+        correct: 2
+    },
+    {
+        question: "Which cryptographic protocol underlies Bitcoin transactions?",
+        options: ["SHA-1", "RSA", "SHA-256", "AES"],
+        correct: 2
+    },
+    {
+        question: "Which chemical reaction occurs in photosynthesis?",
+        options: ["Combustion", "Reduction of CO2", "Oxidation of O2", "Neutralization"],
+        correct: 1
+    },
+    {
+        question: "Which Indian scientist pioneered the field of wireless communication?",
+        options: ["C.V. Raman", "Jagadish Chandra Bose", "S.N. Bose", "Homi Bhabha"],
+        correct: 1
+    },
+    {
+        question: "Which data structure efficiently supports insertions and deletions at both ends?",
+        options: ["Stack", "Queue", "Deque", "Priority Queue"],
+        correct: 2
+    },
+    {
+        question: "Which theorem is used to prove the correctness of recursive algorithms?",
+        options: ["L'Hospital's Rule", "Recursion Tree", "Master Theorem", "Fixed Point Theorem"],
+        correct: 2
+    },
+    {
+        question: "Which part of the electromagnetic spectrum is used in MRI scans?",
+        options: ["Ultraviolet", "Infrared", "Radio waves", "Gamma rays"],
+        correct: 2
+    },
+    {
+        question: "Which concept in physics connects entropy and time direction?",
+        options: ["Quantum Entanglement", "Time Dilation", "Arrow of Time", "Black Hole Paradox"],
+        correct: 2
+    },
+
+];
+
+
+
+
+		document.getElementById('entryScreen').classList.add('hidden');
+document.getElementById('quizScreen').classList.remove('hidden');
+
+window.addEventListener("DOMContentLoaded", () => {
+  window.auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      await startGame(); // ✅ only start if logged in
+    } else {
+      alert("You must be logged in to play.");
+      window.location.href = "login.html";
+    }
+  });
+});
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+
+    window.location.href = "bot.html"; // or your desired home page
+  }
+});
+
+async function startGame() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = parseInt(urlParams.get("amount") || "100");
+
+    // ✅ Ensure user is logged in
+    const user = window.auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to play.");
+        return window.location.href = "login.html";
+    }
+
+    const userRef = window.doc(window.db, "users", user.uid);
+    const userSnap = await window.getDoc(userRef);
+    const userData = userSnap.data();
+
+    let rechargeWallet = userData.rechargeWallet || 0;
+    let winningWallet = userData.winningWallet || 0;
+    let totalBalance = rechargeWallet + winningWallet;
+
+    // ❌ Not enough money at all
+    if (totalBalance < amount) {
+        alert("Not enough balance to start the game. Please recharge your wallet.");
+        return;
+    }
+
+    // ✅ Prepare deduction logic
+    let updateData = {};
+
+    if (rechargeWallet >= amount) {
+        // 💰 Deduct fully from recharge wallet
+        updateData.rechargeWallet = window.increment(-amount);
+    } else {
+        // 💡 Partial from recharge, remaining from winning
+        const fromRecharge = rechargeWallet;
+        const fromWinning = amount - fromRecharge;
+
+        updateData.rechargeWallet = window.increment(-fromRecharge);
+        updateData.winningWallet = window.increment(-fromWinning);
+    }
+
+    // ✅ Deduct wallets in Firestore
+    await window.setDoc(userRef, updateData, { merge: true });
+
+    // ✅ Store amount in game state
+    currentGameState.playAmount = amount;
+    currentGameState.selectedQuestions = getRandomQuestions(10);
+    currentGameState.startTime = Date.now();
+
+    document.getElementById('entryScreen').classList.add('hidden');
+    document.getElementById('quizScreen').classList.remove('hidden');
+
+    initializeProgress();
+    showQuestion(0);
+}
+
+
+
+
+        function getRandomQuestions(count) {
+            const shuffled = [...questionsPool].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function initializeProgress() {
+            const container = document.getElementById('progressContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const progressItem = document.createElement('div');
+                progressItem.className = 'progress-item flex items-center justify-between p-2 rounded border border-gray-600';
+                progressItem.innerHTML = `
+                    <span class="text-sm">Q${i + 1}</span>
+                    <div class="flex space-x-2">
+                        <span id="userQ${i}" class="w-3 h-3 rounded-full bg-gray-600"></span>
+                        <span id="botQ${i}" class="w-3 h-3 rounded-full bg-gray-600"></span>
+                    </div>
+                `;
+                container.appendChild(progressItem);
+            }
+        }
+
+
+function showQuestion(index) {
+    if (index >= currentGameState.selectedQuestions.length) {
+        endGame();
+        return;
+    }
+
+    const question = currentGameState.selectedQuestions[index];
+    currentGameState.currentQuestionIndex = index;
+    currentGameState.questionStartTime = Date.now();
+
+    document.getElementById('currentQuestion').textContent = index + 1;
+    document.getElementById('questionText').textContent = question.question;
+
+  const questionText = document.getElementById("questionText");
+  const questionImage = document.getElementById("question-image");
+
+  questionText.textContent = question.question;
+
+if (question.img) {
+  questionImage.style.display = "block";
+  questionImage.src = question.img + `?v=${Date.now()}`;
+} else {
+  questionImage.style.display = "none";
+  questionImage.src = "";
+}
+
+
+
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+    question.options.forEach((option, optionIndex) => {
+        const button = document.createElement('button');
+        button.className = 'option-btn w-full p-4 rounded-lg text-left hover:scale-105 transform transition-all';
+        button.innerHTML = `<span class="font-medium">${String.fromCharCode(65 + optionIndex)}.</span> ${option}`;
+        button.onclick = () => selectAnswer(optionIndex);
+        optionsContainer.appendChild(button);
+    });
+
+    const progressItems = document.querySelectorAll('.progress-item');
+    progressItems.forEach((item, i) => {
+        if (i === index) item.classList.add('active');
+        else item.classList.remove('active', 'completed');
+        if (i < index) item.classList.add('completed');
+    });
+
+    startTimer();
+
+
+}
+
+
+ function selectAnswer(selectedIndex) {
+    const answerTime = (Date.now() - currentGameState.questionStartTime) / 1000;
+    currentGameState.userTimes.push(answerTime);
+
+    const question = currentGameState.selectedQuestions[currentGameState.currentQuestionIndex];
+    const isCorrect = selectedIndex === question.correct;
+
+    currentGameState.userAnswers.push({
+        selected: selectedIndex,
+        correct: isCorrect,
+        time: answerTime
+    });
+
+    if (selectedIndex !== -1) {
+        const options = document.querySelectorAll('.option-btn');
+        options[selectedIndex].classList.add('selected');
+    }
+
+    if (isCorrect) {
+        currentGameState.userScore++;
+    }
+
+    const userIndicator = document.getElementById(`userQ${currentGameState.currentQuestionIndex}`);
+    userIndicator.className = `w-3 h-3 rounded-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
+
+    clearInterval(currentGameState.gameTimer);
+
+    setTimeout(() => {
+        if (currentGameState.currentQuestionIndex < 9) {
+            showQuestion(currentGameState.currentQuestionIndex + 1);
+        } else {
+            endGame();
+        }
+    }, 1000);
+}
+
+ 
+        function startTimer() {
+            let timeLeft = 10;
+            document.getElementById('timeLeft').textContent = timeLeft;
+            
+            currentGameState.gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                document.getElementById('timerBar').style.width = (timeLeft / 10) * 100 + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(currentGameState.gameTimer);
+                    selectAnswer(-1); // Auto-submit with no selection
+                }
+            }, 1000);
+        }
+
+
+		
+function endGame() {
+    if (currentGameState.gameEnded) return; // ⛔ prevent repeat calls
+    currentGameState.gameEnded = true; // ✅ mark as ended
+
+    const userScore = currentGameState.userScore;
+    const botShouldWin = Math.random() < 0.99;
+    
+    if (botShouldWin) {
+        if (userScore < 9) {
+            currentGameState.botScore = userScore + Math.floor(Math.random() * 2) + 1;
+        } else {
+            currentGameState.botScore = userScore;
+        }
+        currentGameState.botScore = Math.min(currentGameState.botScore, 10);
+    } else {
+        const penalty = Math.floor(Math.random() * 3) + 1;
+        currentGameState.botScore = Math.max(0, userScore - penalty);
+    }
+
+    // Update bot visual indicators
+    for (let i = 0; i < 10; i++) {
+        const botIndicator = document.getElementById(`botQ${i}`);
+        const isCorrect = i < currentGameState.botScore;
+        botIndicator.className = `w-3 h-3 rounded-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
+    }
+
+    setTimeout(() => {
+        showResults();
+    }, 2000);
+}
+
+async function showResults() {
+            const userWon = currentGameState.userScore > currentGameState.botScore;
+            const winAmount = Math.floor(currentGameState.playAmount * 5);
+            document.getElementById('winAmount').textContent = winAmount;
+document.getElementById('winningSection').classList.remove('hidden');
+
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            // Update result display
+if (userWon) {
+    document.getElementById('resultIcon').innerHTML = '<i class="fas fa-trophy text-yellow-400"></i>';
+    document.getElementById('resultTitle').textContent = 'Victory!';
+    document.getElementById('resultTitle').className = 'text-3xl font-bold mb-2 text-green-400';
+    document.getElementById('resultSubtitle').textContent = 'You defeated the bot!';
+    document.getElementById('winAmount').textContent = winAmount;
+    document.getElementById('winningSection').classList.remove('hidden');
+
+    // ✅ Update wallet in Firestore
+    const user = window.auth.currentUser;
+    if (user) {
+        const userRef = window.doc(window.db, "users", user.uid);
+        await window.setDoc(userRef, {
+            winningWallet: window.increment(winAmount)
+        }, { merge: true });
+
+        const snap = await window.getDoc(userRef);
+        const newWalletAmount = snap.data().winningWallet || 0;
+        const walletElem = document.getElementById("winning-wallet");
+        if (walletElem) walletElem.innerText = newWalletAmount;
+    }
+
+    // 🎉 Show confetti
+    showConfetti();
+} else {
+                document.getElementById('resultIcon').innerHTML = '<i class="fas fa-robot text-red-400"></i>';
+                document.getElementById('resultTitle').textContent = 'Defeated!';
+                document.getElementById('resultTitle').className = 'text-3xl font-bold mb-2 text-red-400';
+                document.getElementById('resultSubtitle').textContent = 'The bot was too smart this time!';
+                document.getElementById('winningSection').classList.add('hidden');
+            }
+
+            // Update scores
+            document.getElementById('userScore').textContent = `${currentGameState.userScore}/10`;
+            document.getElementById('botScore').textContent = `${currentGameState.botScore}/10`;
+            
+            // Calculate average times
+            const userAvgTime = currentGameState.userTimes.length > 0 ? 
+                (currentGameState.userTimes.reduce((a, b) => a + b, 0) / currentGameState.userTimes.length).toFixed(1) : 'N/A';
+            const botAvgTime = currentGameState.botTimes.length > 0 ? 
+                (currentGameState.botTimes.reduce((a, b) => a + b, 0) / currentGameState.botTimes.length).toFixed(1) : 'N/A';
+            
+            document.getElementById('userAvgTime').textContent = userAvgTime;
+            document.getElementById('botAvgTime').textContent = botAvgTime;
+			
+			if (userWon === false && currentGameState.userScore === 10 && currentGameState.botScore === 10) {
+  // Make bot seem slower if it wins despite user getting full score
+  currentGameState.botTimes = currentGameState.botTimes.map(t => t + 1.5);
+  
+  
+}
+await saveBotMatchResult(userWon, winAmount);
+
+
+
+        }
+
+async function saveBotMatchResult(userWon, winAmount) {
+    const user = window.auth.currentUser;
+    if (!user) return;
+
+    const resultData = {
+        uid: user.uid,
+        playAmount: currentGameState.playAmount,
+        userScore: currentGameState.userScore,
+        botScore: currentGameState.botScore,
+        userTimes: currentGameState.userTimes,
+        botTimes: currentGameState.botTimes,
+        userWon: userWon,
+		botLevel: botLevel,
+        winAmount: userWon ? winAmount : 0,
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        const matchRef = window.doc(window.db, `botMatches/${user.uid}_${Date.now()}`);
+        await window.setDoc(matchRef, resultData);
+        console.log("Bot match result saved successfully.");
+    } catch (error) {
+        console.error("Failed to save bot match result:", error);
+    }
+}
+
+        function showConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.classList.remove('hidden');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const confettiPieces = [];
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 150; i++) {
+                confettiPieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 10 + 5,
+                    h: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: Math.random() * 4 - 2,
+                    vy: Math.random() * 6 + 2,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 10 - 5
+                });
+            }
+            
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                confettiPieces.forEach((piece, index) => {
+                    piece.x += piece.vx;
+                    piece.y += piece.vy;
+                    piece.rotation += piece.rotationSpeed;
+                    
+                    ctx.save();
+                    ctx.translate(piece.x + piece.w / 2, piece.y + piece.h / 2);
+                    ctx.rotate(piece.rotation * Math.PI / 180);
+                    ctx.fillStyle = piece.color;
+                    ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+                    ctx.restore();
+                    
+                    if (piece.y > canvas.height) {
+                        confettiPieces.splice(index, 1);
+                    }
+                });
+                
+                if (confettiPieces.length > 0) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    canvas.classList.add('hidden');
+                }
+            }
+            
+            animateConfetti();
+        }
+
+        function saveGameHistory(userWon, winAmount) {
+            const history = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const gameRecord = {
+                date: new Date().toISOString(),
+                userScore: currentGameState.userScore,
+                botScore: currentGameState.botScore,
+                winner: userWon ? 'user' : 'bot',
+                playAmount: currentGameState.playAmount,
+                winAmount: userWon ? winAmount : 0,
+                totalTime: Math.floor((Date.now() - currentGameState.startTime) / 1000)
+            };
+            
+            history.push(gameRecord);
+            localStorage.setItem('quizHistory', JSON.stringify(history));
+        }
+
+        function playAgain() {
+            // Reset game state
+            currentGameState = {
+                playAmount: 0,
+                currentQuestionIndex: 0,
+                userAnswers: [],
+                userScore: 0,
+                botScore: 0,
+                selectedQuestions: [],
+                startTime: 0,
+                questionStartTime: 0,
+                userTimes: [],
+                botTimes: [],
+                gameTimer: null,
+                botTimer: null
+            };
+            
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('entryScreen').classList.remove('hidden');
+        }
+
+        function goHome() {
+            // In a real app, this would navigate to dashboard
+            window.location.href = '/dashboard.html';
+        }
+
+        // Handle window resize for confetti
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script><span id="winning-wallet"></span>
+<span id="recharge-wallet"></span>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizania Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+  
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="dashboard.html">🏠 Home</a>
+      <a href="profile-edit.html">👤 Profile</a>
+      <a href="msg.html">✉️ Messages</a>
+      <a href="#">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="#">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 animate-fadeIn">
+
+      <h1 class="text-2xl font-bold mb-4">🎮 Quiz Battel</h1>
+
+      <div class="bg-white dark:bg-gray-800 p-4 rounded shadow space-y-4">
+        <h2 class="text-xl font-semibold">📜 Rules & Commission</h2>
+        <ul class="list-disc ml-6 text-sm">
+          <li>Choose an entry fee to join the battle</li>
+          <li>Commission is deducted before the match</li>
+          <li>Wallet deduction prioritizes Recharge Wallet</li>
+          <li>Remaining amount taken from Winning Wallet</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold mt-4">💰 Entry Fee Options</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button onclick="selectFee(10, 2)" class="p-2 bg-blue-600 text-white rounded">₹10</button>
+          <button onclick="selectFee(20, 3)" class="p-2 bg-blue-600 text-white rounded">₹20</button>
+          <button onclick="selectFee(50, 5)" class="p-2 bg-blue-600 text-white rounded">₹50</button>
+          <button onclick="selectFee(100, 10)" class="p-2 bg-blue-600 text-white rounded">₹100</button>
+        </div>
+
+        <div id="walletStatus" class="text-sm text-gray-600 mt-2"></div>
+
+        <h3 class="text-lg font-semibold mt-4">🎯 Choose Category</h3>
+        <select id="category" class="w-full p-2 rounded bg-gray-200 dark:bg-gray-700">
+          <option value="gk">General Knowledge</option>
+          <option value="sports">Sports</option>
+          <option value="science">Science</option>
+          <option value="movies">Movies</option>
+        </select>
+
+        <button onclick="startQuizBattle()" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Start Quiz Battle</button>
+      </div>
+    </main>
+  </div>
+
+</div>
+
+  
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+    let selectedEntry = 10;
+    let fee = 2;
+  let currentUser = null;
+ 
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+  
+      window.selectFee = function (amount, commission) {
+      selectedEntry = amount;
+      fee = commission;
+      document.getElementById('walletStatus').textContent = `Selected: ₹${amount} (₹${commission} fee), will try from Recharge Wallet first.`;
+    };
+
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const res = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST", body: formData
+    });
+    const data = await res.json();
+    if (data.secure_url) {
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+    currentUser = user;
+    const docRef = doc(db, "users", user.uid);
+    let docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      await setDoc(docRef, { name: user.email, rechargeWallet: 0, winningWallet: 0 }, { merge: true });
+      docSnap = await getDoc(docRef);
+    }
+    const data = docSnap.data();
+
+    if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+  });
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+
+  window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+
+window.startQuizBattle = async function () {
+  const selectedFee = selectedEntry; // Use selectedEntry instead of entryFee from dropdown
+  const category = document.getElementById('category').value;
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("User not logged in");
+    return;
+  }
+
+  const uid = user.uid;
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    alert("User data not found");
+    return;
+  }
+
+  const userData = userSnap.data();
+  const recharge = userData.rechargeWallet || 0;
+  const winning = userData.winningWallet || 0;
+  const totalAvailable = recharge + winning;
+
+  if (totalAvailable < selectedFee) {
+    alert("Insufficient total balance.");
+    return;
+  }
+
+  let rechargeDeduct = 0;
+  let winningDeduct = 0;
+
+  if (recharge >= selectedFee) {
+    rechargeDeduct = selectedFee;
+  } else {
+    rechargeDeduct = recharge;
+    winningDeduct = selectedFee - recharge;
+  }
+
+  await updateDoc(userRef, {
+    rechargeWallet: recharge - rechargeDeduct,
+    winningWallet: winning - winningDeduct
+  });
+
+  alert(`₹${selectedFee} deducted. Starting quiz...`);
+
+  // Redirect to quiz page
+  const redirectUrl = `battle-quiz.html?entryFee=${selectedFee}&category=${encodeURIComponent(category)}`;
+  window.location.href = redirectUrl;
+};
+
+
+
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+
+
+
+</script>
+
+</body>
+</html>

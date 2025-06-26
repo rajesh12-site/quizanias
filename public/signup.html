@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quizania - Signup</title>
+    <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .form-box {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #4b00ff;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #4b00ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #3600cc;
+    }
+    .link {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .link a {
+      color: #4b00ff;
+      text-decoration: none;
+    }
+	
+	#google-signin-btn {
+  background: #db4437;
+  color: white;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+  </style>
+  
+  
+
+</head>
+<body>
+
+
+  <div class="form-box">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+	  
+	    <p style="font-size: 12px; color: #555; margin: 8px 0 0 0;">
+    By signing up, you accept the 
+    <a href="terms.html" target="_blank" style="color: #4b00ff; text-decoration: none;">
+      Terms & Conditions
+    </a>and<a href="game-policy.html" target="_blank" style="color: #4b00ff; text-decoration: none;">
+      Game policy
+    </a>.
+  </p>
+	  
+      <button type="submit">Sign Up</button>
+    </form>
+	<button id="google-signin-btn" style="margin-top: 20px; background: white; border: 1px solid #ccc; color: #444; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 500;">
+  <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="width: 20px; height: 20px;" />
+  Sign in with Google
+</button>
+
+    <div class="link">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  collection
+} from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    signInWithPopup	 
+  } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider();
+
+  // ✅ TEST Referral Read Access
+
+  // ✅ Capture referral code
+  const urlParams = new URLSearchParams(window.location.search);
+  const refCode = urlParams.get("ref");
+  if (refCode) localStorage.setItem("referralCode", refCode);
+  // Email/Password Signup
+  const signupForm = document.getElementById("signupForm");
+  
+  
+signupForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = signupForm.name.value;
+  const email = signupForm.email.value;
+  const password = signupForm.password.value;
+
+  // (Optional) Check only allowed domains
+  const allowedDomains = ["gmail.com", "yahoo.com", "outlook.com"];
+  const domain = email.split("@")[1];
+  if (!allowedDomains.includes(domain)) {
+    alert("Only Gmail, Yahoo, or Outlook emails are allowed.");
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // ✅ Send verification email but allow user access immediately
+
+
+    // ✅ Store user in Firestore without 'emailVerified'
+let referredByUID = null;
+
+// 🔍 Check if referralCode exists in localStorage
+const referralCode = localStorage.getItem("referralCode");
+
+if (referralCode) {
+  try {
+    const referralsSnapshot = await getDocs(collection(db, "referrals"));
+    referralsSnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.referralCode === referralCode) {
+        referredByUID = data.uid;
+      }
+    });
+  } catch (err) {
+    console.error("❌ Referral fetch from top-level 'referrals' failed:", err.message);
+  }
+}
+
+await setDoc(doc(db, "users", user.uid), {
+  name: name,
+  email: email,
+  rechargeWallet: 10,
+  profilePhoto: "",
+  referredBy: referredByUID || null
+});
+
+
+    alert("Signup successful! create Your Profile");
+    window.location.href = "profile-edit.html"; // or profile-edit.html
+  } catch (error) {
+    alert(error.message);
+    console.error(error);
+  }
+});
+
+
+  // Google Sign-in
+  document.getElementById("google-signin-btn").addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+if (!userSnap.exists()) {
+  let referredByUID = null;
+  const referralCode = localStorage.getItem("referralCode");
+
+if (referralCode) {
+  try {
+    const referralsSnapshot = await getDocs(collection(db, "referrals"));
+    referralsSnapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data.referralCode === referralCode) {
+        referredByUID = data.uid;
+      }
+    });
+  } catch (err) {
+    console.error("❌ Referral fetch from top-level 'referrals' failed:", err.message);
+  }
+}
+
+  await setDoc(userRef, {
+    name: user.displayName,
+    email: user.email,
+    rechargeWallet: 10,
+    referredBy: referredByUID || null
+  });
+}
+
+	  
+
+      alert("Google Sign-in successful: " + user.email);
+      window.location.href = "profile-edit.html";
+    } catch (error) {
+      console.error(error);
+      alert("Google Sign-in failed: " + error.message);
+    }
+  });
+</script>
+
+
+
+</body>
+</html>

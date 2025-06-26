@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania - Play vs Bot Challenge</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+		 <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .bot-easy {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .bot-medium {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+        
+        .bot-hard {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            }
+        }
+        
+        .floating-icons {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .currency-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .currency-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .section-divider {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            height: 1px;
+            margin: 3rem 0;
+        }
+        
+        .step-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .step-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+        }
+    </style>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white">
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="/play.html">▶️ Play</a>
+      <a href="/refferearn">🤝 Refer & Earn</a>
+      <a href="/settingtrial">⚙️ Setting</a>
+      <a href="/feedbacks">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pb-8">
+	<br></br>
+        <!-- Play vs Bot Section -->
+        <section class="mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <i class="fas fa-robot mr-3 text-cyan-300"></i>
+                    Choose Your Challenge
+                </h2>
+                <p class="text-lg text-white opacity-80 max-w-2xl mx-auto">
+                    Pick your opponent and entry amount. Higher difficulty means bigger rewards but lower win chances!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                <!-- Easy Bot Card -->
+                <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+                    <div class="bot-easy absolute inset-0 opacity-20 rounded-2xl"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4 bounce-animation">
+                            🤖
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Easy Bot</h3>
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-green-400 text-green-900 px-4 py-2 rounded-full text-sm font-semibold mr-2">
+                                70% Win Chance
+                            </div>
+                            <div class="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-semibold">
+                                1.3× Reward
+                            </div>
+                        </div>
+                        <p class="text-white opacity-90 mb-6 italic">
+                            "A friendly challenger to warm up!"
+                        </p>
+                        
+                        <div class="mb-6">
+                            <label class="block text-white mb-2 font-semibold">Entry Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">₹</span>
+                                <input type="number" 
+                                       class="currency-input w-full pl-8 pr-4 py-3 rounded-lg font-semibold text-gray-800" 
+                                       placeholder="10" 
+                                       min="10" 
+                                       max="5000" 
+                                       value="100">
+                            </div>
+                            <p class="text-xs text-white opacity-70 mt-1">Min: ₹10 | Max: ₹5000</p>
+                        </div>
+                        
+                        <button onclick="startBotGame('easy', this)" 
+                                class="btn-primary w-full py-4 px-6 rounded-lg text-white font-bold text-lg">
+                            <i class="fas fa-play mr-2"></i>
+                            Play Now
+                        </button>
+                        
+                        <div class="mt-4 text-white opacity-80">
+                            <i class="fas fa-coins text-yellow-400 mr-1"></i>
+                            Potential Win: <span class="font-bold text-yellow-300">₹130</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium Bot Card -->
+                <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden transform scale-105">
+                    <div class="bot-medium absolute inset-0 opacity-20 rounded-2xl"></div>
+                    <div class="absolute -top-4 -right-4 bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold rotate-12">
+                        POPULAR
+                    </div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4 bounce-animation" style="animation-delay: 0.2s;">
+                            🤖
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Medium Bot</h3>
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-green-400 text-green-900 px-4 py-2 rounded-full text-sm font-semibold mr-2">
+                                50% Win Chance
+                            </div>
+                            <div class="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-semibold">
+                                2× Reward
+                            </div>
+                        </div>
+                        <p class="text-white opacity-90 mb-6 italic">
+                            "A balanced challenge – risk vs reward!"
+                        </p>
+                        
+                        <div class="mb-6">
+                            <label class="block text-white mb-2 font-semibold">Entry Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">₹</span>
+                                <input type="number" 
+                                       class="currency-input w-full pl-8 pr-4 py-3 rounded-lg font-semibold text-gray-800" 
+                                       placeholder="10" 
+                                       min="10" 
+                                       max="5000" 
+                                       value="200">
+                            </div>
+                            <p class="text-xs text-white opacity-70 mt-1">Min: ₹10 | Max: ₹5000</p>
+                        </div>
+                        
+                        <button onclick="startBotGame('medium', this)" 
+                                class="btn-primary w-full py-4 px-6 rounded-lg text-white font-bold text-lg">
+                            <i class="fas fa-play mr-2"></i>
+                            Play Now
+                        </button>
+                        
+                        <div class="mt-4 text-white opacity-80">
+                            <i class="fas fa-coins text-yellow-400 mr-1"></i>
+                            Potential Win: <span class="font-bold text-yellow-300">₹400</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hard Bot Card -->
+                <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+                    <div class="bot-hard absolute inset-0 opacity-20 rounded-2xl"></div>
+                    <div class="relative z-10">
+                        <div class="text-6xl mb-4 bounce-animation" style="animation-delay: 0.4s;">
+                            🤖
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Hard Bot</h3>
+                        <div class="flex justify-center items-center mb-4">
+                            <div class="bg-green-400 text-green-900 px-4 py-2 rounded-full text-sm font-semibold mr-2">
+                                20% Win Chance
+                            </div>
+                            <div class="bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full text-sm font-semibold">
+                                5× Reward
+                            </div>
+                        </div>
+                        <p class="text-white opacity-90 mb-6 italic">
+                            "Dare the genius? Win big!"
+                        </p>
+                        
+                        <div class="mb-6">
+                            <label class="block text-white mb-2 font-semibold">Entry Amount</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">₹</span>
+                                <input type="number" 
+                                       class="currency-input w-full pl-8 pr-4 py-3 rounded-lg font-semibold text-gray-800" 
+                                       placeholder="10" 
+                                       min="10" 
+                                       max="5000" 
+                                       value="500">
+                            </div>
+                            <p class="text-xs text-white opacity-70 mt-1">Min: ₹10 | Max: ₹5000</p>
+                        </div>
+                        
+                        <button onclick="startBotGame('hard', this)" 
+                                class="btn-primary w-full py-4 px-6 rounded-lg text-white font-bold text-lg">
+                            <i class="fas fa-play mr-2"></i>
+                            Play Now
+                        </button>
+                        
+                        <div class="mt-4 text-white opacity-80">
+                            <i class="fas fa-coins text-yellow-400 mr-1"></i>
+                            Potential Win: <span class="font-bold text-yellow-300">₹2500</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- How It Works Section -->
+        <section class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <i class="fas fa-lightbulb mr-3 text-yellow-300 floating-icons"></i>
+                    How It Works
+                </h2>
+                <p class="text-lg text-white opacity-80 max-w-2xl mx-auto">
+                    Simple 4-step process to challenge AI bots and win exciting prizes!
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Step 1 -->
+                <div class="step-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">
+                        <i class="fas fa-robot text-cyan-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">
+                        1. Choose Bot
+                    </h3>
+                    <p class="text-white opacity-80">
+                        Select your AI opponent and set your entry amount (₹10-₹5000)
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">
+                        <i class="fas fa-question-circle text-blue-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">
+                        2. Answer Questions
+                    </h3>
+                    <p class="text-white opacity-80">
+                        Face 10 challenging questions with 10-second timer each
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">
+                        <i class="fas fa-chart-line text-green-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">
+                        3. Beat the Bot
+                    </h3>
+                    <p class="text-white opacity-80">
+                        Score higher than the AI based on correct answers and speed
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card rounded-xl p-6 text-center">
+                    <div class="text-5xl mb-4">
+                        <i class="fas fa-trophy text-yellow-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">
+                        4. Win Prizes
+                    </h3>
+                    <p class="text-white opacity-80">
+                        Earn 1.3×, 2×, or 5× your entry amount based on bot difficulty
+                    </p>
+                </div>
+            </div>
+
+            <!-- Match Format Details -->
+            <div class="glass-card rounded-2xl p-8 mt-12">
+                <h3 class="text-3xl font-bold text-white mb-6 text-center">
+                    <i class="fas fa-gamepad mr-3 text-purple-300"></i>
+                    Match Format Details
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">⏱️</div>
+                        <h4 class="text-xl font-semibold text-white mb-2">10 Questions</h4>
+                        <p class="text-white opacity-80">Each question has a 10-second time limit</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h4 class="text-xl font-semibold text-white mb-2">Scoring System</h4>
+                        <p class="text-white opacity-80">Points based on correct answers and response time</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">💰</div>
+                        <h4 class="text-xl font-semibold text-white mb-2">Prize Structure</h4>
+                        <p class="text-white opacity-80">
+                            Easy: 1.3× | Medium: 2× | Hard: 5×
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-center">
+                    <h4 class="text-2xl font-bold text-white mb-2">
+                        <i class="fas fa-star mr-2"></i>
+                        Win Condition
+                    </h4>
+                    <p class="text-lg text-white opacity-90">
+                        Score higher than your chosen AI bot to claim your prize! 🏆
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+ 
+  
+</div>
+
+<!-- Firebase Auth & Profile Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+
+window.startBotGame = async function (botLevel, btnElement) {
+  const user = auth.currentUser;
+  if (!user) return alert("Please login first.");
+
+  const card = btnElement.closest(".glass-card");
+  const amountInput = card.querySelector("input.currency-input");
+  const amount = parseInt(amountInput.value);
+
+  if (isNaN(amount) || amount < 10 || amount > 5000) {
+    return alert("Invalid entry amount (₹10–₹5000).");
+  }
+
+  // ✅ Do not deduct money here — only redirect
+  const targetPage = `play-vs-bot-${botLevel}.html?amount=${amount}`;
+  window.location.href = targetPage;
+};
+
+  
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePreview.addEventListener("click", () => profilePhotoInput.click());
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+    if (data.secure_url) {
+      const user = auth.currentUser;
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const docRef = doc(db, "users", uid);
+      let docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const defaultData = {
+          name: user.email,
+          rechargeWallet: 0,
+          winningWallet: 0,
+          profilePhoto: "",
+          isAdmin: false,
+          matchHistory: []
+        };
+        await setDoc(docRef, defaultData);
+        docSnap = await getDoc(docRef);
+      }
+
+      const data = docSnap.data();
+      document.getElementById("recharge-wallet").innerText = data.rechargeWallet || 0;
+      document.getElementById("winning-wallet").innerText = data.winningWallet || 0;
+      if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+  window.withdraw = function () {
+    alert("Withdraw coming soon!");
+  }
+  window.logout = function () {
+    signOut(auth).then(() => window.location.href = 'login.html');
+  }
+    window.recharge = async function () {
+    const amountStr = prompt("Enter recharge amount:");
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Invalid amount.");
+    const fee = amount <= 100 ? 2 : 0;
+    const net = amount - fee;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, { rechargeWallet: increment(net) });
+
+    const adminRef = doc(db, "admin", "fees");
+    await updateDoc(adminRef, { totalRechargeFee: increment(fee) }).catch(() =>
+      setDoc(adminRef, { totalRechargeFee: fee }, { merge: true })
+    );
+
+    alert(`₹${net} added. ₹${fee} fee charged.`);
+    const snap = await getDoc(userRef);
+    document.getElementById("recharge-wallet").innerText = snap.data().rechargeWallet || 0;
+  }
+
+  window.withdraw = () => alert("Withdraw coming soon!");
+</script>
+
+    <script>
+        // Update potential winnings dynamically
+        document.querySelectorAll('.currency-input').forEach((input, index) => {
+            const multipliers = [1.3, 2, 5];
+            const cards = document.querySelectorAll('.glass-card');
+            
+            input.addEventListener('input', function() {
+                const amount = parseInt(this.value) || 0;
+                const potential = Math.floor(amount * multipliers[index]);
+                const winDisplay = cards[index].querySelector('.mt-4 .font-bold');
+                if (winDisplay) {
+                    winDisplay.textContent = `₹${potential}`;
+                }
+            });
+        });
+
+        // Add floating animation to currency symbols
+        setInterval(() => {
+            const coins = document.querySelectorAll('.fa-coins');
+            coins.forEach(coin => {
+                coin.style.transform = `translateY(${Math.sin(Date.now() * 0.002) * 3}px)`;
+            });
+        }, 50);
+
+        // Validate input ranges
+        document.querySelectorAll('.currency-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const value = parseInt(this.value);
+                if (value < 10) this.value = 10;
+                if (value > 5000) this.value = 5000;
+            });
+        });
+    </script>
+</body>
+</html>

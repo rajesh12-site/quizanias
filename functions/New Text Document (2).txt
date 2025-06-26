@@ -1,0 +1,20 @@
+[
+  {
+    "category": "gk",
+    "question": "Who was the first Prime Minister of India?",
+    "options": ["Nehru", "Gandhi", "Modi", "Patel"],
+    "correctAnswer": "Nehru"
+  },
+  {
+    "category": "gk",
+    "question": "What is the capital of Australia?",
+    "options": ["Sydney", "Canberra", "Melbourne", "Perth"],
+    "correctAnswer": "Canberra"
+  },
+  {
+    "category": "sports",
+    "question": "What is 12 x 12?",
+    "options": ["124", "144", "132", "122"],
+    "correctAnswer": "144"
+  }
+]

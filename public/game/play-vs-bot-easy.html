@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania - Easy Bot Battle</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+	 <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+  </style>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a40 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .option-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        .option-btn.selected {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .timer-bar {
+            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
+        }
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .progress-item {
+            transition: all 0.3s ease;
+        }
+        .progress-item.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        .progress-item.completed {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white overflow-x-hidden">
+
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="/play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="#">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+    <!-- Entry Screen -->
+    <div id="entryScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="quiz-container rounded-2xl p-8 max-w-md w-full text-center">
+            <div class="mb-6">
+                <i class="fas fa-robot text-6xl text-blue-400 mb-4"></i>
+                <h1 class="text-3xl font-bold text-white mb-2">Easy Bot Battle</h1>
+                <p class="text-gray-300">Test your knowledge against our AI bot!</p>
+            </div>
+            
+            
+            <div class="mb-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+                <p class="text-green-300 text-sm">
+                    <i class="fas fa-trophy mr-2"></i>
+                    Beat the bot and win <span class="font-bold text-yellow-400">1.3x</span> your entry amount!
+                </p>
+            </div>
+            
+            <button onclick="startGame()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                <i class="fas fa-play mr-2"></i>Start Battle
+            </button>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="min-h-screen p-4 hidden">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="flex flex-col lg:flex-row gap-6 mb-6">
+                <div class="quiz-container rounded-xl p-6 flex-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">Question <span id="currentQuestion">1</span>/10</h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="text-sm text-gray-400">Time Left</p>
+                                <p class="text-2xl font-bold text-yellow-400" id="timeLeft">10</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mb-6">
+                        <div id="timerBar" class="timer-bar h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Main Quiz Area -->
+                <div class="flex-1">
+                    <div class="quiz-container rounded-xl p-6 mb-6">
+                        <h3 id="questionText" class="text-xl mb-6 leading-relaxed"></h3>
+<img id="question-image" class="mb-4 max-w-full" alt="Question Image" style="display:none;" />
+
+
+
+                        <div id="optionsContainer" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- Progress Sidebar -->
+                <div class="lg:w-80">
+                    <div class="quiz-container rounded-xl p-6">
+                        <h4 class="text-lg font-bold mb-4">Battle Progress</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-blue-400"><i class="fas fa-user mr-2"></i>You</span>
+                                <span class="text-red-400"><i class="fas fa-robot mr-2"></i>Bot</span>
+                            </div>
+                            <div id="progressContainer" class="space-y-2"></div>
+                        </div>
+                        
+                        <!-- Bot Status -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="resultScreen" class="min-h-screen flex items-center justify-center p-4 hidden">
+        <div class="quiz-container rounded-2xl p-8 max-w-2xl w-full">
+            <div class="text-center mb-8">
+                <div id="resultIcon" class="text-6xl mb-4"></div>
+                <h2 id="resultTitle" class="text-3xl font-bold mb-2"></h2>
+                <p id="resultSubtitle" class="text-gray-300"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 text-center">
+                    <i class="fas fa-user text-blue-400 text-2xl mb-2"></i>
+                    <h3 class="text-lg font-semibold mb-2">Your Score</h3>
+                    <p id="userScore" class="text-3xl font-bold text-blue-400"></p>
+                    <p class="text-sm text-gray-400 mt-1">Avg Time: <span id="userAvgTime"></span>s</p>
+                </div>
+                <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center">
+                    <i class="fas fa-robot text-red-400 text-2xl mb-2"></i>
+                    <h3 class="text-lg font-semibold mb-2">Bot Score</h3>
+                    <p id="botScore" class="text-3xl font-bold text-red-400"></p>
+                    <p class="text-sm text-gray-400 mt-1">Avg Time: <span id="botAvgTime"></span>s</p>
+                </div>
+            </div>
+
+            <div id="winningSection" class="bg-green-900/20 border border-green-500/30 rounded-lg p-6 mb-6 text-center hidden">
+                <i class="fas fa-trophy text-yellow-400 text-3xl mb-3"></i>
+                <h3 class="text-xl font-bold text-green-400 mb-2">Congratulations!</h3>
+                <p class="text-2xl font-bold text-yellow-400">You Won ₹<span id="winAmount"></span>!</p>
+                <p class="text-sm text-gray-300 mt-2">Amount added to your wallet</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="location.href='bot.html'" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fas fa-redo mr-2"></i>Play Again
+                </button>
+                <button onclick="goHome()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    <i class="fas fa-home mr-2"></i>Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas" class="confetti hidden"></canvas>
+
+ <div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+ 
+  
+</div>
+
+<!-- Firebase Auth & Profile Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, increment, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePreview.addEventListener("click", () => profilePhotoInput.click());
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST",
+      body: formData
+    });
+    const data = await response.json();
+    if (data.secure_url) {
+      const user = auth.currentUser;
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const uid = user.uid;
+      const docRef = doc(db, "users", uid);
+      let docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        const defaultData = {
+          name: user.email,
+          rechargeWallet: 0,
+          winningWallet: 0,
+          profilePhoto: "",
+          isAdmin: false,
+          matchHistory: []
+        };
+        await setDoc(docRef, defaultData);
+        docSnap = await getDoc(docRef);
+      }
+
+
+      const data = docSnap.data();
+      document.getElementById("recharge-wallet").innerText = data.rechargeWallet || 0;
+      document.getElementById("winning-wallet").innerText = data.winningWallet || 0;
+      if (data.profilePhoto) profilePreview.src = data.profilePhoto;
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+  window.withdraw = function () {
+    alert("Withdraw coming soon!");
+  }
+  window.logout = function () {
+    signOut(auth).then(() => window.location.href = 'login.html');
+  }
+    window.recharge = async function () {
+    const amountStr = prompt("Enter recharge amount:");
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) return alert("Invalid amount.");
+    const fee = amount <= 100 ? 2 : 0;
+    const net = amount - fee;
+
+    const userRef = doc(db, "users", currentUser.uid);
+    await updateDoc(userRef, { rechargeWallet: increment(net) });
+
+    const adminRef = doc(db, "admin", "fees");
+    await updateDoc(adminRef, { totalRechargeFee: increment(fee) }).catch(() =>
+      setDoc(adminRef, { totalRechargeFee: fee }, { merge: true })
+    );
+
+    alert(`₹${net} added. ₹${fee} fee charged.`);
+    const snap = await getDoc(userRef);
+    document.getElementById("recharge-wallet").innerText = snap.data().rechargeWallet || 0;
+  }
+
+  window.withdraw = () => alert("Withdraw coming soon!");
+  
+  // Expose Firebase functions and instances globally
+window.auth = auth;
+window.db = db;
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
+window.increment = increment;
+
+</script>
+
+    <script>
+        // Game State
+        let currentGameState = {
+            playAmount: 0,
+            currentQuestionIndex: 0,
+            userAnswers: [],
+            userScore: 0,
+            botScore: 0,
+            selectedQuestions: [],
+            startTime: 0,
+            questionStartTime: 0,
+            userTimes: [],
+            botTimes: [],
+            gameTimer: null,
+            botTimer: null,
+		   gameEnded: false 
+        };
+const botLevel = "Easy";
+        // Questions Pool (30 questions)
+        // Questions Pool (30 questions)
+const questionsPool = 
+[
+    {
+        question: "Identify this ancient script.",
+        img: "https://i.ibb.co/nM2LBgN8/download.jpg",
+        options: ["Sanskrit", "Indus Valley Script", "Cuneiform", "Devanagari"],
+        correct: 1
+    },
+    {
+        question: "Identify this mathematical tool.",
+        img: "https://i.ibb.co/8Dg5jvpc/images.png",
+        options: ["Abacus", "Slide Rule", "Napier's Bones", "Astrolabe"],
+        correct: 2
+    },
+    {
+        question: "Which physics concept is demonstrated here?",
+        img: "https://i.ibb.co/Cp5nXtpM/download.png",
+        options: ["Collision", "Elastic Collision", "Centripetal Force", "Buoyancy"],
+        correct: 1
+    },
+    {
+        question: "Which type of cloud is shown in this image?",
+        img: "https://i.ibb.co/Q370vH5L/download.jpg",
+        options: ["Cumulus", "Stratus", "Cumulonimbus", "Cirrus"],
+        correct: 2
+    },
+    {
+        question: "Identify this famous scientist.",
+        img: "https://i.ibb.co/DP416hmK/download.jpg",
+        options: ["Thomas Edison", "Nikola Tesla", "Michael Faraday", "James Watt"],
+        correct: 1
+    },
+    {
+        question: "Which programming language is shown in this syntax?",
+        img: "https://i.ibb.co/1CQTnX9/download.jpg",
+        options: ["Java", "Python", "JavaScript", "C++"],
+        correct: 1
+    },
+    {
+        question: "Which famous experiment setup is this?",
+        img: "https://i.ibb.co/kgLm8nN0/download.png",
+        options: ["Photoelectric Effect", "Millikan Oil Drop", "Double-slit Experiment", "Cavendish Experiment"],
+        correct: 2
+    },
+    {
+        question: "Identify this logical puzzle.",
+        img: "https://i.ibb.co/1YFbK0h9/download.jpg",
+        options: ["River Boating", "River Crossing", "River Swimming", "River Appear"],
+        correct: 1
+    },
+    {
+        question: "Which circuit symbol is shown here?",
+        img: "https://i.ibb.co/gMSTDyWT/download.jpg",
+        options: ["Resistor", "Capacitor", "Inductor", "Diode"],
+        correct: 0
+    },
+    {
+        question: "Which ancient structure is this?",
+        img: "https://i.ibb.co/ksBR7Mm1/download.jpg",
+        options: ["Sanchi Stupa", "Mohenjo-daro", "Nalanda", "Ajanta Caves"],
+        correct: 1
+    },
+    {
+        question: "Identify this type of volcanic eruption pattern.",
+        img: "https://i.ibb.co/MxMm1VM9/download.jpg",
+        options: ["Volcano", "Jawal Muki", "Vulcanian", "Evopouration"],
+        correct: 3
+    },
+    {
+        question: "Identify this Indian freedom fighter.",
+        img: "https://i.ibb.co/Xr6zpsy1/download.jpg",
+        options: ["Kodiram Boss", "CV Raman", "VD Savarkar", "Lala lajpat Roy"],
+        correct: 2
+    },
+    {
+        question: "Which optical illusion is this?",
+        img: "https://i.ibb.co/JR15PKnK/download.png",
+        options: ["Zöllner illusion", "Café Wall illusion", "Müller-Lyer illusion", "Hering illusion"],
+        correct: 1
+    },
+    {
+        question: "Identify this space observatory.",
+        img: "https://i.ibb.co/N4DDj91/download.jpg",
+        options: ["James Webb Telescope", "Chandra Observatory", "Hubble Space Telescope", "Kepler Telescope"],
+        correct: 2
+    },
+    {
+        question: "Which biome is represented in this image?",
+        img: "https://i.ibb.co/PscDQJcc/download.jpg",
+        options: ["Desert", "Tundra", "Savanna", "Rainforest"],
+        correct: 1
+    },
+    {
+        question: "Identify this complex mechanical device.",
+        img: "https://i.ibb.co/qMGRWc9j/download.jpg",
+        options: ["Orrery", "Astrolabe", "Antikythera Mechanism", "Chronometer"],
+        correct: 2
+    },
+    {
+        question: "Which ancient city ruins are shown here?",
+        img: "https://i.ibb.co/W4QK75bb/download.jpg",
+        options: ["Machu Picchu", "Petra", "Great Zimbabwe", "Angkor Wat"],
+        correct: 2
+    },
+    {
+        question: "What is this image an example of in biology?",
+        img: "https://i.ibb.co/yB8XXq9h/download.jpg",
+        options: ["Bacterial Colonies", "Virus", "MRSA under SEM", "Fungal Spores"],
+        correct: 2
+    },
+    {
+        question: "What mathematical concept is illustrated?",
+        img: "https://i.ibb.co/PGgFdzwF/download.jpg",
+        options: ["Set Theory", "Fractals", "Topology", "Vectors"],
+        correct: 1
+    },
+    {
+        question: "Identify this classic puzzle game.",
+        img: "https://i.ibb.co/FbWtLV9C/download.png",
+        options: ["Tower of Hanoi", "8 Puzzle", "Sudoku", "Peg Solitaire"],
+        correct: 0
+    },
+    {
+        question: "Which famous logic circuit is depicted?",
+        img: "https://i.ibb.co/GQJ52rL5/download.png",
+        options: ["AND Gate", "OR Gate", "NAND Gate", "XOR Gate"],
+        correct: 2
+    },
+    {
+        question: "Which rare animal species is shown?",
+        img: "https://i.ibb.co/JWnW9pJP/download.jpg",
+        options: ["Nilgai", "Saola", "Chinkara", "Ibex"],
+        correct: 1
+    },
+    {
+        question: "Which Indian classical dance form is this?",
+        img: "https://i.ibb.co/hJzBpyNt/download.jpg",
+        options: ["Bharatanatyam", "Kathak", "Manipuri", "Odissi"],
+        correct: 3
+    },
+    {
+        question: "Identify this ancient architecture style.",
+        img: "https://i.ibb.co/qYmmXbdH/download.jpg",
+        options: ["Nagara", "Dravidian", "Hoysala", "Vesara"],
+        correct: 2
+    },
+    {
+        question: "Which concept of calculus does this graph illustrate?",
+        img: "https://i.ibb.co/9mRBSzBg/download.png",
+        options: ["Integration", "Differentiation", "Limits", "Area under Curve"],
+        correct: 1
+    },
+    {
+        question: "Which chemical element is named after a famous physicist and radioactivity pioneer?",
+        options: ["Curium", "Einsteinium", "Fermium", "All of the above"],
+        correct: 3
+    },
+    {
+        question: "Which mathematical conjecture remains unproven and involves prime numbers?",
+        options: ["Fermat's Last Theorem", "Goldbach's Conjecture", "Riemann Hypothesis", "Collatz Conjecture"],
+        correct: 1
+    },
+    {
+        question: "Who formulated the uncertainty principle in quantum mechanics?",
+        options: ["Max Planck", "Werner Heisenberg", "Erwin Schrödinger", "Niels Bohr"],
+        correct: 1
+    },
+    {
+        question: "What is the name of the theoretical boundary surrounding a black hole?",
+        options: ["Event horizon", "Singularity", "Photon sphere", "Schwarzschild radius"],
+        correct: 0
+    },
+    {
+        question: "Which part of the brain is responsible for long-term memory formation?",
+        options: ["Cerebellum", "Amygdala", "Hippocampus", "Thalamus"],
+        correct: 2
+    },
+    {
+        question: "What phenomenon causes light to bend around massive objects like stars?",
+        options: ["Redshift", "Doppler Effect", "Gravitational lensing", "Diffraction"],
+        correct: 2
+    },
+    {
+        question: "Which law explains the relationship between current, voltage, and resistance?",
+        options: ["Newton’s Law", "Ohm’s Law", "Kirchhoff’s Law", "Ampère's Law"],
+        correct: 1
+    },
+    {
+        question: "In computer science, what does 'NP' in 'NP-complete' stand for?",
+        options: ["Non-Polynomial", "Non-deterministic Polynomial time", "Negative Polynomial", "Neutral Processing"],
+        correct: 1
+    },
+    {
+        question: "Which ancient civilization used a base-60 numeral system?",
+        options: ["Babylonians", "Romans", "Greeks", "Egyptians"],
+        correct: 0
+    },
+    {
+        question: "Who wrote the influential paper 'On Computable Numbers'?",
+        options: ["Claude Shannon", "John von Neumann", "Alan Turing", "George Boole"],
+        correct: 2
+    },
+    {
+        question: "Which subatomic particle is responsible for nuclear force?",
+        options: ["Electron", "Photon", "Gluon", "Neutrino"],
+        correct: 2
+    },
+    {
+        question: "Which of these constants is irrational?",
+        options: ["π", "√2", "e", "All of the above"],
+        correct: 3
+    },
+    {
+        question: "Which scientist proposed the idea of 'quanta' of energy?",
+        options: ["Einstein", "Bohr", "Planck", "Rutherford"],
+        correct: 2
+    },
+    {
+        question: "Which physical principle explains why a bicycle stays upright while moving?",
+        options: ["Gyroscopic effect", "Centripetal force", "Bernoulli's principle", "Newton’s Third Law"],
+        correct: 0
+    },
+    {
+        question: "Which programming paradigm focuses on data and functions that operate on data?",
+        options: ["Functional", "Procedural", "Object-Oriented", "Declarative"],
+        correct: 2
+    },
+    {
+        question: "Which planet has the most eccentric orbit in the solar system?",
+        options: ["Mercury", "Pluto", "Mars", "Venus"],
+        correct: 1
+    },
+    {
+        question: "Which of the following is NOT a vector quantity?",
+        options: ["Velocity", "Displacement", "Acceleration", "Work"],
+        correct: 3
+    },
+    {
+        question: "Which cryptographic algorithm is widely used in blockchain?",
+        options: ["AES", "SHA-256", "RSA", "DES"],
+        correct: 1
+    },
+    {
+        question: "What is the output of a NAND gate when both inputs are high?",
+        options: ["High", "Low", "Undefined", "Same as OR gate"],
+        correct: 1
+    },
+    {
+        question: "Which philosopher is credited with early work on formal logic?",
+        options: ["Aristotle", "Plato", "Descartes", "Socrates"],
+        correct: 0
+    },
+    {
+        question: "Which molecule is most responsible for the greenhouse effect?",
+        options: ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"],
+        correct: 2
+    },
+    {
+        question: "Which statistical test is used to compare the means of two groups?",
+        options: ["Chi-square test", "ANOVA", "T-test", "Z-test"],
+        correct: 2
+    },
+    {
+        question: "Which of these elements has the highest electronegativity?",
+        options: ["Oxygen", "Nitrogen", "Fluorine", "Chlorine"],
+        correct: 2
+    },
+    {
+        question: "Which field of AI involves learning from labeled data?",
+        options: ["Unsupervised Learning", "Reinforcement Learning", "Supervised Learning", "Self-Supervised Learning"],
+        correct: 2
+    },
+    {
+        question: "What is the derivative of ln(x)?",
+        options: ["1/x", "ln(x)", "x", "e^x"],
+        correct: 0
+    },
+    {
+        question: "Which Indian physicist won a Nobel Prize in 1930?",
+        options: ["C.V. Raman", "Satyendra Nath Bose", "Homi Bhabha", "Meghnad Saha"],
+        correct: 0
+    },
+    {
+        question: "Which particle has no rest mass?",
+        options: ["Proton", "Neutron", "Electron", "Photon"],
+        correct: 3
+    },
+    {
+        question: "What is the SI unit of entropy?",
+        options: ["Joule", "Joule per kelvin", "Calorie", "Newton"],
+        correct: 1
+    },
+    {
+        question: "In which layer of Earth's atmosphere does the ozone layer lie?",
+        options: ["Troposphere", "Stratosphere", "Mesosphere", "Exosphere"],
+        correct: 1
+    },
+    {
+        question: "What is the purpose of a cache in computing?",
+        options: ["Store permanent data", "Speed up memory access", "Increase storage", "Reduce latency in networks"],
+        correct: 1
+    },
+    {
+        question: "Which organelle is known as the powerhouse of the cell?",
+        options: ["Ribosome", "Nucleus", "Mitochondria", "Golgi Apparatus"],
+        correct: 2
+    },
+    {
+        question: "Which number is a perfect cube and a perfect square?",
+        options: ["8", "64", "16", "100"],
+        correct: 1
+    },
+    {
+        question: "What kind of bond is formed between water molecules?",
+        options: ["Covalent bond", "Ionic bond", "Hydrogen bond", "Metallic bond"],
+        correct: 2
+    },
+	    {
+        question: "What does the Heisenberg Uncertainty Principle state?",
+        options: ["You can't measure temperature and pressure simultaneously", "You can't know both position and momentum of a particle exactly", "You can't accelerate a mass beyond the speed of light", "You can't measure energy and charge at the same time"],
+        correct: 1
+    },
+    {
+        question: "Which programming algorithm is based on the divide and conquer approach?",
+        options: ["Bubble Sort", "Insertion Sort", "Merge Sort", "Selection Sort"],
+        correct: 2
+    },
+    {
+        question: "In which layer of the OSI model does TCP operate?",
+        options: ["Transport Layer", "Network Layer", "Application Layer", "Session Layer"],
+        correct: 0
+    },
+    {
+        question: "Which Indian mathematician independently discovered the number zero?",
+        options: ["Aryabhata", "Brahmagupta", "Ramanujan", "Bhaskara II"],
+        correct: 1
+    },
+    {
+        question: "Which branch of physics deals with the motion of fluids?",
+        options: ["Thermodynamics", "Electrodynamics", "Fluid Mechanics", "Quantum Physics"],
+        correct: 2
+    },
+    {
+        question: "Which of these is a linear data structure?",
+        options: ["Binary Tree", "Graph", "Stack", "Hash Table"],
+        correct: 2
+    },
+    {
+        question: "What is the time complexity of binary search in a sorted array?",
+        options: ["O(n)", "O(n^2)", "O(log n)", "O(1)"],
+        correct: 2
+    },
+    {
+        question: "Which gas is most responsible for acid rain?",
+        options: ["Carbon dioxide", "Sulfur dioxide", "Ozone", "Methane"],
+        correct: 1
+    },
+    {
+        question: "Which scientist discovered the electron?",
+        options: ["J.J. Thomson", "Ernest Rutherford", "James Chadwick", "Niels Bohr"],
+        correct: 0
+    },
+    {
+        question: "Which programming language is closest to machine language?",
+        options: ["C", "Python", "Assembly", "Java"],
+        correct: 2
+    },
+
+];	
+
+
+		document.getElementById('entryScreen').classList.add('hidden');
+document.getElementById('quizScreen').classList.remove('hidden');
+
+window.addEventListener("DOMContentLoaded", () => {
+  window.auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      await startGame(); // ✅ only start if logged in
+    } else {
+      alert("You must be logged in to play.");
+      window.location.href = "login.html";
+    }
+  });
+});
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) {
+
+    window.location.href = "bot.html"; // or your desired home page
+  }
+});
+
+async function startGame() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = parseInt(urlParams.get("amount") || "100");
+
+    // ✅ Ensure user is logged in
+    const user = window.auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to play.");
+        return window.location.href = "login.html";
+    }
+
+    const userRef = window.doc(window.db, "users", user.uid);
+    const userSnap = await window.getDoc(userRef);
+    const userData = userSnap.data();
+
+    let rechargeWallet = userData.rechargeWallet || 0;
+    let winningWallet = userData.winningWallet || 0;
+    let totalBalance = rechargeWallet + winningWallet;
+
+    // ❌ Not enough money at all
+    if (totalBalance < amount) {
+        alert("Not enough balance to start the game. Please recharge your wallet.");
+        return;
+    }
+
+    // ✅ Prepare deduction logic
+    let updateData = {};
+
+    if (rechargeWallet >= amount) {
+        // 💰 Deduct fully from recharge wallet
+        updateData.rechargeWallet = window.increment(-amount);
+    } else {
+        // 💡 Partial from recharge, remaining from winning
+        const fromRecharge = rechargeWallet;
+        const fromWinning = amount - fromRecharge;
+
+        updateData.rechargeWallet = window.increment(-fromRecharge);
+        updateData.winningWallet = window.increment(-fromWinning);
+    }
+
+    // ✅ Deduct wallets in Firestore
+    await window.setDoc(userRef, updateData, { merge: true });
+
+    // ✅ Store amount in game state
+    currentGameState.playAmount = amount;
+    currentGameState.selectedQuestions = getRandomQuestions(10);
+    currentGameState.startTime = Date.now();
+
+    document.getElementById('entryScreen').classList.add('hidden');
+    document.getElementById('quizScreen').classList.remove('hidden');
+
+    initializeProgress();
+    showQuestion(0);
+}
+
+
+
+
+        function getRandomQuestions(count) {
+            const shuffled = [...questionsPool].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function initializeProgress() {
+            const container = document.getElementById('progressContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 10; i++) {
+                const progressItem = document.createElement('div');
+                progressItem.className = 'progress-item flex items-center justify-between p-2 rounded border border-gray-600';
+                progressItem.innerHTML = `
+                    <span class="text-sm">Q${i + 1}</span>
+                    <div class="flex space-x-2">
+                        <span id="userQ${i}" class="w-3 h-3 rounded-full bg-gray-600"></span>
+                        <span id="botQ${i}" class="w-3 h-3 rounded-full bg-gray-600"></span>
+                    </div>
+                `;
+                container.appendChild(progressItem);
+            }
+        }
+
+
+function showQuestion(index) {
+    if (index >= currentGameState.selectedQuestions.length) {
+        endGame();
+        return;
+    }
+
+    const question = currentGameState.selectedQuestions[index];
+    currentGameState.currentQuestionIndex = index;
+    currentGameState.questionStartTime = Date.now();
+
+    document.getElementById('currentQuestion').textContent = index + 1;
+    document.getElementById('questionText').textContent = question.question;
+
+  const questionText = document.getElementById("questionText");
+  const questionImage = document.getElementById("question-image");
+
+  questionText.textContent = question.question;
+
+if (question.img) {
+  questionImage.style.display = "block";
+  questionImage.src = question.img + `?v=${Date.now()}`;
+} else {
+  questionImage.style.display = "none";
+  questionImage.src = "";
+}
+
+
+
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+    question.options.forEach((option, optionIndex) => {
+        const button = document.createElement('button');
+        button.className = 'option-btn w-full p-4 rounded-lg text-left hover:scale-105 transform transition-all';
+        button.innerHTML = `<span class="font-medium">${String.fromCharCode(65 + optionIndex)}.</span> ${option}`;
+        button.onclick = () => selectAnswer(optionIndex);
+        optionsContainer.appendChild(button);
+    });
+
+    const progressItems = document.querySelectorAll('.progress-item');
+    progressItems.forEach((item, i) => {
+        if (i === index) item.classList.add('active');
+        else item.classList.remove('active', 'completed');
+        if (i < index) item.classList.add('completed');
+    });
+
+    startTimer();
+
+
+}
+
+
+ function selectAnswer(selectedIndex) {
+    const answerTime = (Date.now() - currentGameState.questionStartTime) / 1000;
+    currentGameState.userTimes.push(answerTime);
+
+    const question = currentGameState.selectedQuestions[currentGameState.currentQuestionIndex];
+    const isCorrect = selectedIndex === question.correct;
+
+    currentGameState.userAnswers.push({
+        selected: selectedIndex,
+        correct: isCorrect,
+        time: answerTime
+    });
+
+    if (selectedIndex !== -1) {
+        const options = document.querySelectorAll('.option-btn');
+        options[selectedIndex].classList.add('selected');
+    }
+
+    if (isCorrect) {
+        currentGameState.userScore++;
+    }
+
+    const userIndicator = document.getElementById(`userQ${currentGameState.currentQuestionIndex}`);
+    userIndicator.className = `w-3 h-3 rounded-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
+
+    clearInterval(currentGameState.gameTimer);
+
+    setTimeout(() => {
+        if (currentGameState.currentQuestionIndex < 9) {
+            showQuestion(currentGameState.currentQuestionIndex + 1);
+        } else {
+            endGame();
+        }
+    }, 1000);
+}
+
+ 
+        function startTimer() {
+            let timeLeft = 10;
+            document.getElementById('timeLeft').textContent = timeLeft;
+            
+            currentGameState.gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                document.getElementById('timerBar').style.width = (timeLeft / 10) * 100 + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(currentGameState.gameTimer);
+                    selectAnswer(-1); // Auto-submit with no selection
+                }
+            }, 1000);
+        }
+
+
+		
+function endGame() {
+    if (currentGameState.gameEnded) return; // ⛔ prevent repeat calls
+    currentGameState.gameEnded = true; // ✅ mark as ended
+
+    const userScore = currentGameState.userScore;
+    const botShouldWin = Math.random() < 0.5;
+    
+    if (botShouldWin) {
+        if (userScore < 9) {
+            currentGameState.botScore = userScore + Math.floor(Math.random() * 2) + 1;
+        } else {
+            currentGameState.botScore = userScore;
+        }
+        currentGameState.botScore = Math.min(currentGameState.botScore, 10);
+    } else {
+        const penalty = Math.floor(Math.random() * 3) + 1;
+        currentGameState.botScore = Math.max(0, userScore - penalty);
+    }
+
+    // Update bot visual indicators
+    for (let i = 0; i < 10; i++) {
+        const botIndicator = document.getElementById(`botQ${i}`);
+        const isCorrect = i < currentGameState.botScore;
+        botIndicator.className = `w-3 h-3 rounded-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`;
+    }
+
+    setTimeout(() => {
+        showResults();
+    }, 2000);
+}
+
+
+async function showResults() {
+            const userWon = currentGameState.userScore > currentGameState.botScore;
+            const winAmount = Math.floor(currentGameState.playAmount * 1.3);
+            document.getElementById('winAmount').textContent = winAmount;
+document.getElementById('winningSection').classList.remove('hidden');
+
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            // Update result display
+if (userWon) {
+    document.getElementById('resultIcon').innerHTML = '<i class="fas fa-trophy text-yellow-400"></i>';
+    document.getElementById('resultTitle').textContent = 'Victory!';
+    document.getElementById('resultTitle').className = 'text-3xl font-bold mb-2 text-green-400';
+    document.getElementById('resultSubtitle').textContent = 'You defeated the bot!';
+    document.getElementById('winAmount').textContent = winAmount;
+    document.getElementById('winningSection').classList.remove('hidden');
+
+    // ✅ Update wallet in Firestore
+    const user = window.auth.currentUser;
+    if (user) {
+        const userRef = window.doc(window.db, "users", user.uid);
+        await window.setDoc(userRef, {
+            winningWallet: window.increment(winAmount)
+        }, { merge: true });
+
+        const snap = await window.getDoc(userRef);
+        const newWalletAmount = snap.data().winningWallet || 0;
+        const walletElem = document.getElementById("winning-wallet");
+        if (walletElem) walletElem.innerText = newWalletAmount;
+    }
+
+    // 🎉 Show confetti
+    showConfetti();
+} else {
+                document.getElementById('resultIcon').innerHTML = '<i class="fas fa-robot text-red-400"></i>';
+                document.getElementById('resultTitle').textContent = 'Defeated!';
+                document.getElementById('resultTitle').className = 'text-3xl font-bold mb-2 text-red-400';
+                document.getElementById('resultSubtitle').textContent = 'The bot was too smart this time!';
+                document.getElementById('winningSection').classList.add('hidden');
+            }
+
+            // Update scores
+            document.getElementById('userScore').textContent = `${currentGameState.userScore}/10`;
+            document.getElementById('botScore').textContent = `${currentGameState.botScore}/10`;
+            
+            // Calculate average times
+            const userAvgTime = currentGameState.userTimes.length > 0 ? 
+                (currentGameState.userTimes.reduce((a, b) => a + b, 0) / currentGameState.userTimes.length).toFixed(1) : 'N/A';
+            const botAvgTime = currentGameState.botTimes.length > 0 ? 
+                (currentGameState.botTimes.reduce((a, b) => a + b, 0) / currentGameState.botTimes.length).toFixed(1) : 'N/A';
+            
+            document.getElementById('userAvgTime').textContent = userAvgTime;
+            document.getElementById('botAvgTime').textContent = botAvgTime;
+			
+			if (userWon === false && currentGameState.userScore === 10 && currentGameState.botScore === 10) {
+  // Make bot seem slower if it wins despite user getting full score
+  currentGameState.botTimes = currentGameState.botTimes.map(t => t + 1.5);
+  
+  
+}
+await saveBotMatchResult(userWon, winAmount);
+
+
+
+        }
+
+async function saveBotMatchResult(userWon, winAmount) {
+    const user = window.auth.currentUser;
+    if (!user) return;
+
+    const resultData = {
+        uid: user.uid,
+        playAmount: currentGameState.playAmount,
+        userScore: currentGameState.userScore,
+        botScore: currentGameState.botScore,
+        userTimes: currentGameState.userTimes,
+        botTimes: currentGameState.botTimes,
+        userWon: userWon,
+	    botLevel: botLevel,
+        winAmount: userWon ? winAmount : 0,
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        const matchRef = window.doc(window.db, `botMatches/${user.uid}_${Date.now()}`);
+        await window.setDoc(matchRef, resultData);
+        console.log("Bot match result saved successfully.");
+    } catch (error) {
+        console.error("Failed to save bot match result:", error);
+    }
+}
+
+        function showConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.classList.remove('hidden');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const confettiPieces = [];
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6c5ce7'];
+            
+            for (let i = 0; i < 150; i++) {
+                confettiPieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 10 + 5,
+                    h: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vx: Math.random() * 4 - 2,
+                    vy: Math.random() * 6 + 2,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: Math.random() * 10 - 5
+                });
+            }
+            
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                confettiPieces.forEach((piece, index) => {
+                    piece.x += piece.vx;
+                    piece.y += piece.vy;
+                    piece.rotation += piece.rotationSpeed;
+                    
+                    ctx.save();
+                    ctx.translate(piece.x + piece.w / 2, piece.y + piece.h / 2);
+                    ctx.rotate(piece.rotation * Math.PI / 180);
+                    ctx.fillStyle = piece.color;
+                    ctx.fillRect(-piece.w / 2, -piece.h / 2, piece.w, piece.h);
+                    ctx.restore();
+                    
+                    if (piece.y > canvas.height) {
+                        confettiPieces.splice(index, 1);
+                    }
+                });
+                
+                if (confettiPieces.length > 0) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    canvas.classList.add('hidden');
+                }
+            }
+            
+            animateConfetti();
+        }
+
+        function saveGameHistory(userWon, winAmount) {
+            const history = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            const gameRecord = {
+                date: new Date().toISOString(),
+                userScore: currentGameState.userScore,
+                botScore: currentGameState.botScore,
+                winner: userWon ? 'user' : 'bot',
+                playAmount: currentGameState.playAmount,
+                winAmount: userWon ? winAmount : 0,
+                totalTime: Math.floor((Date.now() - currentGameState.startTime) / 1000)
+            };
+            
+            history.push(gameRecord);
+            localStorage.setItem('quizHistory', JSON.stringify(history));
+        }
+
+        function playAgain() {
+            // Reset game state
+            currentGameState = {
+                playAmount: 0,
+                currentQuestionIndex: 0,
+                userAnswers: [],
+                userScore: 0,
+                botScore: 0,
+                selectedQuestions: [],
+                startTime: 0,
+                questionStartTime: 0,
+                userTimes: [],
+                botTimes: [],
+                gameTimer: null,
+                botTimer: null
+
+
+            };
+            
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('entryScreen').classList.remove('hidden');
+        }
+
+        function goHome() {
+            // In a real app, this would navigate to dashboard
+            window.location.href = '/dashboard.html';
+        }
+
+        // Handle window resize for confetti
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script><span id="winning-wallet"></span>
+<span id="recharge-wallet"></span>
+</body>
+</html>

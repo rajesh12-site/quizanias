@@ -1,0 +1,2167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania KBC Mode - Quiz Game</title>
+	  <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b82f6;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24, 0 0 30px #fbbf24;
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .correct-answer {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            animation: correctPulse 1s ease-in-out;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            animation: wrongShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .timer-warning {
+            animation: timerWarning 0.5s infinite alternate;
+        }
+        
+        @keyframes timerWarning {
+            from { color: #fbbf24; }
+            to { color: #ef4444; }
+        }
+        
+        .option-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #1e293b, #334155);
+        }
+        
+        .option-btn:hover {
+            background: linear-gradient(145deg, #334155, #475569);
+            transform: translateY(-2px);
+        }
+        
+        .disabled-option {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .lifeline-used {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+	  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	  @keyframes glow {
+    0%   { box-shadow: 0 0 5px #a855f7; }
+    50%  { box-shadow: 0 0 10px #a855f7; }
+    100% { box-shadow: 0 0 5px #a855f7; }
+  }
+
+  .glow {
+    animation: glow 2s infinite;
+  }
+  html body > .skiptranslate {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-gadget-icon,
+.goog-te-gadget-simple {
+  display: none !important;
+}
+
+
+  </style>
+</head>
+<body class="min-h-screen text-white overflow-x-hidden">
+
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <a href="dashboard.html"><h1 class="font-bold">Quizania</h1></a>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="/dashboard.html">🏠 Home</a>
+      <a href="/profile-edit.html">👤 Profile</a>
+      <a href="/msg.html">✉️ Messages</a>
+      <a href="play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="/feedback">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+    <!-- Entry Rules Page -->
+    <div id="entryPage" class="min-h-screen flex items-center justify-center p-6">
+        <div class="max-w-4xl mx-auto text-center fade-in">
+            <div class="mb-8">
+                <h1 class="text-6xl font-black mb-4 neon-text">QUIZANIA</h1>
+                <h2 class="text-3xl font-bold text-blue-400 mb-8">KBC MODE</h2>
+            </div>
+
+
+            <div class="bg-gray-800 bg-opacity-80 rounded-3xl p-8 mb-8 neon-glow">
+                <button id="playButton" class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black font-bold text-2xl px-12 py-4 rounded-full shimmer pulse-ring transition-all duration-300">
+                    Play with ₹299
+                </button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-gray-800 bg-opacity-60 rounded-2xl p-6">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-4">🎮 Game Rules</h3>
+                    <ul class="text-left space-y-2">
+                        <li>• 10 Levels with increasing difficulty</li>
+                        <li>• Each question must be answered within 10 seconds</li>
+                        <li>• Auto-submit when timer ends</li>
+                        <li>• Only last cleared level amount is awarded</li>
+                        <li>• 4 Lifelines available</li>
+                    </ul>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-60 rounded-2xl p-6">
+                    <h3 class="text-2xl font-bold text-green-400 mb-4">💎 Lifelines</h3>
+                    <ul class="text-left space-y-2">
+					<li>For use any Life line pay only ₹50</li>
+                        <li>• 50:50 - Remove 2 wrong options</li>
+                        <li>• Audience Poll - See crowd opinion</li>
+                        <li>• Flip Question - Get new question</li>
+                        <li>• Ask Bot - Get AI hint</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-gray-800 bg-opacity-60 rounded-2xl p-6">
+                <h3 class="text-2xl font-bold text-yellow-400 mb-4">🏆 Reward Structure</h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                    <div class="bg-gray-700 rounded-lg p-3">Level 1: ₹5</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 2: ₹50</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 3: ₹70</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 4: ₹100</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 5: ₹200</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 6: ₹300</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 7: ₹400</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 8: ₹500</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 9: ₹600</div>
+                    <div class="bg-gray-700 rounded-lg p-3">Level 10: ₹1000</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Page -->
+    <div id="gamePage" class="min-h-screen hidden">
+        <!-- Header -->
+        <div class="bg-gray-900 bg-opacity-90 p-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="text-2xl font-bold neon-text">QUIZANIA KBC</div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-lg">Level: <span id="currentLevel" class="text-yellow-400 font-bold">1</span></div>
+                    <div class="text-lg">Prize: ₹<span id="currentPrize" class="text-green-400 font-bold">10</span></div>
+                    <div class="text-lg">Timer: <span id="timer" class="text-red-400 font-bold text-2xl">10</span>s</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto p-6">
+            <div class="grid lg:grid-cols-4 gap-6">
+                <!-- Main Game Area -->
+                <div class="lg:col-span-3">
+                    <!-- Lifelines -->
+                    <div class="bg-gray-800 bg-opacity-80 rounded-2xl p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4 text-center text-blue-400">🆘 LIFELINES</h3>
+                        <div class="flex justify-center space-x-4">
+                            <button id="lifeline5050" class="lifeline-btn bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all">
+                                <i class="fas fa-balance-scale"></i> 50:50
+                            </button>
+                            <button id="lifelineAudience" class="lifeline-btn bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all">
+                                <i class="fas fa-users"></i> Audience
+                            </button>
+                            <button id="lifelineFlip" class="lifeline-btn bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-all">
+                                <i class="fas fa-sync"></i> Flip
+                            </button>
+                            <button id="lifelineBot" class="lifeline-btn bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-lg transition-all">
+                                <i class="fas fa-robot"></i> Ask Bot
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Area -->
+                    <div class="bg-gray-800 bg-opacity-80 rounded-2xl p-8 mb-6 neon-glow">
+                        <div class="text-center mb-6">
+                            <div class="text-lg text-gray-300 mb-2">Question <span id="questionNumber">1</span> of 10</div>
+                            <div id="questionText" class="text-2xl font-bold leading-relaxed">
+                                What is the capital of France?
+                            </div>
+							<div id="questionText" class="text-lg font-semibold text-center mb-4"></div>
+
+                        </div>
+                        
+                        <!-- Timer Circle -->
+                        <div class="flex justify-center mb-8">
+                            <div class="relative w-20 h-20">
+                                <div class="w-20 h-20 rounded-full border-4 border-red-500 flex items-center justify-center pulse-ring">
+                                    <span id="timerDisplay" class="text-2xl font-bold">10</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button class="option-btn option-btn rounded-xl p-6 text-left border-2 border-gray-600 hover:border-blue-400" data-option="A">
+                            <span class="font-bold text-yellow-400">A.</span> <span id="optionA">London</span>
+                        </button>
+                        <button class="option-btn option-btn rounded-xl p-6 text-left border-2 border-gray-600 hover:border-blue-400" data-option="B">
+                            <span class="font-bold text-yellow-400">B.</span> <span id="optionB">Berlin</span>
+                        </button>
+                        <button class="option-btn option-btn rounded-xl p-6 text-left border-2 border-gray-600 hover:border-blue-400" data-option="C">
+                            <span class="font-bold text-yellow-400">C.</span> <span id="optionC">Paris</span>
+                        </button>
+                        <button class="option-btn option-btn rounded-xl p-6 text-left border-2 border-gray-600 hover:border-blue-400" data-option="D">
+                            <span class="font-bold text-yellow-400">D.</span> <span id="optionD">Madrid</span>
+                        </button>
+                    </div>
+
+                    <!-- Bot Hint -->
+                    <div id="botHint" class="hidden mt-6 bg-blue-900 bg-opacity-80 rounded-xl p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-robot text-2xl text-blue-400 mr-3"></i>
+                            <div>
+                                <div class="font-bold text-blue-400">AI Bot says:</div>
+                                <div id="botHintText"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audience Poll -->
+                    <div id="audiencePoll" class="hidden mt-6 bg-green-900 bg-opacity-80 rounded-xl p-4">
+                        <div class="font-bold text-green-400 mb-3"><i class="fas fa-users"></i> Audience Poll Results:</div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>A.</span>
+                                <div class="flex-1 mx-2 bg-gray-700 rounded-full h-4">
+                                    <div id="pollA" class="bg-blue-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <span id="pollAPercent">0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>B.</span>
+                                <div class="flex-1 mx-2 bg-gray-700 rounded-full h-4">
+                                    <div id="pollB" class="bg-blue-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <span id="pollBPercent">0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>C.</span>
+                                <div class="flex-1 mx-2 bg-gray-700 rounded-full h-4">
+                                    <div id="pollC" class="bg-blue-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <span id="pollCPercent">0%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>D.</span>
+                                <div class="flex-1 mx-2 bg-gray-700 rounded-full h-4">
+                                    <div id="pollD" class="bg-blue-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                </div>
+                                <span id="pollDPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Ladder -->
+                <div class="lg:col-span-1">
+                    <div class="bg-gray-800 bg-opacity-80 rounded-2xl p-6 sticky top-6">
+                        <h3 class="text-xl font-bold mb-4 text-center text-yellow-400">💰 PRIZE LADDER</h3>
+                        <div id="rewardLadder" class="space-y-2">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Level Button -->
+        <div id="nextLevelSection" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+            <div class="bg-gray-800 rounded-2xl p-8 text-center max-w-md mx-4">
+                <div id="resultMessage" class="text-2xl font-bold mb-6"></div>
+                <button id="nextLevelBtn" class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold text-xl px-8 py-4 rounded-full transition-all">
+                    Next Level
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Page -->
+    <div id="gameOverPage" class="min-h-screen hidden flex items-center justify-center p-6">
+        <div class="max-w-2xl mx-auto text-center fade-in">
+            <div class="bg-gray-800 bg-opacity-80 rounded-3xl p-8 neon-glow">
+                <div class="mb-6">
+                    <i class="fas fa-trophy text-6xl text-yellow-400 mb-4"></i>
+                    <h1 class="text-4xl font-black mb-4" id="gameOverTitle">Game Over!</h1>
+                </div>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="text-2xl">
+                        <span class="text-gray-300">You earned:</span>
+                        <span class="text-green-400 font-bold text-4xl">₹<span id="finalEarnings">0</span></span>
+                    </div>
+                    <div class="text-xl">
+                        <span class="text-gray-300">Level Reached:</span>
+                        <span class="text-blue-400 font-bold" id="finalLevel">0</span>
+                    </div>
+                    <div class="text-lg">
+                        <span class="text-gray-300">New Wallet Balance:</span>
+                        <span class="text-yellow-400 font-bold">₹<span id="newWalletBalance">0</span></span>
+                    </div>
+                </div>
+                
+                <button id="playAgainBtn" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold text-xl px-8 py-4 rounded-full shimmer transition-all">
+                    <i class="fas fa-redo mr-2"></i> Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+<div id="google_translate_element" style="display: none;"></div>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,hi',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+</script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+  function translatePage(code) {
+    const dropdown = document.querySelector("#google_translate_element select");
+    if (!dropdown) return;
+    dropdown.value = code;
+    dropdown.dispatchEvent(new Event("change"));
+  }
+
+  window.addEventListener("load", () => {
+    const savedLang = localStorage.getItem("quizania_lang");
+    if (savedLang) {
+      const waitForDropdown = setInterval(() => {
+        const sel = document.querySelector("#google_translate_element select");
+        if (sel) {
+          clearInterval(waitForDropdown);
+          translatePage(savedLang);
+        }
+      }, 500);
+    }
+  });
+</script>
+
+    <script type="module">
+	
+	import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  let currentUser = null;
+
+  const profilePreview = document.getElementById("profilePreview");
+  const profilePhotoInput = document.getElementById("profilePhoto");
+
+  profilePhotoInput.addEventListener("change", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Profile photo");
+
+    const res = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+      method: "POST", body: formData
+    });
+    const data = await res.json();
+    if (data.secure_url) {
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(userRef, { profilePhoto: data.secure_url }, { merge: true });
+      profilePreview.src = data.secure_url;
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+    currentUser = user;
+    const docRef = doc(db, "users", user.uid);
+    let docSnap = await getDoc(docRef);
+	 });
+
+        // Game State
+        let gameState = {
+            currentLevel: 1,
+            walletBalance: 1000,
+            lastCompletedLevel: 0,
+            timer: 10,
+            timerInterval: null,
+            usedLifelines: {
+                '5050': false,
+                'audience': false,
+                'flip': false,
+                'bot': false
+            },
+            currentQuestion: null,
+            isAnswering: false
+        };
+
+        // Reward Structure
+        const rewards = [0, 5, 50, 70, 100, 200, 300, 400, 500, 600, 1000];
+
+        // Sound Effects (using Web Audio API)
+        class SoundManager {
+            constructor() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            playTick() {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.1);
+            }
+
+            playSuccess() {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523, this.audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(659, this.audioContext.currentTime + 0.1);
+                oscillator.frequency.setValueAtTime(784, this.audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.3);
+            }
+
+            playWrong() {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(150, this.audioContext.currentTime + 0.2);
+                
+                gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.4);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.4);
+            }
+
+            playLifeline() {
+                const oscillator = this.audioContext.createOscillator();
+                const gainNode = this.audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+                
+                oscillator.start(this.audioContext.currentTime);
+                oscillator.stop(this.audioContext.currentTime + 0.2);
+            }
+        }
+
+        const soundManager = new SoundManager();
+
+        // Questions Database
+        const questions = [
+    { level: 1, question: "What is the capital of India?", options: ["Mumbai", "Kolkata", "Delhi", "Chennai"], correct: "C" },
+    { level: 1, question: "Which color is formed by mixing red and yellow?", options: ["Green", "Orange", "Purple", "Pink"], correct: "B" },
+    { level: 1, question: "How many days are there in a leap year?", options: ["364", "365", "366", "367"], correct: "C" },
+    { level: 1, question: "Which planet is closest to the Sun?", options: ["Earth", "Mars", "Venus", "Mercury"], correct: "D" },
+    { level: 1, question: "What is H2O commonly known as?", options: ["Salt", "Water", "Oxygen", "Acid"], correct: "B" },
+    { level: 1, question: "How many letters are there in the English alphabet?", options: ["24", "25", "26", "27"], correct: "C" },
+    { level: 1, question: "Which is the smallest two-digit number?", options: ["10", "11", "12", "13"], correct: "A" },
+    { level: 1, question: "Which fruit is yellow and long?", options: ["Apple", "Mango", "Banana", "Grapes"], correct: "C" },
+    { level: 1, question: "Which classical Indian text outlines duties of a king and public administration?", options: ["Bhagavad Gita", "Arthashastra", "Manusmriti", "Rigveda"], correct: "B" },
+    { level: 1, question: "How many wheels does a bicycle have?", options: ["1", "2", "3", "4"], correct: "B" },
+    { level: 1, question: "In Python, which of the following is immutable?", options: ["List", "Dictionary", "Set", "Tuple"], correct: "D" },
+	
+	  {
+    "level": 1,
+    "question": "Which monument is this?",
+    "image": "https://i.ibb.co/Pf3Jqvc/Taj-Mahal-2-Agra-India.jpg",
+    "options": ["Red Fort", "Charminar", "India Gate", "Taj Mahal"],
+    "correct": "D"
+  },
+  {
+  "level": 1,
+  "question": "Which celebrity is shown in this image?",
+  "image": "https://i.ibb.co/vvQbGKyz/Tesla-circa-1890.jpg",
+  "options": ["Albert Einstein", "Nikola Tesla", "Isaac Newton", "Charles Darwin"],
+  "correct": "B"
+},
+{
+  "level": 1,
+  "question": "What brand does this logo belong to?",
+  "image": "https://i.ibb.co/yF9h3Xcg/images.png",
+  "options": ["Tesla", "Nissan", "Hyundai", "Toyota"],
+  "correct": "A"
+},
+  {
+    "level": 1,
+    "question": "What mathematical concept is illustrated in this fractal image?",
+    "image": "https://i.ibb.co/GfVVgmTX/Mandel-zoom-00-mandelbrot-set.jpg",
+    "options": ["Fibonacci sequence", "Chaos theory", "Mandelbrot set", "Topology"],
+    "correct": "C"
+  },
+  {
+    "level": 1,
+    "question": "Which organ of the human body is shown in this MRI scan?",
+    "image": "https://i.ibb.co/WppPHBbw/images.jpg",
+    "options": ["Heart", "Liver", "Brain", "Lung"],
+    "correct": "C"
+  },
+
+    // Level 2 – Easy
+    { level: 2, question: "What is the time complexity of traversing a graph using BFS?", options: ["O(n²)", "O(V+E)", "O(VE)", "O(log V)"], correct: "B" },
+    { level: 2, question: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], correct: "B" },
+    { level: 2, question: "Which organ purifies blood in the human body?", options: ["Heart", "Lungs", "Liver", "Kidneys"], correct: "D" },
+    { level: 2, question: "What gas do plants absorb from the air?", options: ["Oxygen", "Carbon dioxide", "Nitrogen", "Hydrogen"], correct: "B" },
+    { level: 2, question: "Which is the largest continent?", options: ["Africa", "North America", "Asia", "Europe"], correct: "C" },
+    { level: 2, question: "Which shape has four equal sides?", options: ["Rectangle", "Square", "Triangle", "Circle"], correct: "B" },
+    { level: 2, question: "Which day comes before Friday?", options: ["Thursday", "Saturday", "Sunday", "Monday"], correct: "A" },
+    { level: 2, question: "How many zeros are there in one thousand?", options: ["2", "3", "4", "5"], correct: "B" },
+    { level: 2, question: "Which neural network technique prevents overfitting by randomly dropping units during training?", options: ["Batch Normalization", "Gradient Clipping", "Dropout", "Layer Normalization"], correct: "C" },
+	{
+    "level": 2,
+    "question": "Identify this historical machine.",
+    "image": "https://i.ibb.co/7JsN512B/Enigma-crittografia-Museo-scienza-e-tecnologia-Milano.jpg",
+    "options": ["Turing Machine", "Bombe", "Enigma Machine", "Cipher Disk"],
+    "correct": "C"
+  },
+  {
+    "level": 2,
+    "question": "Which logo is associated with this Linux distro?",
+    "image": "https://i.ibb.co/NgStrLZj/ubuntu.png",
+    "options": ["Debian", "Fedora", "Ubuntu", "Kali Linux"],
+    "correct": "C"
+  },
+  {
+    "level": 2,
+    "question": "Identify the structure in this image.",
+    "image": "https://i.ibb.co/Q7gKnFH2/chichen-itza-Pixabay.jpg",
+    "options": ["Tikal", "Machu Picchu", "Petra", "Chichen Itza"],
+    "correct": "D"
+  },
+  {
+    "level": 2,
+    "question": "Which scientific concept does this image depict?",
+    "image": "https://i.ibb.co/g0LT5nZ/doublehelix.gif",
+    "options": ["Protein chain", "DNA structure", "Lipid bilayer", "RNA transcript"],
+    "correct": "B"
+  },
+    {
+    "level": 2,
+    "question": "Which illusion is shown in this image?",
+    "image": "https://i.ibb.co/SXKyfJbC/images.jpg",
+    "options": ["Ames room", "Rotating snakes illusion", "Zöllner illusion", "Müller-Lyer illusion"],
+    "correct": "B"
+  },
+  {
+    "level": 2,
+    "question": "This painting represents which style of art?",
+    "image": "https://i.ibb.co/8nN3DJfF/images.jpg",
+    "options": ["Cubism", "Expressionism", "Impressionism", "Post-Impressionism"],
+    "correct": "D"
+  },
+  {
+    "level": 2,
+    "question": "Which famous physics experiment does this diagram represent?",
+    "image": "https://i.ibb.co/VpJKNzFM/images.png",
+    "options": ["Photoelectric effect", "Double-slit experiment", "Compton scattering", "Cavendish experiment"],
+    "correct": "B"
+  },
+    {
+    "level": 2,
+    "question": "Which type of bacteria is shown under this microscope?",
+    "image": "https://i.ibb.co/0jmt10ST/images.jpg",
+    "options": ["Coccus", "Bacillus", "Spirillum", "Vibrio"],
+    "correct": "B"
+  },
+    {
+    "level": 2,
+    "question": "This abstract lattice structure belongs to which algebraic framework?",
+    "image": "https://i.ibb.co/ymKLrXdL/images.png",
+    "options": ["Boolean algebra", "Galois lattice", "Heyting algebra", "Modular lattice"],
+    "correct": "D"
+  },
+
+
+    // Level 3 – Moderate
+    { level: 3, question: "Which country gifted the Statue of Liberty to the USA?", options: ["England", "France", "Germany", "Spain"], correct: "B" },
+    { level: 3, question: "Which act made the Governor-General of Bengal the Governor-General of India?", options: ["Pitt’s India Act", "Charter Act 1833", "Regulating Act 1773", "Indian Councils Act 1861"], correct: "B" },
+    { level: 3, question: "Which language is the most spoken in the world?", options: ["English", "Spanish", "Mandarin Chinese", "Hindi"], correct: "C" },
+    { level: 3, question: "In reinforcement learning, which concept describes a trade-off between exploration and exploitation?", options: ["Bellman Equation", "Q-Value", "Policy Gradient", "Epsilon-Greedy Strategy"], correct: "D" },
+    { level: 3, question: "Which Python module is used for symbolic mathematics?", options: ["Numpy", "Scipy", "SymPy", "Pandas"], correct: "C" },
+    { level: 3, question: "Which advanced AI architecture uses multiple transformer decoders for image-to-text generation?", options: ["BERT-ViT", "T5", "BLIP", "YOLOv5"], correct: "C" },
+{
+    "level": 3,
+    "question": "Which programming language does this logo represent?",
+    "image": "https://cdn.worldvectorlogo.com/logos/scala-4.svg",
+    "options": ["Scala", "Ruby", "Rust", "Kotlin"],
+    "correct": "A"
+  },
+  {
+    "level": 3,
+    "question": "Identify this luxury fashion brand by logo.",
+    "image": "https://i.ibb.co/9mPV2XRG/chanel-iconic-cc-logo-480x480.webp",
+    "options": ["ChinChar", "Chanel", "ChoCho", "Chinare"],
+    "correct": "B"
+  },
+  {
+    "level": 3,
+    "question": "Which cryptocurrency uses this logo?",
+    "image": "https://i.ibb.co/VZzBZ67/images.png",
+    "options": ["Monero", "Minarc", "Mitcoin", "Mzcash"],
+    "correct": "A"
+  },
+  {
+    "level": 3,
+    "question": "Which platform does this logo belong to?",
+    "image": "https://i.ibb.co/7xbFLkgN/images.jpg",
+    "options": ["TeX", "Figma", "LaTeX", "Sketch"],
+    "correct": "C"
+  },
+  {
+    "level": 3,
+    "question": "Which endangered animal is this?",
+    "image": "https://i.ibb.co/gbxKq3PH/saola-dhulse47098-352248.jpg",
+    "options": ["Okapi", "Saola", "Markhor", "Banteng"],
+    "correct": "B"
+  },
+    {
+    "level": 3,
+    "question": "Which famous paradox is depicted here?",
+    "image": "https://i.ibb.co/0jNJqxSW/images.png",
+    "options": ["Zeno's Paradox", "Barber Paradox", "Penrose stairs", "Schrödinger's cat"],
+    "correct": "C"
+  },
+    {
+    "level": 3,
+    "question": "What does this diagram represent in economics?",
+    "image": "https://i.ibb.co/FbWykjP6/Supply-and-Demand-9.webp",
+    "options": ["Inflation model", "Supply and demand curve", "GDP projection", "Stock analysis"],
+    "correct": "B"
+  },
+    {
+    "level": 3,
+    "question": "Which part of the neuron is shown labeled?",
+    "image": "https://i.ibb.co/7djdKkzH/images.jpg",
+    "options": ["Dendrite", "Axon", "Cell body", "Myelin sheath"],
+    "correct": "B"
+  },
+    {
+    "level": 3,
+    "question": "Which famous sculpture is shown in this image?",
+    "image": "https://i.ibb.co/zT9P4XJq/images.jpg",
+    "options": ["The Thinker", "Venus de Milo", "David", "Pietà"],
+    "correct": "C"
+  },
+    {
+    "level": 3,
+    "question": "What type of weather pattern is forming in this satellite image?",
+    "image": "https://i.ibb.co/RT53gfdg/images.jpg",
+    "options": ["Cyclone", "Hurricane", "Tornado", "Monsoon front"],
+    "correct": "B"
+  },
+    {
+    "level": 3,
+    "question": "What kind of fossil is shown in this image?",
+    "image": "https://i.ibb.co/CpRyMzLH/images.jpg",
+    "options": ["Ammonite", "Trilobite", "Dinosaur tooth", "Coprolite"],
+    "correct": "B"
+  },
+    {
+    "level": 3,
+    "question": "Which paradox does this image visually represent?",
+    "image": "https://i.ibb.co/pv9rgw0c/images.png",
+    "options": ["Russell's Paradox", "Banach–Tarski Paradox", "Penrose Triangle", "Gibbs Paradox"],
+    "correct": "C"
+  },
+    {
+    "level": 3,
+    "question": "Which algorithm's behavior is being visualized here?",
+    "image": "https://i.ibb.co/G4Qtsn36/images.jpg",
+    "options": ["Merge Sort", "Bubble Sort", "Quick Sort", "Heap Sort"],
+    "correct": "C"
+  },
+    {
+    "level": 3,
+    "question": "What physical quantity is simulated in this Navier-Stokes visual?",
+    "image": "https://i.ibb.co/YTWr9fKK/Vorticity-Figure-01-c.png",
+    "options": ["Pressure field", "Turbulence spectrum", "Vorticity", "Viscosity map"],
+    "correct": "C"
+  },
+
+    // Level 4 – Medium
+    { level: 4, question: "Who discovered gravity?", options: ["Galileo", "Newton", "Einstein", "Copernicus"], correct: "B" },
+    { level: 4, question: "Which is the hardest natural substance on Earth?", options: ["Iron", "Steel", "Diamond", "Platinum"], correct: "C" },
+    { level: 4, question: "What is the capital of Canada?", options: ["Toronto", "Ottawa", "Vancouver", "Montreal"], correct: "B" },
+    { level: 4, question: "Who invented the telephone?", options: ["Alexander Graham Bell", "Thomas Edison", "James Watt", "Nikola Tesla"], correct: "A" },
+    { level: 4, question: "Which is the longest river in the world?", options: ["Nile", "Amazon", "Yangtze", "Mississippi"], correct: "A" },
+    { level: 4, question: "In which country did the Olympic Games originate?", options: ["Italy", "France", "Greece", "USA"], correct: "C" },
+    { level: 4, question: "Which element has the highest electrical conductivity at standard temperature and pressure?", options: ["Gold", "Platinum", "Copper", "Silver"], correct: "D" },
+    { level: 4, question: "Who wrote 'The Origin of Species'?", options: ["Newton", "Darwin", "Pasteur", "Curie"], correct: "B" },
+    { level: 4, question: "Which 20th-century physicist developed the uncertainty principle?", options: ["Max Planck", "Werner Heisenberg", "Erwin Schrödinger", "Niels Bohr"], correct: "B" },
+    { level: 4, question: "How many hearts does an octopus have?", options: ["1", "2", "3", "4"], correct: "C" },
+    { level: 4, question: "In which year did the Bretton Woods Conference take place?", options: ["1919", "1961", "1950", "1944"], correct: "D" },
+    { level: 4, question: "Who was the first female Prime Minister of a Muslim-majority country?", options: ["Indira Gandhi", "Benazir Bhutto", "Sheikh Hasina", "Khaleda Zia"], correct: "B" },
+    { level: 4, question: "In computer science, what does the 'ACID' acronym stand for in database systems?", options: ["Atomicity, Consistency, Isolation, Durability", "Accuracy, Concurrency, Integrity, Distribution", "Access, Control, Indexing, Design", "Availability, Capacity, Isolation, Durability"], correct: "A" },
+    { level: 4, question: "Which of the following languages is not a functional programming language?", options: ["Haskell", "Scala", "Prolog", "F#"], correct: "C" },
+    { level: 4, question: "Which Greek philosopher is considered the founder of formal logic?", options: ["Socrates", "Plato", "Aristotle", "Pythagoras"], correct: "C" },
+    { level: 4, question: "What is the minimum number of colors needed to color any map so that no adjacent regions share the same color?", options: ["3", "4", "5", "6"], correct: "B" },
+	
+	  {
+    "level": 4,
+    "question": "What type of AI model structure is shown in this architecture diagram?",
+    "image": "https://i.ibb.co/RpGMzXkh/GENAI-1-151ded5440b4c997bac0642ec669a00acff2cca1.png",
+    "options": ["Convolutional Neural Network", "Recurrent Neural Network", "Transformer", "Bayesian Network"],
+    "correct": "C"
+  },
+    {
+    "level": 4,
+    "question": "Which psychological principle is illustrated in this optical illusion?",
+    "image": "https://i.ibb.co/ymVchR2p/images.jpg",
+    "options": ["Gestalt Closure", "Change Blindness", "Hybrid Image Illusion", "Perspective Shift"],
+    "correct": "C"
+  },
+    {
+    "level": 4,
+    "question": "This abstract artwork is linked to which mathematical concept?",
+    "image": "https://i.ibb.co/VWm1rwb0/images.png",
+    "options": ["Euclidean Geometry", "Tessellation", "Set Theory", "Topology"],
+    "correct": "B"
+  },
+    {
+    "level": 4,
+    "question": "Which advanced physics concept is illustrated in this diagram?",
+    "image": "https://i.ibb.co/4nQdRx02/space-time-warping-by-gravitational-force.png",
+    "options": ["String Theory", "Quantum Tunneling", "Time Dilation", "General Relativity"],
+    "correct": "A"
+  },
+    {
+    "level": 4,
+    "question": "Which abstract mathematical object is depicted in this 3D visualization?",
+    "image": "https://i.ibb.co/PZt3Z4rc/images.jpg",
+    "options": ["Mobius strip", "Klein bottle", "Torus", "Projective plane"],
+    "correct": "B"
+  },
+    {
+    "level": 4,
+    "question": "Which unsolved AI problem does this real-world scenario illustrate?",
+    "image": "https://i.ibb.co/DH5fNmKN/images.jpg",
+    "options": ["Frame problem", "Trolley problem", "Symbol grounding problem", "Binding problem"],
+    "correct": "B"
+  },
+    {
+    "level": 4,
+    "question": "Which type of advanced fractal is rendered in this image?",
+    "image": "https://i.ibb.co/LdF4RLjQ/images.jpg",
+    "options": ["Julia set", "Koch snowflake", "Cantor set", "Barnsley fern"],
+    "correct": "A"
+  },
+    {
+    "level": 4,
+    "question": "What type of logic gate network is shown in this quantum computing diagram?",
+    "image": "https://i.ibb.co/jk7Dkknc/images.png",
+    "options": ["Hadamard gate network", "Toffoli gate", "CNOT-based circuit", "XOR tree"],
+    "correct": "C"
+  },
+    {
+    "level": 4,
+    "question": "Which deep topology structure is being shown in this AI visual explanation?",
+    "image": "https://i.ibb.co/LzSbBdHV/images.jpg",
+    "options": ["t-SNE clustering", "k-means output", "SVM boundary", "Bayesian posterior"],
+    "correct": "A"
+  },
+    {
+    "level": 4,
+    "question": "This graph shows the behavior of which paradoxical algorithm?",
+    "image": "https://i.ibb.co/8wWCSJn/images.png",
+    "options": ["PageRank convergence", "Monty Hall simulation", "Birthday paradox", "Random walk"],
+    "correct": "B"
+  },
+    {
+    "level": 4,
+    "question": "This sculpture encodes which mathematical function?",
+    "image": "https://i.ibb.co/xK6hgtVX/download.jpg",
+    "options": ["Euler spiral", "Mobius transformation", "Riemann surface", "Fibonacci spiral"],
+    "correct": "B"
+  },
+	
+	
+	
+    // Level 5 – Medium-Hard
+    { level: 5, question: "Which Indian mathematician independently discovered results similar to those of Newton and Leibniz regarding calculus?", options: ["Aryabhata", "Bhaskaracharya", "Brahmagupta", "Madhava of Sangamagrama"], correct: "D" },
+    { level: 5, question: "Who wrote 'Hamlet'?", options: ["Charles Dickens", "Leo Tolstoy", "William Shakespeare", "Mark Twain"], correct: "C" },
+    { level: 5, question: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"], correct: "C" },
+    { level: 5, question: "Which part of the brain is primarily associated with decision making and personality expression?", options: ["Cerebellum", "Hippocampus", "Amygdala", "Prefrontal Cortex"], correct: "D" },
+    { level: 5, question: "Who invented the light bulb?", options: ["Tesla", "Edison", "Bell", "Newton"], correct: "B" },
+    { level: 5, question: "Who authored the book 'The Wealth of Nations'?", options: ["David Ricardo", "John Locke", "Adam Smith", "Milton Friedman"], correct: "C" },
+    { level: 5, question: "Which Vedic text is primarily a collection of hymns?", options: ["Sama Veda", "Yajur Veda", "Rig Veda", "Atharva Veda"], correct: "C" },
+    { level: 5, question: "Which Indian leader was called 'Grand Old Man of India'?", options: ["Bal Gangadhar Tilak", "Dadabhai Naoroji", "Gopal Krishna Gokhale", "Lala Lajpat Rai"], correct: "B" },
+    { level: 5, question: "Which AI concept involves machines understanding context and meaning of language?", options: ["Machine Vision", "Natural Language Processing", "Neural Style Transfer", "Robotics"], correct: "B" },
+    { level: 5, question: "Which blood group is called universal donor?", options: ["A+", "AB+", "O+", "O-"], correct: "D" },
+    { level: 5, question: "What is the capital of Argentina?", options: ["Lima", "Santiago", "Buenos Aires", "Bogotá"], correct: "C" },
+    { level: 5, question: "Which gas is used in balloons?", options: ["Hydrogen", "Nitrogen", "Oxygen", "Helium"], correct: "D" },
+    { level: 5, question: "Which treaty formally ended World War I?", options: ["Treaty of Versailles", "Treaty of Tordesillas", "Treaty of Paris", "Treaty of Ghent"], correct: "A" },
+    { level: 5, question: "Which branch of mathematics studies structures called groups, rings, and fields?", options: ["Number Theory", "Abstract Algebra", "Topology", "Calculus"], correct: "B" },
+    { level: 5, question: "What does the term 'singularity' refer to in the context of artificial intelligence?", options: ["A black hole-like data compression event", "A state where AI surpasses human intelligence", "A unique algorithm without alternatives", "An irreversible network collapse"], correct: "B" },
+    { level: 5, question: "Which Indian constitutional amendment is known for introducing the Fundamental Duties?", options: ["36th Amendment", "42nd Amendment", "44th Amendment", "52nd Amendment"], correct: "B" },
+    { level: 5, question: "Which of the following algorithms is used for reinforcement learning?", options: ["Gradient Descent", "Q-Learning", "Naive Bayes", "Support Vector Machine"], correct: "B" },
+    { level: 5, question: "Which article of the Indian Constitution deals with the amendment process?", options: ["Article 356", "Article 352", "Article 370", "Article 368"], correct: "D" },
+	
+	 {
+    "level": 5,
+    "question": "Which simulation technique is being visualized here in fluid dynamics?",
+    "image": "https://i.ibb.co/Dm0kTnS/images.jpg",
+    "options": ["Navier-Stokes simulation", "Monte Carlo fluid sampling", "Lattice Boltzmann model", "Eulerian particle tracing"],
+    "correct": "A"
+  },
+	  {
+    "level": 5,
+    "question": "What brain-computer interface concept is represented in this setup?",
+    "image": "https://i.ibb.co/MknDPypK/images.png",
+    "options": ["Neural decoding", "EEG analysis", "Brain fingerprinting", "BCI motor control"],
+    "correct": "D"
+  },
+    {
+    "level": 5,
+    "question": "What mathematical object is this 3D projection representing?",
+    "image": "https://i.ibb.co/s2WrfpB/projective-plane.png",
+    "options": ["Torus", "Hyperboloid", "Projective plane", "Mobius strip"],
+    "correct": "C"
+  },
+    {
+    "level": 5,
+    "question": "What mathematical object is this 3D projection representing?",
+    "image": "https://i.ibb.co/Q3pxBDRB/images.jpg",
+    "options": ["Torus", "Hyperboloid", "Projective plane", "Mobius strip"],
+    "correct": "C"
+  },
+    {
+    "level": 5,
+    "question": "Which computing principle does this quantum interference pattern visualize?",
+    "image": "https://i.ibb.co/jkt4GCyq/Principle-of-Superposition-of-Waves-1.png",
+    "options": ["Superposition", "Entanglement", "Qubit collapse", "Quantum tunneling"],
+    "correct": "A"
+  },
+    {
+    "level": 5,
+    "question": "This sculpture metaphorically visualizes which Gödel-related concept?",
+    "image": "https://i.ibb.co/ZzTjF4R5/images.png",
+    "options": ["Gödel's incompleteness", "Zeno's paradox", "Self-reference loop", "Cantor’s diagonal"],
+    "correct": "C"
+  },
+    {
+    "level": 5,
+    "question": "Which obscure topology is this mathematical knot related to?",
+    "image": "https://i.ibb.co/ZzqHSV2Q/Trefoil-knot-left-svg.png",
+    "options": ["Trefoil knot", "Figure-eight knot", "Borromean rings", "Hopf link"],
+    "correct": "A"
+  },
+    {
+    "level": 5,
+    "question": "This synthetic biology visualization shows what kind of structure?",
+    "image": "https://i.ibb.co/wFpCLQ1K/images.jpg",
+    "options": ["mRNA transcript", "Ribosomal tunnel", "DNA origami", "Synthetic plasmid"],
+    "correct": "C"
+  },
+    {
+    "level": 5,
+    "question": "What concept from epistemology is symbolically represented here?",
+    "image": "https://i.ibb.co/XrGSN8GF/images.jpg",
+    "options": ["Plato’s cave", "Occam’s razor", "Rashomon effect", "Solipsism"],
+    "correct": "A"
+  },
+    {
+    "level": 5,
+    "question": "Which cosmological model is this shape derived from?",
+    "image": "https://i.ibb.co/3ydzpWqc/images.jpg",
+    "options": ["Open Universe", "Flat Universe", "Closed Universe", "Cyclic Universe"],
+    "correct": "C"
+  },
+    {
+    "level": 5,
+    "question": "This anomaly is caused by which relativistic phenomenon?",
+    "image": "https://i.ibb.co/NdTPc4pD/download.jpg",
+    "options": ["Frame dragging", "Gravitational lensing", "Time dilation", "Hawking radiation"],
+    "correct": "B"
+  },
+    {
+    "level": 5,
+    "question": "Which quantum algorithm's structure does this circuit represent?",
+    "image": "https://i.ibb.co/V0qSSN6t/images.png",
+    "options": ["Grover’s algorithm", "Shor’s algorithm", "Deutsch-Jozsa algorithm", "Quantum Fourier Transform"],
+    "correct": "A"
+  },
+   {
+    "level": 5,
+    "question": "This anomaly is caused by which relativistic phenomenon?",
+    "image": "https://i.ibb.co/NdTPc4pD/download.jpg",
+    "options": ["Frame dragging", "Gravitational lensing", "Time dilation", "Hawking radiation"],
+    "correct": "B"
+  },
+
+  {
+    "level": 5,
+    "question": "This visualization maps which concept in information theory?",
+    "image": "https://i.ibb.co/M5254x0b/images.jpg",
+    "options": ["Kolmogorov complexity", "Entropy", "Shannon mutual information", "Channel capacity"],
+    "correct": "C"
+  },
+  {
+    "level": 5,
+    "question": "This cryptographic scheme visualization belongs to what type of algorithm?",
+    "image": "https://i.ibb.co/Wp499yGk/images.png",
+    "options": ["Homomorphic encryption", "Zero-knowledge proof", "Elliptic curve cryptography", "SHA hashing"],
+    "correct": "B"
+  },
+  {
+    "level": 5,
+    "question": "What model of human cognition is abstractly represented here?",
+    "image": "https://i.ibb.co/xMMc1Pr/global-workspace.jpg",
+    "options": ["Neural activation map", "Bayesian brain model", "Global Workspace Theory", "Deep recurrent belief network"],
+    "correct": "C"
+  },
+  {
+    "level": 5,
+    "question": "This dimensional structure is based on what mathematical system?",
+    "image": "https://i.ibb.co/5WQTxfJc/Cayley-Q8-multiplication-graph-svg.png",
+    "options": ["Quaternions", "Complex numbers", "Dual numbers", "Sedenions"],
+    "correct": "A"
+  },
+	
+	
+
+            
+    // Level 6 – Challenging
+    { level: 6, question: "Which gas is used in electric bulbs?", options: ["Nitrogen", "Helium", "Oxygen", "Argon"], correct: "D" },
+    { level: 6, question: "Who wrote the book 'Origin of Species'?", options: ["Isaac Newton", "Charles Darwin", "Gregor Mendel", "Galileo"], correct: "B" },
+    { level: 6, question: "What is the capital of Kazakhstan?", options: ["Almaty", "Astana", "Tashkent", "Bishkek"], correct: "B" },
+    { level: 6, question: "Which state in India has the highest literacy rate?", options: ["Kerala", "Tamil Nadu", "Goa", "Mizoram"], correct: "A" },
+    { level: 6, question: "Which Nobel prize category was added last?", options: ["Peace", "Literature", "Economics", "Chemistry"], correct: "C" },
+    { level: 6, question: "Which data structure is used to implement recursion?", options: ["Queue", "Tree", "Stack", "Graph"], correct: "C" },
+    { level: 6, question: "Who introduced the concept of 'Swaraj' in Indian politics?", options: ["Jawaharlal Nehru", "Bal Gangadhar Tilak", "Gandhi", "Raja Ram Mohan Roy"], correct: "B" },
+    { level: 6, question: "Which ML algorithm is best suited for dimensionality reduction?", options: ["PCA", "KNN", "Decision Trees", "Logistic Regression"], correct: "A" },
+    { level: 6, question: "Which constitutional body recommends the distribution of tax revenue between Center and States?", options: ["NITI Aayog", "Finance Commission", "CAG", "Planning Commission"], correct: "B" },
+    { level: 6, question: "Which protocol is used in secure HTTPS communication?", options: ["FTP", "SSL/TLS", "UDP", "TCP/IP"], correct: "B" },
+    { level: 6, question: "What does the 'volatile' keyword in Java indicate?", options: ["Variable changes frequently", "Variable stored in cache", "Variable is thread-safe and updates are visible to all threads", "Variable is static"], correct: "C" },
+    { level: 6, question: "Which Indian leader founded the Hindustan Socialist Republican Association?", options: ["Chandra Shekhar Azad", "Sardar Patel", "Subhas Chandra Bose", "Bhagat Singh"], correct: "D" },
+    { level: 6, question: "Which sorting algorithm has the best average-case time complexity?", options: ["Bubble Sort", "Selection Sort", "Quick Sort", "Insertion Sort"], correct: "C" },
+    { level: 6, question: "Which Indian Act allowed Indians to sit in ICS exams in England?", options: ["Charter Act 1853", "Charter Act 1833", "Indian Councils Act 1861", "Montagu-Chelmsford Act"], correct: "A" },
+    { level: 6, question: "In AI, what does 'overfitting' mean?", options: ["Model performs well on test data", "Model is too simple", "Model memorizes training data and performs poorly on new data", "Model has no bias"], correct: "C" },
+	
+	  {
+    "level": 6,
+    "question": "Which advanced geometric concept is depicted in this rotating visualization?",
+    "image": "https://i.ibb.co/r2Tb2K9z/images.jpg",
+    "options": ["Tesseract", "Riemann Surface", "Calabi–Yau manifold", "Fractal attractor"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "This diagram is a representation of what unsolved question in number theory?",
+    "image": "https://i.ibb.co/B5YHGNYk/images.png",
+    "options": ["Goldbach Conjecture", "Riemann Hypothesis", "Collatz Conjecture", "Twin Prime Conjecture"],
+    "correct": "B"
+  },
+  {
+    "level": 6,
+    "question": "This simulation shows what effect predicted by General Relativity?",
+    "image": "https://i.ibb.co/5WMFtMgj/images.jpg",
+    "options": ["Time dilation", "Frame dragging", "Event horizon rotation", "Redshift"],
+    "correct": "B"
+  },
+  {
+    "level": 6,
+    "question": "This neural activation map corresponds to which neuroscientific phenomenon?",
+    "image": "https://i.ibb.co/nMXH2Spb/images.jpg",
+    "options": ["Seizure onset", "Default Mode Network", "Mirror neuron firing", "Lucid dreaming phase"],
+    "correct": "B"
+  },
+  {
+    "level": 6,
+    "question": "This encoded mesh is used in what kind of modern encryption system?",
+    "image": "https://i.ibb.co/dsQXSkPp/elliptic-curve-cryptography-diagram.webp",
+    "options": ["SHA-512", "Quantum key exchange", "Elliptic Curve Cryptography", "Lattice-based cryptography"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "This 4D object shadow projection is known as what?",
+    "image": "https://i.ibb.co/7JvPQfj0/images.jpg",
+    "options": ["8-cell (Tesseract)", "24-cell", "Dodecaplex", "120-cell"],
+    "correct": "B"
+  },
+  {
+    "level": 6,
+    "question": "This image illustrates which concept in **meta-mathematics**?",
+    "image": "https://i.ibb.co/KjRK9j1H/images.png",
+    "options": ["Gödel numbering", "Ordinal collapse", "Recursive hierarchy", "Turing completeness"],
+    "correct": "A"
+  },
+  {
+    "level": 6,
+    "question": "This type of quantum circuit implements which algorithm?",
+    "image": "https://i.ibb.co/fdsqZ8bk/images.png",
+    "options": ["Grover's algorithm", "Quantum Fourier Transform", "Shor's algorithm", "Teleportation protocol"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "This spacetime diagram visualizes what theoretical construct?",
+    "image": "https://i.ibb.co/Kjp79Wcy/images.jpg",
+    "options": ["Wormhole", "White hole", "Einstein-Rosen bridge", "Closed time-like curve"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "Which field of mathematics is this exotic surface most associated with?",
+    "image": "https://i.ibb.co/dJwGcMpr/images.png",
+    "options": ["Topology", "Abstract algebra", "Differential calculus", "Combinatorics"],
+    "correct": "A"
+  },
+  {
+    "level": 6,
+    "question": "This visual encoding technique is a concept from what computational area?",
+    "image": "https://i.ibb.co/Nnb3V4js/images.png",
+    "options": ["Neural decoding", "Vector quantization", "Hyperdimensional computing", "Wavelet transformation"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "This visualization of multi-agent interactions relates to which game theory concept?",
+    "image": "https://i.ibb.co/1S52g4z/images.png",
+    "options": ["Pareto optimality", "Minimax strategy", "Nash equilibrium", "Zero-sum theorem"],
+    "correct": "C"
+  },
+  {
+    "level": 6,
+    "question": "This 3D visualization shows what behavior of neural networks?",
+    "image": "https://i.ibb.co/Fbz4TNWj/images.jpg",
+    "options": ["Weight decay", "Overfitting", "Loss landscape", "Gradient vanishing"],
+    "correct": "C"
+  },
+
+    // Level 7 – Difficult
+    { level: 7, question: "Who was the first woman to win a Nobel Prize?", options: ["Rosalind Franklin", "Ada Lovelace", "Marie Curie", "Mother Teresa"], correct: "C" },
+    { level: 7, question: "In compiler design, which phase generates the intermediate code?", options: ["Lexical Analysis", "Syntax Analysis", "Semantic Analysis", "Intermediate Code Generation"], correct: "D" },
+    { level: 7, question: "Which Mughal emperor issued the famous 'Farman' to the East India Company in 1717?", options: ["Bahadur Shah I", "Aurangzeb", "Farrukhsiyar", "Shah Alam II"], correct: "C" },
+    { level: 7, question: "In which language was the Buddhist text 'Milinda Panha' originally written?", options: ["Sanskrit", "Pali", "Prakrit", "Greek"], correct: "B" },
+    { level: 7, question: "Which Mughal emperor built the Red Fort?", options: ["Babur", "Akbar", "Shah Jahan", "Humayun"], correct: "C" },
+    { level: 7, question: "Which Indian case first laid down the concept of judicial review?", options: ["Golak Nath Case", "Minerva Mills Case", "Shankari Prasad Case", "Keshavananda Bharati Case"], correct: "C" },
+    { level: 7, question: "In machine learning, which evaluation metric is ideal when classes are imbalanced?", options: ["Accuracy", "Precision", "F1-Score", "MAE"], correct: "C" },
+    { level: 7, question: "The term 'Anekantavada' is a central philosophy of which Indian tradition?", options: ["Buddhism", "Hinduism", "Jainism", "Charvaka"], correct: "C" },
+    { level: 7, question: "Which algorithm is used to prevent the deadlock situation in Operating Systems?", options: ["Banker’s Algorithm", "FIFO", "LRU", "Round Robin"], correct: "A" },
+    { level: 7, question: "In database normalization, what does BCNF stand for?", options: ["Binary Code Normal Form", "Basic Column Normal Form", "Boyce-Codd Normal Form", "Base Class Normal Form"], correct: "C" },
+    { level: 7, question: "Who first proposed the theory of 'Drain of Wealth' in colonial India?", options: ["Gopal Krishna Gokhale", "Dadabhai Naoroji", "D.N. Wacha", "R.C. Dutt"], correct: "B" },
+    { level: 7, question: "Which cryptographic algorithm is based on the hardness of integer factorization?", options: ["AES", "RSA", "SHA-256", "Diffie-Hellman"], correct: "B" },
+    { level: 7, question: "Which memory model in C++11 helps prevent data races in multi-threading?", options: ["Weak Memory Model", "Sequential Consistency", "Strong Memory Model", "Loose Coupling"], correct: "B" },
+    { level: 7, question: "Which of the following statements is true about entropy in decision trees?", options: ["It increases with purity", "It decreases with impurity", "It is maximum when classes are equally distributed", "It is zero when all examples belong to different classes"], correct: "C" },
+	
+	  {
+    "level": 7,
+    "question": "This abstract diagram attempts to represent which unification theory in physics?",
+    "image": "https://i.ibb.co/ZpPzpD1p/0414img73.png",
+    "options": ["Loop Quantum Gravity", "Superstring Theory", "Theory of Everything", "M-theory"],
+    "correct": "C"
+  },
+  {
+    "level": 7,
+    "question": "Which paradox in set theory is visualized in this infinite feedback loop?",
+    "image": "https://i.ibb.co/k62Wsr6x/images.jpg",
+    "options": ["Burali-Forti paradox", "Russell’s paradox", "Banach-Tarski paradox", "Curry’s paradox"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "This hyperbolic projection belongs to which non-Euclidean geometry?",
+    "image": "https://i.ibb.co/d3KTWPQ/images.jpg",
+    "options": ["Spherical geometry", "Elliptic geometry", "Hyperbolic geometry", "Projective geometry"],
+    "correct": "C"
+  },
+  {
+    "level": 7,
+    "question": "Which deep learning interpretability concept is shown in this feature activation map?",
+    "image": "https://i.ibb.co/5h4VnGbT/images.jpg",
+    "options": ["Saliency map", "Gradient SHAP", "Integrated gradients", "Activation maximization"],
+    "correct": "D"
+  },
+  {
+    "level": 7,
+    "question": "Which philosophical idea does this recursive painting represent?",
+    "image": "https://i.ibb.co/35TJ5qqy/images.jpg",
+    "options": ["Infinite regress", "Dualism", "Panpsychism", "Subjective idealism"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "What is being modeled in this causal Bayesian network structure?",
+    "image": "https://i.ibb.co/8ggZZ5Jp/images.png",
+    "options": ["Counterfactual analysis", "Decision trees", "Markov assumption", "Policy learning"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "This manifold is used in which machine learning dimensionality reduction method?",
+    "image": "https://i.ibb.co/mCSqNFDQ/images.jpg",
+    "options": ["t-SNE", "UMAP", "LLE", "PCA"],
+    "correct": "B"
+  },
+  {
+    "level": 7,
+    "question": "This 3D topological structure is central to which quantum computation model?",
+    "image": "https://i.ibb.co/LdXy3NmY/Topological-quantum-computer.jpg",
+    "options": ["Topological qubits", "Quantum annealing", "Spin lattice models", "Quantum teleportation"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "This pattern of logical growth is linked to which formal system limit?",
+    "image": "https://i.ibb.co/wFdt8B2y/images.jpg",
+    "options": ["Gödel’s Incompleteness", "Zermelo-Fraenkel contradiction", "Peano axiom inconsistency", "Hilbert's Program"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "This holographic structure is connected to which frontier theory in physics?",
+    "image": "https://i.ibb.co/4RszMtHJ/4-studyreveals.jpg",
+    "options": ["Holographic principle", "Quantum foam", "Causal loop theory", "Bulk-boundary duality"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "What paradox does this algorithmic process visually encode?",
+    "image": "https://i.ibb.co/HLKsKWnM/images.jpg",
+    "options": ["Self-replication paradox", "Quine paradox", "Liar paradox", "Diagonalization"],
+    "correct": "B"
+  },
+  {
+    "level": 7,
+    "question": "This type of data visualization represents which theoretical AI model?",
+    "image": "https://i.ibb.co/SXMTtkLk/1-s2-0-S2468502-X24000160-gr1.jpg",
+    "options": ["World models", "Transformers", "Capsule networks", "Energy-based models"],
+    "correct": "A"
+  },
+  {
+    "level": 7,
+    "question": "Which property of higher-dimensional polytopes is illustrated here?",
+    "image": "https://i.ibb.co/kgSnMTxg/images.jpg",
+    "options": ["Simplicial faces", "Dual symmetry", "4D vertex tessellation", "Schläfli symbol encoding"],
+    "correct": "C"
+  },
+  {
+    "level": 7,
+    "question": "Which type of paradox is depicted in this philosophical loop?",
+    "image": "https://i.ibb.co/j9d9tXmG/Epimenides-poet.jpg",
+    "options": ["Grelling-Nelson", "Epimenides paradox", "Tarski’s truth paradox", "Semantic paradox"],
+    "correct": "B"
+  },
+
+
+    // Level 8 – Very Difficult
+    { level: 8, question: "What is the escape velocity of Earth?", options: ["9.8 m/s²", "11.2 km/s", "5.6 km/s", "7.9 m/s"], correct: "B" },
+    { level: 8, question: "Who was the Chairman of the Drafting Committee of the Constituent Assembly?", options: ["Rajendra Prasad", "Jawaharlal Nehru", "B.R. Ambedkar", "Sardar Patel"], correct: "C" },
+    { level: 8, question: "In which year was the Indian Constitution adopted?", options: ["1950", "1949", "1947", "1951"], correct: "B" },
+    { level: 8, question: "Which Python module is used for symbolic mathematics?", options: ["Numpy", "Scipy", "SymPy", "Pandas"], correct: "C" },
+    { level: 8, question: "Which type of join in SQL returns rows from both tables even if they don’t match?", options: ["INNER JOIN", "OUTER JOIN", "LEFT JOIN", "FULL OUTER JOIN"], correct: "D" },
+    { level: 8, question: "In Big-O notation, what is the worst-case time complexity of Quick Sort?", options: ["O(n log n)", "O(n²)", "O(n)", "O(log n)"], correct: "B" },
+    { level: 8, question: "Which empire issued the Allahabad Pillar Inscription?", options: ["Mauryan", "Gupta", "Mughal", "Kushan"], correct: "B" },
+    { level: 8, question: "What is the primary function of a Convolutional Layer in a CNN?", options: ["Feature Extraction", "Overfitting Control", "Pooling", "Activation"], correct: "A" },
+    { level: 8, question: "Which branch of logic deals with self-referential paradoxes and fixed points?", options: ["First-Order Logic", "Modal Logic", "Non-Monotonic Logic", "Recursive Logic"], correct: "D" },
+    { level: 8, question: "Which of the following is a statistical test for checking independence of two categorical variables", options: ["T-test", "Chi-square Test", "Z-test", "ANOVA"], correct: "B" },
+    { level: 8, question: "Which 19th century Indian reformer opposed child marriage and founded the Arya Samaj?", options: ["Raja Ram Mohan Roy", "Ishwar Chandra Vidyasagar", "Dayanand Saraswati", "Swami Vivekananda"], correct: "C" },
+    { level: 8, question: "In NLP, which model architecture is the base for ChatGPT?", options: ["LSTM", "CNN", "Transformer", "GRU"], correct: "C" },
+    { level: 8, question: "Which economic theory supports minimum government interference in markets?", options: ["Keynesian Economics", "Classical Economics", "Socialism", "Monetarism"], correct: "B" },
+	
+	  {
+    "level": 8,
+    "question": "This visual illusion encodes which higher-order logical concept?",
+    "image": "https://i.ibb.co/Jk6qScT/penrose-stairs.jpg",
+    "options": ["Circular reasoning", "Self-reference", "Non-transitive logic", "Inconsistent axioms"],
+    "correct": "B"
+  },
+  {
+    "level": 8,
+    "question": "This symbolic image is often used to explain what paradox in cosmology?",
+    "image": "https://i.ibb.co/7Svs6q7/flatland-sphere.jpg",
+    "options": ["Anthropic principle", "Simulation theory", "Flatland paradox", "Boltzmann brain"],
+    "correct": "C"
+  },
+  {
+    "level": 8,
+    "question": "This recursive simulation illustrates which philosophical concept?",
+    "image": "https://i.ibb.co/GFYMK49/simulation.png",
+    "options": ["Infinite regress", "Simulation argument", "Nested consciousness", "Phenomenal realism"],
+    "correct": "B"
+  },
+  {
+    "level": 8,
+    "question": "Which abstract data structure does this shape most closely represent?",
+    "image": "https://i.ibb.co/tmVmyYw/graph-hypercube.png",
+    "options": ["Trie", "Hypercube graph", "Bloom filter", "B-tree"],
+    "correct": "B"
+  },
+  {
+    "level": 8,
+    "question": "This surreal neural visual output most closely resembles which ML concept?",
+    "image": "https://i.ibb.co/x58khFV/deepdream.jpg",
+    "options": ["Gradient hallucination", "Generative overfitting", "Neural dreamscape", "Feature amplification"],
+    "correct": "D"
+  },
+  {
+    "level": 8,
+    "question": "This image metaphorically represents which epistemological problem?",
+    "image": "https://i.ibb.co/m0fFwXW/brain-in-vat.jpg",
+    "options": ["Descartes' doubt", "Mind-body dualism", "Brain in a vat", "Qualia gap"],
+    "correct": "C"
+  },
+  {
+    "level": 8,
+    "question": "What cryptographic vulnerability is suggested by this simplified hash collision visualization?",
+    "image": "https://i.ibb.co/v3W6Zd9/hash-collision.jpg",
+    "options": ["Rainbow table", "Birthday paradox", "Timing attack", "Replay attack"],
+    "correct": "B"
+  },
+  {
+    "level": 8,
+    "question": "This graphical recursion most closely relates to which mathematical theorem?",
+    "image": "https://i.ibb.co/7zqnFYx/four-color.png",
+    "options": ["Banach–Tarski theorem", "Ramsey theory", "Four color theorem", "Zorn’s lemma"],
+    "correct": "C"
+  },
+  {
+    "level": 8,
+    "question": "This ancient yet mathematically rigorous pattern is an example of which geometry?",
+    "image": "https://i.ibb.co/8Dc1V62/islamic-tiling.jpg",
+    "options": ["Non-periodic tiling", "Radial tessellation", "Penrose tiling", "Frieze symmetry"],
+    "correct": "A"
+  },
+  {
+    "level": 8,
+    "question": "This chaotic attractor represents which famous mathematical object?",
+    "image": "https://i.ibb.co/3S1dt8W/lorenz-attractor.jpg",
+    "options": ["Strange attractor", "Logistic map", "Lyapunov space", "Lorenz attractor"],
+    "correct": "D"
+  },
+  {
+    "level": 8,
+    "question": "What quantum mechanics thought experiment does this illustration represent?",
+    "image": "https://i.ibb.co/1Z0psXP/wigner-friend.jpg",
+    "options": ["Quantum suicide", "Schrödinger's cat", "Wigner’s friend", "EPR paradox"],
+    "correct": "C"
+  },
+  {
+    "level": 8,
+    "question": "This unusual perspective visualizes which logical puzzle?",
+    "image": "https://i.ibb.co/Qf6r5rD/three-doors.jpg",
+    "options": ["Prisoner’s Dilemma", "Monty Hall problem", "Newcomb’s paradox", "Zeno’s paradox"],
+    "correct": "B"
+  },
+  {
+    "level": 8,
+    "question": "This visual metaphor represents what concept in theoretical computer science?",
+    "image": "https://i.ibb.co/dK51pJy/halting-problem.jpg",
+    "options": ["Halting problem", "Recursion limit", "Turing completeness", "NP-completeness"],
+    "correct": "A"
+  },
+  {
+    "level": 8,
+    "question": "This impossible object illustrates which concept in perceptual psychology?",
+    "image": "https://i.ibb.co/jkbYd8v/blivet.png",
+    "options": ["Gestalt closure", "Depth ambiguity", "Blivet illusion", "Topological inversion"],
+    "correct": "C"
+  },
+  {
+    "level": 8,
+    "question": "This representation of 'thought within thought' refers to which self-referential phenomenon?",
+    "image": "https://i.ibb.co/syG5pW0/hofstadter-strange-loop.jpg",
+    "options": ["Gödel loop", "Strange loop", "Self-indexing recursion", "Downward causation"],
+    "correct": "B"
+  },
+
+    // Level 9 – Expert
+    { level: 9, question: "Which functional interface in Java 8 has a single abstract method called 'apply'?", options: ["Predicate", "Consumer", "Function", "Supplier"], correct: "C" },
+    { level: 9, question: "Which branch of computer science studies formal languages and automata?", options: ["Theory of Computation", "Compiler Design", "Operating Systems", "Discrete Mathematics"], correct: "A" },
+    { level: 9, question: "Which of these is a concept in quantum computing representing a combination of all possible states?", options: ["Quantum Entanglement", "Superposition", "Qubit Collapse", "Wavefunction Duality"], correct: "B" },
+    { level: 9, question: "Which unsolved problem in computer science asks whether every problem whose solution can be verified in polynomial time can also be solved in polynomial time?", options: ["Turing Halting Problem", "P vs NP", "P vs PSPACE", "Church-Turing Thesis"], correct: "B" },
+    { level: 9, question: "Which Article of the Indian Constitution provides for the doctrine of 'due process of law' in a limited sense?", options: ["Article 21", "Article 19(1)(g)", "Article 14", "Article 22"], correct: "A" },
+	{ level: 9, question: "In deep learning, which regularization technique penalizes the absolute value of weights?", options: ["L1 Regularization", "L2 Regularization", "Dropout", "Batch Normalization"], correct: "C" },
+    { level: 9, question: "Gödel's incompleteness theorem implies that:", options: ["All true statements can be proven", "Some truths are unprovable", "Mathematics is complete", "Logic and arithmetic are inconsistent"], correct: "B" },
+    { level: 9, question: "Which ruler built the Iron Pillar in Delhi, known for its rust-resistant composition?", options: ["Ashoka", "Chandragupta I", "Chandragupta II", "Harshavardhana"], correct: "C" },
+    { level: 9, question: "Which law governs the maximum efficiency of a heat engine operating between two temperatures?", options: ["Carnot's Theorem", "Second Law of Thermodynamics", "Joule's Law", "Kirchhoff's Law"], correct: "A" },
+    { level: 9, question: "Which cryptographic algorithm uses elliptic curves over finite fields for encryption?", options: ["RSA", "AES", "ECC", "SHA-256"], correct: "C" },
+    { level: 9, question: "Which Indian Act first introduced 'Separate Electorates' for Muslims?", options: ["Government of India Act 1919", "Minto-Morley Reforms 1909", "Indian Councils Act 1892", "Montagu-Chelmsford Reforms"], correct: "B" },
+    { level: 9, question: "Which sorting algorithm has the best average-case time complexity for large datasets with uniformly distributed values?", options: ["QuickSort", "MergeSort", "HeapSort", "Radix Sort"], correct: "D" },
+    { level: 9, question: "Which data structure is used in Tarjan’s algorithm for finding strongly connected components?", options: ["Queue", "Stack", "Heap", "Priority Queue"], correct: "B" },
+    { level: 9, question: "Which system of philosophy accepts only perception and inference as valid sources of knowledge?", options: ["Nyaya", "Vedanta", "Charvaka", "Sankhya"], correct: "C" },
+    { level: 9, question: "Which Turing machine configuration results in the Busy Beaver function growing faster than any computable function?", options: ["Universal TM", "Multitape TM", "Non-deterministic TM", "Busy Beaver TM"], correct: "D" },
+	
+	  {
+    "level": 9,
+    "question": "This image suggests which concept where an AI becomes capable of recursive self-improvement?",
+    "image": "https://i.ibb.co/Zzxp2tw1/images.jpg",
+    "options": ["Technological AI", "Trajectory optimization", "Technological singularity", "Artificial consciousness"],
+    "correct": "C"
+  },
+  {
+    "level": 9,
+    "question": "This structure is a visual metaphor for which foundational issue in logic and math?",
+    "image": "https://i.ibb.co/M5sngXWS/3-s2-0-B9780080496467500096-f03-14-9780080496467.jpg",
+    "options": ["Cantor’s diagonalization", "Undecidability", "Russell’s paradox", "Foundational incompleteness"],
+    "correct": "D"
+  },
+  {
+    "level": 9,
+    "question": "This AI-generated visual ambiguity is an example of what philosophical puzzle?",
+    "image": "https://i.ibb.co/jv6g3MRz/large-print-general-knowledge-word-search-puzzle-large-print-general-knowledge-word-search-puzzle-ea.webp",
+    "options": ["Knowledge argument", "Zombie argument", "Chinese room", "Trolley problem"],
+    "correct": "A"
+  },
+  {
+    "level": 9,
+    "question": "What theoretical physics concept does this geometrical diagram hint at?",
+    "image": "https://i.ibb.co/RTv3zyK8/images.jpg",
+    "options": ["String compactification", "Multiverse symmetry", "E8 Lie group", "Dark energy curvature"],
+    "correct": "C"
+  },
+  {
+    "level": 9,
+    "question": "This recursive pattern encodes the logic of which famous paradox?",
+    "image": "https://i.ibb.co/JjpYRY2W/images.png",
+    "options": ["Zeno's Paradox", "Infinite regress", "Liar's Paradox", "Burali-Forti"],
+    "correct": "A"
+  },
+  {
+    "level": 9,
+    "question": "This artistic logic puzzle suggests which Gödel-like principle?",
+    "image": "https://i.ibb.co/fdzgp21j/download.jpg",
+    "options": ["Gödel’s Incompleteness", "Turing Halting", "Diagonalization", "Ordinal collapse"],
+    "correct": "A"
+  },
+  {
+    "level": 9,
+    "question": "This recursive thought model represents which phenomenon in cognition?",
+    "image": "https://i.ibb.co/s1mK4v2/meta-consciousness.jpg",
+    "options": ["Recursive introspection", "Infinite regress", "Meta-consciousness", "Qualia stacking"],
+    "correct": "C"
+  },
+  {
+    "level": 9,
+    "question": "What principle in quantum physics is indirectly symbolized here?",
+    "image": "https://i.ibb.co/n8RXZxhC/download.png",
+    "options": ["Entanglement", "Superposition", "Observer effect", "Wave-particle duality"],
+    "correct": "D"
+  },
+  {
+    "level": 9,
+    "question": "This impossible object reflects which higher-order cognitive illusion?",
+    "image": "https://i.ibb.co/PZ0fV1m9/images.jpg",
+    "options": ["Paradox of perception", "Topological inconsistency", "Cognitive dissonance", "Strange loop"],
+    "correct": "B"
+  },
+  {
+    "level": 9,
+    "question": "This encoding pattern hints at which concept in information theory?",
+    "image": "https://i.ibb.co/gL4xq9RD/download.jpg",
+    "options": ["Shannon entropy", "Kolmogorov complexity", "Huffman coding", "Data compression"],
+    "correct": "B"
+  },
+  {
+    "level": 9,
+    "question": "This illusion involving symmetry and identity challenges which concept?",
+    "image": "https://i.ibb.co/sdJx3D23/download.jpg",
+    "options": ["Identity over time", "Materialism", "Continuity of memory", "Observer duality"],
+    "correct": "A"
+  },
+  {
+    "level": 9,
+    "question": "This image represents which bizarre result in set theory involving infinite volume?",
+    "image": "https://i.ibb.co/Rkzp7YrZ/images.jpg",
+    "options": ["Cantor’s infinity", "Banach–Tarski paradox", "Hilbert’s hotel", "Cardinality paradox"],
+    "correct": "B"
+  },
+  {
+    "level": 9,
+    "question": "This visual encryption metaphor depicts which cryptographic assumption?",
+    "image": "https://i.ibb.co/r27B6vCs/Trapdoor-permutation-svg.png",
+    "options": ["Collision resistance", "Trapdoor function", "Zero-knowledge proof", "Hash preimage"],
+    "correct": "B"
+  },
+
+
+    // Level 10 – Genius
+{ level: 10, question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", options: ["Echo", "Whistle", "Soundwave", "Ghost"], correct: "A" },
+{ level: 10, question: "A prisoner is told: 'You may make one statement. If it is true, you will be hanged. If it is false, you will be shot.' What should he say to survive?", options: ["I will be shot.", "I will be hanged.", "You will hang me.", "I will be shot or hanged."], correct: "A" },
+{ level: 10, question: "What is the next number in the sequence: 2, 12, 30, 56, 90, ___?", options: ["132", "140", "156", "100"], correct: "A" },
+{ level: 10, question: "Three gods are named A, B, and C. One always tells the truth, one always lies, and one answers randomly. You can ask 3 yes/no questions. What do you ask?", options: ["Ask A if B is random", "Ask each god 'If I asked you if you were the liar, would you say yes?'", "Ask C if A is truthful", "Ask A if B lies and ask B if C lies"], correct: "B" },
+{ level: 10, question: "A man looks at a photo and says: 'Brothers and sisters, I have none. But that man's father is my father's son.' Who is in the photo?", options: ["His nephew", "His son", "Himself", "His father"], correct: "B" },
+{ level: 10, question: "Which 4-digit number multiplied by 4 gives the reverse of itself?", options: ["2178", "2197", "2187", "2179"], correct: "A" },
+{ level: 10, question: "You have 8 balls, one of which is heavier. What’s the minimum number of weighings on a balance scale to find the heavy one?", options: ["2", "3", "4", "1"], correct: "B" },
+{ level: 10, question: "I am a 7-letter word. I become longer when the third letter is removed. What am I?", options: ["Lounger", "Longing", "Longer", "Lengthy"], correct: "C" },
+{ level: 10, question: "What 5-letter word becomes shorter when you add two letters to it?", options: ["Short", "Stint", "Spurt", "Sprint"], correct: "A" },
+{ level: 10, question: "A farmer has 17 sheep. All but 9 run away. How many are left?", options: ["9", "8", "0", "17"], correct: "A" },
+{ level: 10, question: "Which number comes next? 1, 11, 21, 1211, 111221, ___?", options: ["312211", "1113213211", "111222", "122112"], correct: "A" },
+{ level: 10, question: "You’re in a room with 2 doors and 2 guards. One door leads to death. One guard always lies. What do you ask?", options: ["Which door is safe?", "If I asked the other guard which door is safe, what would he say?", "Is the other guard lying?", "What’s behind this door?"], correct: "B" },
+{ level: 10, question: "A clock shows 3:15. What is the angle between the hour and minute hands?", options: ["7.5°", "0°", "30°", "22.5°"], correct: "A" },
+{ level: 10, question: "I am a word of letters three, add two and fewer there will be. What am I?", options: ["Few", "One", "Two", "Bit"], correct: "A" },
+
+  {
+    "level": 10,
+    "question": "This fractal-based image hints at which paradox in determinism and free will?",
+    "image": "https://i.ibb.co/v4QvXs2s/Entropy-Expansion-Layzer.gif",
+    "options": ["Laplace's demon", "Quantum freedom", "Causal closure", "Free will illusion"],
+    "correct": "A"
+  },
+  {
+    "level": 10,
+    "question": "This pattern subtly encodes the essence of which unsolved mathematical hypothesis?",
+    "image": "https://i.ibb.co/zWzgmtjj/download.png",
+    "options": ["Goldbach’s Conjecture", "Collatz Conjecture", "Riemann Hypothesis", "Twin Prime Conjecture"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This visual puzzle connects to which ancient logic dilemma?",
+    "image": "https://i.ibb.co/39VNGrRJ/download.png",
+    "options": ["Ship of Theseus", "Zeno’s paradox", "Liar’s paradox", "Sorites paradox"],
+    "correct": "D"
+  },
+  {
+    "level": 10,
+    "question": "Which theory does this visual metaphorically represent about the universe's geometry?",
+    "image": "https://i.ibb.co/d3KTWPQ/images.jpg",
+    "options": ["Flat universe", "Spherical model", "Hyperbolic geometry", "Loop quantum cosmology"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This recursive system of mirrors is a metaphor for what philosophical concept?",
+    "image": "https://i.ibb.co/vCTN4s1M/download.png",
+    "options": ["Meta-consciousness", "Recursive self-awareness", "Simulation theory", "Solipsism"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "This paradoxical staircase is a direct metaphor for which concept in math?",
+    "image": "https://i.ibb.co/Vc6rLnsD/download.png",
+    "options": ["Limit cycles", "Topology twist", "Penrose paradox", "Infinite regress"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This abstract drawing represents which model of the multiverse?",
+    "image": "https://i.ibb.co/8qkhM81/download.jpg",
+    "options": ["Many-worlds interpretation", "String theory landscapes", "Bubble universes", "Brane cosmology"],
+    "correct": "A"
+  },
+  {
+    "level": 10,
+    "question": "This encryption pattern visually reflects which cryptographic method?",
+    "image": "https://i.ibb.co/k60gtYsr/download.jpg",
+    "options": ["Elliptic curve", "Quantum key distribution", "RSA", "One-time pad"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "This layered circuit illusion connects with which principle in consciousness?",
+    "image": "https://i.ibb.co/zT5RHMd6/download.jpg",
+    "options": ["Integrated Information Theory", "Global Workspace Theory", "Orchestrated Objective Reduction", "Qualia Theory"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "Which AI dilemma does this symbolic spiral image signify?",
+    "image": "https://i.ibb.co/9kWnPvJT/download.jpg",
+    "options": ["Paperclip maximizer", "Instrumental convergence", "Control problem", "Value alignment"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This layered structure metaphorically represents which paradox of infinity?",
+    "image": "https://i.ibb.co/1fTFfrDx/download.png",
+    "options": ["Cantor diagonal", "Hilbert’s hotel", "Banach–Tarski", "Ordinal explosion"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "This symbolic visual of intertwined logic gates is a nod to which unsolved AI concept?",
+    "image": "https://i.ibb.co/BHRmywYr/download.png",
+    "options": ["Symbol grounding problem", "Embodied cognition", "Strong emergence", "Neural binding problem"],
+    "correct": "A"
+  },
+  {
+    "level": 10,
+    "question": "This sketch implies what physics concept that challenges time perception?",
+    "image": "https://i.ibb.co/27C4b9jG/download.jpg",
+    "options": ["Arrow of time", "Block universe", "Quantum loop gravity", "Time dilation"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "This recursive image of a robot painting itself suggests which AI problem?",
+    "image": "https://i.ibb.co/YBL7qcR3/download.jpg",
+    "options": ["Self-modification risk", "Instrumental goals", "Recursive reward hacking", "Autopoiesis"],
+    "correct": "A"
+  },
+  {
+    "level": 10,
+    "question": "This visual shows which quantum concept that even Einstein called 'spooky'?",
+    "image": "https://i.ibb.co/N6mNYcb9/download.jpg",
+    "options": ["Superposition", "Quantum tunneling", "Entanglement", "Observer effect"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This geometry is often used to depict what multidimensional theory?",
+    "image": "https://i.ibb.co/3KWw3NF/download.jpg",
+    "options": ["Supergravity", "Kaluza–Klein theory", "Calabi–Yau manifolds", "Warped branes"],
+    "correct": "C"
+  },
+  {
+    "level": 10,
+    "question": "This impossibility in visual space implies what math abstraction?",
+    "image": "https://i.ibb.co/RTMp49Zn/download.jpg",
+    "options": ["Riemannian surface", "Non-Euclidean space", "Projective geometry", "Torus topology"],
+    "correct": "B"
+  },
+  {
+    "level": 10,
+    "question": "This abstract neural spiral suggests what debated theory of consciousness?",
+    "image": "https://i.ibb.co/qYzpChfG/download.jpg",
+    "options": ["IIT (Integrated Information Theory)", "Holographic brain", "Neural Darwinism", "Quantum cognition"],
+    "correct": "A"
+  },
+
+        ];
+
+        // Initialize Game
+        function initializeGame() {
+            updateWalletDisplay();
+            buildRewardLadder();
+            
+            // Event Listeners
+            document.getElementById('playButton').addEventListener('click', startGame);
+            document.getElementById('nextLevelBtn').addEventListener('click', nextLevel);
+            document.getElementById('playAgainBtn').addEventListener('click', resetGame);
+            
+            // Option buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => selectAnswer(e.target.closest('.option-btn').dataset.option));
+            });
+            
+            // Lifeline buttons
+            document.getElementById('lifeline5050').addEventListener('click', () => useLifeline('5050'));
+            document.getElementById('lifelineAudience').addEventListener('click', () => useLifeline('audience'));
+            document.getElementById('lifelineFlip').addEventListener('click', () => useLifeline('flip'));
+            document.getElementById('lifelineBot').addEventListener('click', () => useLifeline('bot'));
+        }
+
+        async function updateWalletDisplay() {
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const data = userSnap.data();
+
+  const recharge = data?.rechargeWallet || 0;
+  const winning = data?.winningWallet || 0;
+  const total = recharge + winning;
+
+  gameState.walletBalance = total;
+
+  const walletEl = document.getElementById('walletBalance');
+  if (walletEl) walletEl.textContent = total;
+}
+async function startGame() {
+  const success = await deductEntryFee();
+  if (!success) return;
+
+  updateWalletDisplay();
+
+  document.getElementById('entryPage').classList.add('hidden');
+  document.getElementById('gamePage').classList.remove('hidden');
+  document.getElementById('gamePage').classList.add('slide-up');
+
+  loadQuestion();
+}
+
+        function buildRewardLadder() {
+            const ladder = document.getElementById('rewardLadder');
+            ladder.innerHTML = '';
+            
+            for (let i = 10; i >= 1; i--) {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-lg border-2 ${
+                    i === gameState.currentLevel ? 'border-yellow-400 bg-yellow-900 bg-opacity-50 neon-glow' :
+                    i <= gameState.lastCompletedLevel ? 'border-green-400 bg-green-900 bg-opacity-30' :
+                    'border-gray-600 bg-gray-700 bg-opacity-30'
+                }`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm">Level ${i}</span>
+                        <span class="font-bold">₹${rewards[i]}</span>
+                    </div>
+                `;
+                ladder.appendChild(div);
+            }
+        }
+
+async function deductEntryFee() {
+  const ENTRY_FEE = 299;
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    alert("User data not found");
+    return false;
+  }
+
+  const data = userSnap.data();
+  const recharge = data?.rechargeWallet || 0;
+  const winning = data?.winningWallet || 0;
+  const totalAvailable = recharge + winning;
+
+  // ✅ Check total (recharge + winning)
+  if (totalAvailable < ENTRY_FEE) {
+    alert("Insufficient total balance (Recharge + Winning Wallet)!");
+    return false;
+  }
+
+  // ✅ Deduct from recharge first
+  let rechargeDeduct = 0;
+  let winningDeduct = 0;
+
+  if (recharge >= ENTRY_FEE) {
+    rechargeDeduct = ENTRY_FEE;
+  } else {
+    rechargeDeduct = recharge;
+    winningDeduct = ENTRY_FEE - recharge;
+  }
+
+  // ✅ Update Firestore
+  await updateDoc(userRef, {
+    rechargeWallet: recharge - rechargeDeduct,
+    winningWallet: winning - winningDeduct
+  });
+
+  // Update local game state
+  gameState.walletBalance = totalAvailable - ENTRY_FEE;
+
+  console.log(`✅ ₹${rechargeDeduct} cut from Recharge, ₹${winningDeduct} from Winning`);
+  return true;
+}
+
+
+async function deductLifelineFee(amount = 50) {
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const data = userSnap.data();
+
+  const recharge = data?.rechargeWallet || 0;
+  const winning = data?.winningWallet || 0;
+  const total = recharge + winning;
+
+  if (total < amount) {
+    return false;
+  }
+
+  let rechargeDeduct = 0;
+  let winningDeduct = 0;
+
+  if (recharge >= amount) {
+    rechargeDeduct = amount;
+  } else {
+    rechargeDeduct = recharge;
+    winningDeduct = amount - recharge;
+  }
+
+  await updateDoc(userRef, {
+    rechargeWallet: recharge - rechargeDeduct,
+    winningWallet: winning - winningDeduct
+  });
+
+  console.log(`Lifeline: ₹${rechargeDeduct} from recharge, ₹${winningDeduct} from winning`);
+
+  return true;
+}
+
+
+
+
+        function loadQuestion() {
+            resetQuestionUI();
+            
+            // Get random question for current level
+            const levelQuestions = questions.filter(q => q.level === gameState.currentLevel);
+            gameState.currentQuestion = levelQuestions[Math.floor(Math.random() * levelQuestions.length)];
+            
+            // Update UI
+            document.getElementById('currentLevel').textContent = gameState.currentLevel;
+            document.getElementById('currentPrize').textContent = rewards[gameState.currentLevel];
+            document.getElementById('questionNumber').textContent = gameState.currentLevel;
+const questionContainer = document.getElementById('questionText');
+questionContainer.innerHTML = gameState.currentQuestion.question;
+
+// Show image if available
+if (gameState.currentQuestion.image) {
+  questionContainer.innerHTML += `<br><img src="${gameState.currentQuestion.image}" alt="question image" class="mt-4 max-h-40 mx-auto">`;
+}
+            
+            document.getElementById('optionA').textContent = gameState.currentQuestion.options[0];
+            document.getElementById('optionB').textContent = gameState.currentQuestion.options[1];
+            document.getElementById('optionC').textContent = gameState.currentQuestion.options[2];
+            document.getElementById('optionD').textContent = gameState.currentQuestion.options[3];
+            
+            buildRewardLadder();
+            startTimer();
+        }
+
+        function resetQuestionUI() {
+            // Reset options
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.className = 'option-btn rounded-xl p-6 text-left border-2 border-gray-600 hover:border-blue-400';
+                btn.style.pointerEvents = 'auto';
+            });
+            
+            // Hide additional UI
+            document.getElementById('botHint').classList.add('hidden');
+            document.getElementById('audiencePoll').classList.add('hidden');
+            document.getElementById('nextLevelSection').classList.add('hidden');
+            
+            gameState.isAnswering = false;
+        }
+
+        function startTimer() {
+            gameState.timer = 10;
+            document.getElementById('timer').textContent = gameState.timer;
+            document.getElementById('timerDisplay').textContent = gameState.timer;
+            
+            // Remove warning class
+            document.getElementById('timer').classList.remove('timer-warning');
+            document.getElementById('timerDisplay').classList.remove('timer-warning');
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                document.getElementById('timer').textContent = gameState.timer;
+                document.getElementById('timerDisplay').textContent = gameState.timer;
+                
+                // Play tick sound
+                soundManager.playTick();
+                
+                // Add warning color when timer is low
+                if (gameState.timer <= 3) {
+                    document.getElementById('timer').classList.add('timer-warning');
+                    document.getElementById('timerDisplay').classList.add('timer-warning');
+                }
+                
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function timeUp() {
+            if (gameState.isAnswering) return;
+            
+            gameState.isAnswering = true;
+            soundManager.playWrong();
+            
+            // Show game over
+            setTimeout(() => {
+                endGame('Time\'s up! Game Over.');
+            }, 1000);
+        }
+
+        function selectAnswer(option) {
+            if (gameState.isAnswering) return;
+            
+            gameState.isAnswering = true;
+            clearInterval(gameState.timerInterval);
+            
+            const isCorrect = option === gameState.currentQuestion.correct;
+            const selectedBtn = document.querySelector(`[data-option="${option}"]`);
+            const correctBtn = document.querySelector(`[data-option="${gameState.currentQuestion.correct}"]`);
+            
+            // Disable all options
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.style.pointerEvents = 'none';
+            });
+            
+            if (isCorrect) {
+                selectedBtn.classList.add('correct-answer');
+                soundManager.playSuccess();
+                gameState.lastCompletedLevel = gameState.currentLevel;
+                
+                setTimeout(() => {
+                    if (gameState.currentLevel === 10) {
+                        endGame('Congratulations! You won the jackpot!', true);
+                    } else {
+                        showNextLevel();
+                    }
+                }, 1500);
+            } else {
+                selectedBtn.classList.add('wrong-answer');
+                correctBtn.classList.add('correct-answer');
+                soundManager.playWrong();
+                
+                setTimeout(() => {
+                    endGame('Wrong answer! Game Over.');
+                }, 2000);
+            }
+        }
+
+        function showNextLevel() {
+            const message = `✅ Correct! You've won ₹${rewards[gameState.currentLevel]}`;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('nextLevelSection').classList.remove('hidden');
+        }
+
+        function nextLevel() {
+            gameState.currentLevel++;
+            document.getElementById('nextLevelSection').classList.add('hidden');
+            loadQuestion();
+        }
+
+async function endGame(message, isWin = false) {
+  const earnings = rewards[gameState.lastCompletedLevel];
+  await addWinningsToWallet(earnings);
+  await recordKbcResult({ entryFee: 299, earnings });
+
+  document.getElementById('gameOverTitle').textContent = isWin ? 'Congratulations!' : 'Game Over!';
+  document.getElementById('finalEarnings').textContent = earnings;
+  document.getElementById('finalLevel').textContent = gameState.lastCompletedLevel;
+
+  // Update balance shown at the end
+  await updateWalletDisplay();
+  document.getElementById('newWalletBalance').textContent = gameState.walletBalance;
+
+  document.getElementById('gamePage').classList.add('hidden');
+  document.getElementById('gameOverPage').classList.remove('hidden');
+}
+
+async function recordKbcResult({ entryFee, earnings }) {
+  // auto‑ID document inside a top‑level collection
+  await addDoc(collection(db, "kbcResults"), {
+    userId:       currentUser.uid,
+    correctCount: gameState.lastCompletedLevel,      // 0‑10
+    lifelines:    gameState.usedLifelines,            // {5050: bool, ...}
+    entryFee,                                         // ₹299
+    earnings,                                         // money won
+    createdAt:   serverTimestamp()
+  });
+}
+
+        function resetGame() {
+            // Reset game state
+            gameState.currentLevel = 1;
+            gameState.lastCompletedLevel = 0;
+            gameState.timer = 10;
+            gameState.usedLifelines = {
+                '5050': false,
+                'audience': false,
+                'flip': false,
+                'bot': false
+            };
+            gameState.isAnswering = false;
+            
+            // Reset lifeline buttons
+            document.querySelectorAll('.lifeline-btn').forEach(btn => {
+                btn.classList.remove('lifeline-used');
+            });
+            
+            updateWalletDisplay();
+            
+            document.getElementById('gameOverPage').classList.add('hidden');
+            document.getElementById('entryPage').classList.remove('hidden');
+        }
+
+async function useLifeline(type) {
+  if (gameState.usedLifelines[type] || gameState.isAnswering) return;
+
+  const feeSuccess = await deductLifelineFee();
+  if (!feeSuccess) return;
+
+  gameState.usedLifelines[type] = true;
+  document.getElementById(`lifeline${type.charAt(0).toUpperCase() + type.slice(1)}`).classList.add('lifeline-used');
+  soundManager.playLifeline();
+
+  switch (type) {
+    case '5050':
+      use5050();
+      break;
+    case 'audience':
+      useAudiencePoll();
+      break;
+    case 'flip':
+      useFlipQuestion();
+      break;
+    case 'bot':
+      useAskBot();
+      break;
+  }
+}
+
+
+        function use5050() {
+            const correctOption = gameState.currentQuestion.correct;
+            const options = ['A', 'B', 'C', 'D'];
+            const wrongOptions = options.filter(opt => opt !== correctOption);
+            
+            // Remove 2 wrong options
+            for (let i = 0; i < 2; i++) {
+                const removeIndex = Math.floor(Math.random() * wrongOptions.length);
+                const optionToRemove = wrongOptions.splice(removeIndex, 1)[0];
+                document.querySelector(`[data-option="${optionToRemove}"]`).classList.add('disabled-option');
+            }
+        }
+
+        function useAudiencePoll() {
+            const correctOption = gameState.currentQuestion.correct;
+            const options = ['A', 'B', 'C', 'D'];
+            
+            // Generate poll percentages (favor correct answer)
+            const percentages = {};
+            let remaining = 100;
+            
+            // Give correct answer 40-70% chance
+            percentages[correctOption] = 40 + Math.floor(Math.random() * 31);
+            remaining -= percentages[correctOption];
+            
+            // Distribute remaining among other options
+            const otherOptions = options.filter(opt => opt !== correctOption);
+            for (let i = 0; i < otherOptions.length; i++) {
+                if (i === otherOptions.length - 1) {
+                    percentages[otherOptions[i]] = remaining;
+                } else {
+                    const percent = Math.floor(Math.random() * (remaining / (otherOptions.length - i)));
+                    percentages[otherOptions[i]] = percent;
+                    remaining -= percent;
+                }
+            }
+            
+            // Display poll
+            document.getElementById('audiencePoll').classList.remove('hidden');
+            
+            options.forEach(option => {
+                const percent = percentages[option] || 0;
+                setTimeout(() => {
+                    document.getElementById(`poll${option}`).style.width = `${percent}%`;
+                    document.getElementById(`poll${option}Percent`).textContent = `${percent}%`;
+                }, Math.random() * 1000);
+            });
+        }
+
+        function useFlipQuestion() {
+            // Get new question for same level
+            const levelQuestions = questions.filter(q => q.level === gameState.currentLevel);
+            const otherQuestions = levelQuestions.filter(q => q !== gameState.currentQuestion);
+            
+            if (otherQuestions.length > 0) {
+                gameState.currentQuestion = otherQuestions[Math.floor(Math.random() * otherQuestions.length)];
+                
+                // Update question display with animation
+                const questionText = document.getElementById('questionText');
+                questionText.style.opacity = '0';
+                
+                setTimeout(() => {
+                    document.getElementById('questionText').textContent = gameState.currentQuestion.question;
+                    document.getElementById('optionA').textContent = gameState.currentQuestion.options[0];
+                    document.getElementById('optionB').textContent = gameState.currentQuestion.options[1];
+                    document.getElementById('optionC').textContent = gameState.currentQuestion.options[2];
+                    document.getElementById('optionD').textContent = gameState.currentQuestion.options[3];
+                    
+                    questionText.style.opacity = '1';
+                }, 300);
+                
+                // Reset any disabled options
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.classList.remove('disabled-option');
+                });
+            }
+        }
+
+        function useAskBot() {
+            const correctOption = gameState.currentQuestion.correct;
+            const hints = [
+                `I think the correct answer is: ${correctOption}`,
+                `Based on my knowledge, I believe it's option ${correctOption}`,
+                `My analysis suggests the answer is ${correctOption}`,
+                `I'm quite confident the answer is ${correctOption}`
+            ];
+            
+            const hint = hints[Math.floor(Math.random() * hints.length)];
+            
+            document.getElementById('botHintText').textContent = hint;
+            document.getElementById('botHint').classList.remove('hidden');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeGame);
+
+        // Handle audio context for mobile
+        document.addEventListener('click', () => {
+            if (soundManager.audioContext.state === 'suspended') {
+                soundManager.audioContext.resume();
+            }
+        }, { once: true });
+		async function addWinningsToWallet(earnings) {
+  const userRef = doc(db, "users", currentUser.uid);
+  await updateDoc(userRef, {
+    winningWallet: increment(earnings)
+  });
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+  
+      alert("⚠️ You switched tabs! The game is now over.");
+    endGame("You switched tabs. Game over due to violation.");
+  
+    document.getElementById('gamePage').classList.add('hidden');
+    document.getElementById('gameOverPage').classList.remove('hidden');
+    document.getElementById('gameOverTitle').textContent = 'Disqualified!';
+    document.getElementById('resultMessage').textContent = 'You switched tabs during the game.';
+  }
+});
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+    </script>
+</body>
+</html>

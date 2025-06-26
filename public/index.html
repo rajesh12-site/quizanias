@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizania - Play, Win & Earn Real Money | India's Most Trusted Quiz Platform</title>
+      <link rel="icon" href="https://i.ibb.co/d03LWgky/Ideas.png" type="image/png">
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+        }
+        
+        .stats-counter {
+            animation: countUp 2s ease-out;
+        }
+        
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-3xl font-bold gradient-text">
+                        <i class="fas fa-brain mr-2"></i><a href="index.html">Quizania</a>
+                    </h1>
+                </div>
+                
+                <!-- Auth Buttons -->
+<div class="flex space-x-4" id="auth-buttons">
+  <!-- These buttons will be replaced by Firebase JS -->
+  <a href="login.html" class="px-6 py-2 border-2 border-purple-600 text-purple-600 rounded-full font-semibold hover:bg-purple-600 hover:text-white transition duration-300">
+    Login
+  </a>
+  <a href="signup.html" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300">
+    Sign Up
+  </a>
+</div>
+
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-10 left-10 w-20 h-20 bg-white rounded-full animate-float"></div>
+            <div class="absolute top-32 right-20 w-16 h-16 bg-yellow-300 rounded-full animate-float" style="animation-delay: 1s;"></div>
+            <div class="absolute bottom-20 left-32 w-12 h-12 bg-pink-300 rounded-full animate-float" style="animation-delay: 2s;"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                Welcome to <span class="text-yellow-300">Quizania</span>
+            </h1>
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">
+                Play, Win & Earn Real Money!
+            </h2>
+			
+<div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6" id="hero-buttons">
+  <a href="login.html" class="px-8 py-4 bg-yellow-400 text-purple-900 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 pulse-glow">
+    <i class="fas fa-sign-in-alt mr-2"></i>Login Now
+  </a>
+  <a href="signup.html" class="px-8 py-4 bg-white text-purple-600 rounded-full text-xl font-bold hover:bg-gray-100 transition duration-300">
+    <i class="fas fa-user-plus mr-2"></i>Sign Up Free
+  </a>
+</div>
+
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-4">Why Choose Quizania?</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience the ultimate quiz gaming platform with amazing features designed for winners like you
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature Cards -->
+                <div class="bg-gradient-to-br from-green-400 to-green-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">💰</div>
+                    <h3 class="text-2xl font-bold mb-3">Win Real Money</h3>
+                    <p class="text-green-100">Earn actual cash rewards with every quiz you play and win</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-400 to-red-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🎮</div>
+                    <h3 class="text-2xl font-bold mb-3">Quiz Battle</h3>
+                    <p class="text-red-100">Challenge other players in real-time quiz battles</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-400 to-purple-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🧠</div>
+                    <h3 class="text-2xl font-bold mb-3">KBC Mode</h3>
+                    <p class="text-purple-100">Experience the thrill of KBC-style quiz challenges</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-blue-400 to-blue-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🤖</div>
+                    <h3 class="text-2xl font-bold mb-3">Play vs Bot</h3>
+                    <p class="text-blue-100">Practice and improve your skills against AI opponents</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🆓</div>
+                    <h3 class="text-2xl font-bold mb-3">Free Quizzes</h3>
+                    <p class="text-yellow-100">Enjoy unlimited free quizzes to test your knowledge</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-pink-400 to-pink-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🏆</div>
+                    <h3 class="text-2xl font-bold mb-3">Big Rewards</h3>
+                    <p class="text-pink-100">Entry fee games with massive cash prizes and rewards</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-indigo-400 to-indigo-600 p-8 rounded-2xl text-white card-hover">
+                    <div class="text-5xl mb-4">🔐</div>
+                    <h3 class="text-2xl font-bold mb-3">Secure Payments</h3>
+                    <p class="text-indigo-100">Safe transactions with instant withdrawal facility</p>
+                </div>
+                
+<div class="bg-gradient-to-br from-purple-400 to-purple-600 p-8 rounded-2xl text-white card-hover">
+    <div class="text-5xl mb-4">👥</div>
+    <h3 class="text-2xl font-bold mb-3">Real Users</h3>
+    <p class="text-white">Transparent system with genuine players and fair gameplay</p>
+</div>
+
+<div class="bg-gradient-to-br from-green-400 to-green-600 p-8 rounded-2xl text-white card-hover">
+    <div class="text-5xl mb-4">⭐</div>
+    <h3 class="text-2xl font-bold mb-3">Trusted Platform</h3>
+    <p class="text-white">India's most trusted skill-based gaming platform</p>
+</div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Engagement Section -->
+    <section class="py-20 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <!-- Stats -->
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold gradient-text mb-8">Our Amazing Community</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg stats-counter">
+                        <div class="text-4xl md:text-5xl font-bold text-purple-600 mb-2">50,000+</div>
+                        <div class="text-xl text-gray-600">Active Players</div>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg stats-counter" style="animation-delay: 0.2s;">
+                        <div class="text-4xl md:text-5xl font-bold text-green-600 mb-2">₹10L+</div>
+                        <div class="text-xl text-gray-600">Rewards Distributed</div>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-lg stats-counter" style="animation-delay: 0.4s;">
+                        <div class="text-4xl md:text-5xl font-bold text-blue-600 mb-2">1M+</div>
+                        <div class="text-xl text-gray-600">Games Played</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonials -->
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-8">What Our Winners Say</h3>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">R</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Rahul Sharma</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"I won ₹25,000 in my first month! Quizania is genuinely trustworthy and pays instantly."</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-lg card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold">P</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Priya Patel</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"Amazing platform! The KBC mode is my favorite. Already earned ₹15,000 this month."</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl shadow-lg card-hover">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+                        <div class="ml-4">
+                            <h4 class="font-bold">Amit Kumar</h4>
+                            <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">"Best quiz app ever! Fair gameplay, real money, and super fun. Highly recommended!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 hero-gradient text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Start Winning?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Join thousands of players who are already earning real money with their knowledge. Your quiz journey starts here!
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <a href="signup.html" class="px-8 py-4 bg-yellow-400 text-purple-900 rounded-full text-xl font-bold hover:bg-yellow-300 transition duration-300 pulse-glow">
+                    <i class="fas fa-rocket mr-2"></i>Start Playing Now
+                </a>
+                <a href="login.html" class="px-8 py-4 border-2 border-white text-white rounded-full text-xl font-bold hover:bg-white hover:text-purple-600 transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Already a Member?
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-3xl font-bold gradient-text mb-4">
+                        <i class="fas fa-brain mr-2"></i>Quizania
+                    </h3>
+                    <p class="text-gray-300 mb-4 max-w-md">
+                        India's most trusted quiz gaming platform where knowledge meets rewards. Play smart, win big!
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook-f text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-youtube text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="about.html" class="text-gray-300 hover:text-white transition duration-300">About Us</a></li>
+                        <li><a href="contact.html" class="text-gray-300 hover:text-white transition duration-300">Contact Us</a></li>
+                        <li><a href="privacy-policy.html" class="text-gray-300 hover:text-white transition duration-300">Privacy Policy</a></li>
+                        <li><a href="terms.html" class="text-gray-300 hover:text-white transition duration-300">Terms of Use</a></li>
+                        <li><a href="game-policy.html" class="text-gray-300 hover:text-white transition duration-300">Game Policy</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-xl font-bold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li class="text-gray-300"><i class="fas fa-envelope mr-2"></i>help@quizania.com</li>
+                        <li class="text-gray-300"><i class="fas fa-clock mr-2"></i>24/7 Support</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">
+                    © 2025 Quizania. All rights reserved. | Made with ❤️ in India
+                </p>
+            </div>
+        </div>
+    </footer>
+<!-- Firebase Auth Integration -->
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+    authDomain: "quizania-b8292.firebaseapp.com",
+    projectId: "quizania-b8292",
+    storageBucket: "quizania-b8292.appspot.com",
+    messagingSenderId: "94747680142",
+    appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+    measurementId: "G-YM2LZBJNCY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.exists() ? userSnap.data() : { name: user.email };
+
+      // Replace header buttons
+      const header = document.getElementById("auth-buttons");
+      if (header) {
+        header.innerHTML = `
+          <span class="text-purple-600 font-semibold">👋 Hi,</span>
+          <button onclick="logout()" class="ml-4 px-4 py-2 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition">Logout</button>
+        `;
+      }
+
+      // Replace Hero buttons
+      const hero = document.getElementById("hero-buttons");
+      if (hero) {
+        hero.innerHTML = `
+          <a href="dashboard.html" class="px-8 py-4 bg-green-400 text-white rounded-full text-xl font-bold hover:bg-green-500 transition duration-300">
+            <i class="fas fa-tachometer-alt mr-2"></i>Go to Dashboard
+          </a>
+          <button onclick="logout()" class="px-8 py-4 bg-red-500 text-white rounded-full text-xl font-bold hover:bg-red-600 transition duration-300">
+            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+          </button>
+        `;
+      }
+    }
+  });
+
+  window.logout = () => {
+    signOut(auth).then(() => {
+      location.reload();
+    });
+  };
+</script>
+
+
+    <!-- Smooth Scroll Script -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

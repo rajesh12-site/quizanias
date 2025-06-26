@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback - Quizania</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+   <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            fadeIn: 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .sidebar a { display: flex; align-items: center; gap: 0.5rem; }
+    .overlay { background: rgba(0, 0, 0, 0.5); }
+    @media (max-width: 768px) {
+      .sidebar { width: 70%; max-width: 280px; height: 100vh; position: fixed; top: 0; left: -100%; z-index: 40; transition: all 0.3s ease; }
+      .sidebar.open { left: 0; }
+      .mobile-overlay { display: none; }
+      .mobile-overlay.show { display: block; position: fixed; inset: 0; z-index: 30; }
+    }
+	  @keyframes glow {
+    0%   { box-shadow: 0 0 5px #a855f7; }
+    50%  { box-shadow: 0 0 10px #a855f7; }
+    100% { box-shadow: 0 0 5px #a855f7; }
+  }
+
+  .glow {
+    animation: glow 2s infinite;
+  }
+  
+.goog-te-banner-frame.skiptranslate, 
+  .goog-te-gadget-icon,
+  .goog-te-gadget-simple {
+    display: none !important;
+  }
+
+  body {
+    top: 0px !important;
+  }
+
+  #google_translate_element {
+    display: none !important;
+  }
+  html body > .skiptranslate {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+  </style>
+
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+
+
+
+<!-- Mobile Navbar -->
+<div class="sm:hidden flex justify-between items-center p-4 bg-blue-900 text-white">
+  <button onclick="toggleSidebar()">☰</button>
+  <h1 class="font-bold">Quizania</h1>
+</div>
+
+<!-- Sidebar Overlay for Mobile -->
+<div id="mobileOverlay" class="mobile-overlay overlay"></div>
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar bg-blue-900 text-white flex flex-col px-4 py-4 sm:relative sm:w-60 w-full sm:translate-x-0">
+    <div class="flex items-center mb-6 space-x-2">
+      <img id="profilePreview" src="" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white cursor-pointer" />
+      <span class="text-lg font-bold hidden sm:block">Quizania</span>
+      <input type="file" id="profilePhoto" accept="image/*" class="hidden" />
+    </div>
+    <nav class="space-y-2">
+      <a href="dashboard.html">🏠 Home</a>
+      <a href="profile-edit.html">👤 Profile</a>
+      <a href="msg.html">✉️ Messages</a>
+      <a href="play.html">▶️ Play</a>
+      <a href="#">🤝 Refer & Earn</a>
+      <a href="#">⚙️ Setting</a>
+      <a href="feedback.html">📝 Feedback</a>
+    </nav>
+    <button onclick="toggleTheme()" class="mt-4 bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded text-sm">Dark</button>
+    <button onclick="logout()" class="mt-2 bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Logout</button>
+  </div>
+
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+	<div id="loadingSpinner" class="hidden mt-4 text-purple-600 flex items-center">
+  <svg class="animate-spin h-5 w-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  Submitting feedback...
+</div>
+
+      <h2 class="text-2xl font-bold mb-6">Submit Feedback</h2>
+      <form id="feedbackForm" class="space-y-6">
+        <div>
+          <label for="type" class="block font-semibold mb-1">Select Type</label>
+          <select id="type" class="w-full p-2 border dark:bg-gray-800 rounded">
+            <option value="Feedback">Feedback</option>
+            <option value="Report">Report</option>
+            <option value="Question Error">Question Error</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="details" class="block font-semibold mb-1">Details</label>
+          <textarea id="details" class="w-full p-2 h-32 border dark:bg-gray-800 rounded" placeholder="Write your feedback here..."></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">Optional Screenshot/Image</label>
+          <input type="file" id="imageInput" accept="image/*" class="w-full" />
+        </div>
+
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded">Submit</button>
+      </form>
+
+      <div id="successMsg" class="text-green-500 mt-4 hidden">Feedback submitted successfully!</div>
+    </main>
+  </div>
+
+  <!-- Firebase + Submission Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+	import { doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBt_ygYw6AgCcOlQYcMAn3rw6Q325IRyy4",
+      authDomain: "quizania-b8292.firebaseapp.com",
+      projectId: "quizania-b8292",
+      storageBucket: "quizania-b8292.appspot.com",
+      messagingSenderId: "94747680142",
+      appId: "1:94747680142:web:520ef8559cfe766f0c58df",
+      measurementId: "G-YM2LZBJNCY"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, user => {
+      if (!user) return window.location.href = "login.html";
+      currentUser = user;
+    });
+
+document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const type = document.getElementById("type").value;
+  const details = document.getElementById("details").value.trim();
+  const imageFile = document.getElementById("imageInput").files[0];
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const successMsg = document.getElementById("successMsg");
+
+  if (!details) {
+    alert("Please enter feedback details.");
+    return;
+  }
+
+  // Disable submit & show loading
+  submitButton.disabled = true;
+  submitButton.classList.add("opacity-50", "cursor-not-allowed");
+  loadingSpinner.classList.remove("hidden");
+  successMsg.classList.add("hidden");
+
+  let imageURL = "";
+  try {
+    if (imageFile) {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      formData.append("upload_preset", "Profile photo");
+
+      const res = await fetch("https://api.cloudinary.com/v1_1/dkzjcmkha/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      imageURL = data.secure_url;
+    }
+
+    await addDoc(collection(db, "feedbacks"), {
+      details: details,
+      type: type,
+      submittedAt: serverTimestamp(),
+      userId: currentUser.uid,
+      imageURL: imageURL || ""
+    });
+
+    // Reset form & show success
+    document.getElementById("feedbackForm").reset();
+    successMsg.classList.remove("hidden");
+  } catch (error) {
+    alert("Something went wrong. Please try again.");
+    console.error(error);
+  } finally {
+    // Re-enable button and hide spinner
+    submitButton.disabled = false;
+    submitButton.classList.remove("opacity-50", "cursor-not-allowed");
+    loadingSpinner.classList.add("hidden");
+  }
+});
+
+
+
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+  }
+
+  window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+
+
+
+  window.withdraw = () => alert("Withdraw coming soon!");
+
+window.toggleSidebar = function () {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("mobileOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+  overlay.onclick = () => {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+};
+  </script>
+</body>
+</html>
