@@ -230,16 +230,53 @@ else if (entryFee === 100) commission = 10;
 
   onAuthStateChanged(auth, async (u) => {
     if (!u) return location.href = "login.html";
-    currentUser = u;
+	    currentUser = u;
 
-    const userSnap = await getDoc(doc(db, "users", u.uid));
-    user = userSnap.data();
+	
+	async function deductEntryFeeIfPossible() {
+  const userRef = doc(db, "users", currentUser.uid);
+  const userSnap = await getDoc(userRef);
+  const userData = userSnap.data();
 
-    document.getElementById("userPhoto").src = user.profilePhoto || `https://i.pravatar.cc/150?u=${u.uid}`;
-    document.getElementById("userNameDisplay").textContent = user.name || u.email;
+  let recharge = userData.rechargeWallet || 0;
+  let winning = userData.winningWallet || 0;
 
-    startMatchMaking();
-    findOrCreateMatch();
+  if (recharge + winning < entryFee) {
+    alert("Insufficient balance to join the battle.");
+    location.href = "/recharge.html"; // redirect or show top-up modal
+    return false;
+  }
+
+  let rechargeDeduct = 0;
+  let winningDeduct = 0;
+
+  if (recharge >= entryFee) {
+    rechargeDeduct = entryFee;
+  } else {
+    rechargeDeduct = recharge;
+    winningDeduct = entryFee - recharge;
+  }
+
+  await updateDoc(userRef, {
+    rechargeWallet: recharge - rechargeDeduct,
+    winningWallet: winning - winningDeduct
+  });
+
+  console.log("Deducted ₹" + rechargeDeduct + " from recharge, ₹" + winningDeduct + " from winning.");
+  return true;
+}
+
+const userSnap = await getDoc(doc(db, "users", u.uid));
+user = userSnap.data();
+
+document.getElementById("userPhoto").src = user.profilePhoto || `https://i.pravatar.cc/150?u=${u.uid}`;
+document.getElementById("userNameDisplay").textContent = user.name || u.email;
+
+const deductionSuccess = await deductEntryFeeIfPossible();
+if (!deductionSuccess) return;
+
+startMatchMaking();
+findOrCreateMatch();
   });
 
   function startMatchMaking() {
