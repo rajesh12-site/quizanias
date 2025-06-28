@@ -495,7 +495,7 @@ onAuthStateChanged(auth, async (user) => {
     // Allow join now button
 document.getElementById("joinNowBtn").addEventListener("click", async () => {
   const referralCode = Math.random().toString(36).substring(2, 8).toUpperCase(); // Example: "A1B2C3"
-  const referralLink = `http://localhost:3000/signup.html?ref=${referralCode}`;
+const referralLink = `https://quizanias.onrender.com/signup.html?ref=${referralCode}`;
 
   const user = auth.currentUser;
   const userId = user.uid;
