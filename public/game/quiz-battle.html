@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quizania Dashboard</title>
+  <title>Quizania Quiz Battel Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -226,8 +226,9 @@ body {
 
   window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
 
+
 window.startQuizBattle = async function () {
-  const selectedFee = selectedEntry; // Use selectedEntry instead of entryFee from dropdown
+  const selectedFee = selectedEntry;
   const category = document.getElementById('category').value;
 
   const user = auth.currentUser;
@@ -236,48 +237,10 @@ window.startQuizBattle = async function () {
     return;
   }
 
-  const uid = user.uid;
-  const userRef = doc(db, "users", uid);
-  const userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) {
-    alert("User data not found");
-    return;
-  }
-
-  const userData = userSnap.data();
-  const recharge = userData.rechargeWallet || 0;
-  const winning = userData.winningWallet || 0;
-  const totalAvailable = recharge + winning;
-
-  if (totalAvailable < selectedFee) {
-    alert("Insufficient total balance.");
-    return;
-  }
-
-  let rechargeDeduct = 0;
-  let winningDeduct = 0;
-
-  if (recharge >= selectedFee) {
-    rechargeDeduct = selectedFee;
-  } else {
-    rechargeDeduct = recharge;
-    winningDeduct = selectedFee - recharge;
-  }
-
-  await updateDoc(userRef, {
-    rechargeWallet: recharge - rechargeDeduct,
-    winningWallet: winning - winningDeduct
-  });
-
-  alert(`₹${selectedFee} deducted. Starting quiz...`);
-
-  // Redirect to quiz page
+  // Just redirect without any balance checks or deduction
   const redirectUrl = `battle-quiz.html?entryFee=${selectedFee}&category=${encodeURIComponent(category)}`;
   window.location.href = redirectUrl;
 };
-
-
 
 window.toggleSidebar = function () {
   const sidebar = document.getElementById("sidebar");
