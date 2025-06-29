@@ -427,56 +427,64 @@ async function showOpponent(uid) {
   }
 }
 
+  const funFacts = [
+    // GK & History
+    "India has the world's largest postal network, with over 1.5 lakh post offices.",
+    "The national animal of Scotland is... the unicorn!",
+    "The Taj Mahal appears pink in the morning, white during the day, and golden at night.",
+    "Mount Everest grows about 4 millimeters taller every year.",
+    "The world's first university was established in Takshashila, India, around 700 BC.",
+    "Bananas are berries, but strawberries aren't!",
+    "There’s an ATM in Antarctica used by scientists at McMurdo Station.",
+    "The Eiffel Tower can grow more than 6 inches during hot weather.",
+    "Albert Einstein’s brain was preserved after his death for research.",
+    "Shivaji Maharaj used guerrilla warfare tactics centuries before modern armies adopted it.",
 
-const funFacts = [
-  // GK & History
-  "India has the world's largest postal network, with over 1.5 lakh post offices.",
-  "The national animal of Scotland is... the unicorn!",
-  "The Taj Mahal appears pink in the morning, white during the day, and golden at night.",
-  "Mount Everest grows about 4 millimeters taller every year.",
-  "The world's first university was established in Takshashila, India, around 700 BC.",
-  "Bananas are berries, but strawberries aren't!",
-  "There’s an ATM in Antarctica used by scientists at McMurdo Station.",
-  "The Eiffel Tower can grow more than 6 inches during hot weather.",
-  "Albert Einstein’s brain was preserved after his death for research.",
-  "Shivaji Maharaj used guerrilla warfare tactics centuries before modern armies adopted it.",
+    // Science
+    "Your brain generates enough electricity to power a light bulb.",
+    "A day on Venus is longer than its year.",
+    "Hot water can freeze faster than cold water — it’s called the Mpemba effect.",
+    "Sharks are older than dinosaurs — they’ve been around for over 400 million years.",
+    "The human body contains enough carbon to make 9,000 pencils.",
+    "An adult human is made up of about 37 trillion cells.",
+    "Sound travels 4 times faster in water than in air.",
+    "A bolt of lightning is five times hotter than the surface of the sun.",
+    "Your stomach gets a new lining every few days to avoid digesting itself.",
+    "Cats can’t taste sugar — they lack the gene for sweet taste.",
 
-  // Science
-  "Your brain generates enough electricity to power a light bulb.",
-  "A day on Venus is longer than its year.",
-  "Hot water can freeze faster than cold water — it’s called the Mpemba effect.",
-  "Sharks are older than dinosaurs — they’ve been around for over 400 million years.",
-  "The human body contains enough carbon to make 9,000 pencils.",
-  "An adult human is made up of about 37 trillion cells.",
-  "Sound travels 4 times faster in water than in air.",
-  "A bolt of lightning is five times hotter than the surface of the sun.",
-  "Your stomach gets a new lining every few days to avoid digesting itself.",
-  "Cats can’t taste sugar — they lack the gene for sweet taste.",
+    // Sports
+    "Sachin Tendulkar is the only player to score 100 international centuries.",
+    "The Olympic gold medals are mostly made of silver!",
+    "The FIFA World Cup trophy cannot be won permanently — it must be returned after each tournament.",
+    "Michael Phelps has won more Olympic golds (23) than 160 countries.",
+    "Chess is considered a sport and is recognized by the International Olympic Committee.",
+    "Basketball was invented by a Canadian in 1891 using a soccer ball and peach baskets.",
+    "Kabaddi is believed to have originated in ancient India over 4,000 years ago.",
+    "The longest tennis match lasted over 11 hours between Isner and Mahut in 2010.",
+    "India has won all its Olympic gold medals in field hockey from 1928 to 1980.",
+    "Cristiano Ronaldo can jump higher than an average NBA player."
+  ];
 
-  // Sports
-  "Sachin Tendulkar is the only player to score 100 international centuries.",
-  "The Olympic gold medals are mostly made of silver!",
-  "The FIFA World Cup trophy cannot be won permanently — it must be returned after each tournament.",
-  "Michael Phelps has won more Olympic golds (23) than 160 countries.",
-  "Chess is considered a sport and is recognized by the International Olympic Committee.",
-  "Basketball was invented by a Canadian in 1891 using a soccer ball and peach baskets.",
-  "Kabaddi is believed to have originated in ancient India over 4,000 years ago.",
-  "The longest tennis match lasted over 11 hours between Isner and Mahut in 2010.",
-  "India has won all its Olympic gold medals in field hockey from 1928 to 1980.",
-  "Cristiano Ronaldo can jump higher than an average NBA player."
-
-];
-
-
-  let currentIndex = 0;
+  let lastIndex = -1;
 
   function showNextFunFact() {
     const factBox = document.getElementById("funFactText");
-    factBox.textContent = funFacts[currentIndex];
-    currentIndex = (currentIndex + 1) % funFacts.length;
+    factBox.style.opacity = 0;
+
+    setTimeout(() => {
+      let randomIndex;
+      do {
+        randomIndex = Math.floor(Math.random() * funFacts.length);
+      } while (randomIndex === lastIndex);
+
+      lastIndex = randomIndex;
+      factBox.textContent = funFacts[randomIndex];
+      factBox.style.opacity = 1;
+    }, 300);
   }
 
-  // Show a new fact every 9 seconds
+
+  // Show a new random fact every 8 seconds
   setInterval(showNextFunFact, 8000);
 
   // Show the first fact immediately
